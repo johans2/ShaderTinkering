@@ -31,15 +31,15 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Thickness:
-        m_Texture: {fileID: 2800000, guid: e361028a6ba4c084fb0471b2dea6e49d, type: 3}
+        m_Texture: {fileID: 2800000, guid: aa5ca20bace8e1046a65886c8350298b, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _Distortion: 1
     - _Glossiness: 0.443
     - _Metallic: 0
-    - _Power: 1
-    - _Scale: 1
+    - _Power: 0.31
+    - _Scale: 0.69
     - _Shininess: 0.1829303
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}

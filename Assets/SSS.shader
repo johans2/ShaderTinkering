@@ -7,8 +7,8 @@
 		_Glossiness ("Smoothness", Range(0,1)) = 0.5
 		_Metallic ("Metallic", Range(0,1)) = 0.0
 			_Distortion("Distortion", Range(0,1)) = 0.0
-			_Power("Power", Range(0,1)) = 0.0
-			_Scale("Scale", Range(0,1)) = 0.0
+			_Power("Power", Range(0,10)) = 0.0
+			_Scale("Scale", Range(0,10)) = 0.0
 	}
 	SubShader {
 		Tags { "RenderType"="Opaque" }
@@ -51,8 +51,8 @@
 			float3 N = s.Normal;
 
 			float3 H = normalize(L + N * _Distortion);
-			float I = pow(saturate(dot(V, -H)), _Power) *  _Scale * thickness;
-			//float3 I = _Attenuation * (VdotH + _Ambient);// *thickness;
+			float VdotH = pow(saturate(dot(V, -H)), _Power) *  _Scale;
+			float3 I = (VdotH + unity_AmbientSky) * thickness;
 
 			// Final add
 			pbr.rgb = pbr.rgb + gi.light.color * I * _Color;
