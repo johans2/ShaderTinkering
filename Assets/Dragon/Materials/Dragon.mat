@@ -26,9 +26,17 @@ Material:
         m_Texture: {fileID: 2800000, guid: bc98b0db932aa4f43882c0e5afaa39e0, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _NormalMap:
+        m_Texture: {fileID: 2800000, guid: fe35bca53be0dd44aa31a36c61dbd974, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Thickness:
+        m_Texture: {fileID: 2800000, guid: e361028a6ba4c084fb0471b2dea6e49d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Floats:
     - _Distortion: 1
-    - _Glossiness: 0.5
+    - _Glossiness: 0.443
     - _Metallic: 0
     - _Power: 1
     - _Scale: 1

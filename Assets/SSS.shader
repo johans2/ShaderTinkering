@@ -2,6 +2,8 @@
 	Properties {
 		_Color ("Color", Color) = (1,1,1,1)
 		_MainTex ("Albedo (RGB)", 2D) = "white" {}
+		_NormalMap ("MormalMap", 2D) = "white" {}
+		_Thickness ("Thickness", 2D) = "white" {}
 		_Glossiness ("Smoothness", Range(0,1)) = 0.5
 		_Metallic ("Metallic", Range(0,1)) = 0.0
 			_Distortion("Distortion", Range(0,1)) = 0.0
@@ -20,6 +22,9 @@
 		#pragma target 3.0
 
 		sampler2D _MainTex;
+		sampler2D _NormalMap;
+		sampler2D _Thickness;
+
 
 		struct Input {
 			float2 uv_MainTex;
@@ -32,7 +37,7 @@
 		float _Power;
 		float _Scale;
 
-
+		float thickness;
 
 		#include "UnityPBSLighting.cginc"
 		inline fixed4 LightingStandardTranslucent(SurfaceOutputStandard s, fixed3 viewDir, UnityGI gi)
@@ -46,11 +51,11 @@
 			float3 N = s.Normal;
 
 			float3 H = normalize(L + N * _Distortion);
-			float VdotH = pow(saturate(dot(V, -H)), _Power) * _Scale;
-			float3 I = _Attenuation * (VdotH + _Ambient);// *thickness;
+			float I = pow(saturate(dot(V, -H)), _Power) *  _Scale * thickness;
+			//float3 I = _Attenuation * (VdotH + _Ambient);// *thickness;
 
 			// Final add
-			pbr.rgb = pbr.rgb + gi.light.color * I;
+			pbr.rgb = pbr.rgb + gi.light.color * I * _Color;
 			return pbr;
 		}
 
@@ -66,6 +71,8 @@
 			// put more per-instance properties here
 		UNITY_INSTANCING_CBUFFER_END
 
+
+
 		void surf (Input IN, inout SurfaceOutputStandard o) {
 			// Albedo comes from a texture tinted by color
 			fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
@@ -74,6 +81,8 @@
 			o.Metallic = _Metallic;
 			o.Smoothness = _Glossiness;
 			o.Alpha = c.a;
+			//o.Normal = tex2D (_NormalMap, IN.uv_MainTex);
+			thickness = tex2D (_Thickness, IN.uv_MainTex).r;
 		}
 		ENDCG
 	}
