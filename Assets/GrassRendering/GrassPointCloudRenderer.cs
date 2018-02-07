@@ -41,8 +41,10 @@ public class GrassPointCloudRenderer : MonoBehaviour {
                 if (Physics.Raycast(ray, out hit))
                 {
                     origin = hit.point;
-                    origin.y = grassOffset;
+                    origin.y += grassOffset;
 
+                    //Debug.DrawLine(hit.point, hit.point + Vector3.up, Color.red, 5);
+                    
                     positions.Add(origin);
                     indicies[i] = i;
                     colors.Add(new Color(Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), 1));
