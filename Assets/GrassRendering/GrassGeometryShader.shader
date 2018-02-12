@@ -8,6 +8,8 @@ Shader "Custom/GrassGeometryShader" {
 		_Metallic("Metallic", Range(0,1)) = 0.0
 		_GrassHeight("Grass Height", Float) = 0.25
 		_GrassWidth("Grass Width", Float) = 0.25
+		_WindStrength("Wind strength", Float) = 1
+		_WindSpeed("Wind speed", Float) = 1
 	}
 	SubShader{
 			Pass{
@@ -46,6 +48,8 @@ Shader "Custom/GrassGeometryShader" {
 				fixed4 _Color;
 				half _GrassHeight;
 				half _GrassWidth;
+				half _WindStrength;
+				half _WindSpeed;
 
 				v2g vert(appdata_full v) {
 					float3 v0 = v.vertex.xyz;
@@ -69,12 +73,16 @@ Shader "Custom/GrassGeometryShader" {
 					float3 v0 = IN[0].pos.xyz;
 					float3 v1 = IN[0].pos.xyz + IN[0].norm * _GrassHeight;
 
+					half time = _Time.x * _WindSpeed;
+					float3 wind = float3(sin(time + v0.x) + sin(time + v0.z * 2 + cos(time + v0.x)), 0 , cos(time + v0.x * 2) + cos(time + v0.z));
+					v1 += wind * _WindStrength;
+
+
 					float3 crossA = IN[0].norm;
 					float3 crossB = crossA + float3(1, 0, 0);
 					float3 crossC = crossA + float3(0, 0, 1);
 
-					// This creates the base  vectors from which the quads are generated.
-
+					// This creates the base vectors from which the quads are generated.
 					// Perpendicular vector.
 					float3 pVector = normalize( cross(crossA, crossB)) * _GrassHeight;
 
