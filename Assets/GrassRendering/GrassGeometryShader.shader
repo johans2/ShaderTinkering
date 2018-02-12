@@ -59,7 +59,7 @@ Shader "Custom/GrassGeometryShader" {
 					return OUT;
 				}
 
-				[maxvertexcount(6)]
+				[maxvertexcount(9)]
 				void geom(point v2g IN[1], inout TriangleStream<g2f> triStream) {
 					float3 lightPosition = _WorldSpaceLightPos0;
 
@@ -80,105 +80,118 @@ Shader "Custom/GrassGeometryShader" {
 
 					float3 color = IN[0].color;
 
-					// Quad 1
+					// Plane 1, Quad 1
 					g2f OUT;
 
 					// e
-					OUT.pos = UnityObjectToClipPos(v0 /*perpendicularAngle * 0.5 * _GrassHeight*/);
+					OUT.pos = UnityObjectToClipPos(v0);
 					OUT.norm = faceNormal;
 					OUT.diffuseColor = color;
 					OUT.uv = float2(0.5, 0);
 					triStream.Append(OUT);
 
-					// a
-					OUT.pos = UnityObjectToClipPos(v0 + pVector /*perpendicularAngle * 0.5 * _GrassHeight*/);
-					OUT.norm = faceNormal;
-					OUT.diffuseColor = color;
-					OUT.uv = float2(1, 0);
-					triStream.Append(OUT);
-
-					// c
-					OUT.pos = UnityObjectToClipPos(v1 + pVector /* perpendicularAngle * 0.5 * _GrassHeight*/);
-					OUT.norm = faceNormal;
-					OUT.diffuseColor = color;
-					OUT.uv = float2(1, 1);
-					triStream.Append(OUT);
-
 					// f
-					OUT.pos = UnityObjectToClipPos(v1 /*perpendicularAngle * 0.5 * _GrassHeight*/);
+					OUT.pos = UnityObjectToClipPos(v1);
 					OUT.norm = faceNormal;
 					OUT.diffuseColor = color;
 					OUT.uv = float2(0.5, 1);
 					triStream.Append(OUT);
 
+					// c
+					OUT.pos = UnityObjectToClipPos(v1 + pVector);
+					OUT.norm = faceNormal;
+					OUT.diffuseColor = color;
+					OUT.uv = float2(1, 1);
+					triStream.Append(OUT);
 
+					// a
+					OUT.pos = UnityObjectToClipPos(v0 + pVector);
+					OUT.norm = faceNormal;
+					OUT.diffuseColor = color;
+					OUT.uv = float2(1, 0);
+					triStream.Append(OUT);
 
+					// Plane 1, Quad 2
 
+					// e
+					OUT.pos = UnityObjectToClipPos(v0);
+					OUT.norm = faceNormal;
+					OUT.diffuseColor = color;
+					OUT.uv = float2(0.5, 0);
+					triStream.Append(OUT);
 
-
-					
-
+					// f
+					OUT.pos = UnityObjectToClipPos(v1);
+					OUT.norm = faceNormal;
+					OUT.diffuseColor = color;
+					OUT.uv = float2(0.5, 1);
+					triStream.Append(OUT);
 
 					// d
-					OUT.pos = UnityObjectToClipPos(v1 - pVector /*perpendicularAngle * 0.5 * _GrassHeight*/);
+					OUT.pos = UnityObjectToClipPos(v1 - pVector);
 					OUT.norm = faceNormal;
 					OUT.diffuseColor = color;
 					OUT.uv = float2(0, 1);
 					triStream.Append(OUT);
 
 					// b
-					OUT.pos = UnityObjectToClipPos(v0 - pVector /*perpendicularAngle * 0.5 * _GrassHeight*/);
+					OUT.pos = UnityObjectToClipPos(v0 - pVector);
 					OUT.norm = faceNormal;
 					OUT.diffuseColor = color;
 					OUT.uv = float2(0,0);
 					triStream.Append(OUT);
 
+					// e
+					OUT.pos = UnityObjectToClipPos(v0);
+					OUT.norm = faceNormal;
+					OUT.diffuseColor = color;
+					OUT.uv = float2(0.5, 0);
+					triStream.Append(OUT);
+
+					/*
 					// Quad 2
-
-
-
 					// c
-					OUT.pos = UnityObjectToClipPos(v1 + hVector /* perpendicularAngle * 0.5 * _GrassHeight*/);
+					OUT.pos = UnityObjectToClipPos(v1 + hVector);
 					OUT.norm = faceNormal;
 					OUT.diffuseColor = color;
 					OUT.uv = float2(1, 1);
 					triStream.Append(OUT);
 
 					// a
-					OUT.pos = UnityObjectToClipPos(v0 + hVector /*perpendicularAngle * 0.5 * _GrassHeight*/);
+					OUT.pos = UnityObjectToClipPos(v0 + hVector);
 					OUT.norm = faceNormal;
 					OUT.diffuseColor = color;
 					OUT.uv = float2(1, 0);
 					triStream.Append(OUT);
 
 					// f
-					OUT.pos = UnityObjectToClipPos(v1 /*perpendicularAngle * 0.5 * _GrassHeight*/);
+					OUT.pos = UnityObjectToClipPos(v1);
 					OUT.norm = faceNormal;
 					OUT.diffuseColor = color;
 					OUT.uv = float2(0.5, 1);
 					triStream.Append(OUT);
 
 					// e
-					OUT.pos = UnityObjectToClipPos(v0 /*perpendicularAngle * 0.5 * _GrassHeight*/);
+					OUT.pos = UnityObjectToClipPos(v0);
 					OUT.norm = faceNormal;
 					OUT.diffuseColor = color;
 					OUT.uv = float2(0.5, 0);
 					triStream.Append(OUT);
 
 					// d
-					OUT.pos = UnityObjectToClipPos(v1 - hVector /*perpendicularAngle * 0.5 * _GrassHeight*/);
+					OUT.pos = UnityObjectToClipPos(v1 - hVector);
 					OUT.norm = faceNormal;
 					OUT.diffuseColor = color;
 					OUT.uv = float2(0, 1);
 					triStream.Append(OUT);
 
 					// b
-					OUT.pos = UnityObjectToClipPos(v0 - hVector /*perpendicularAngle * 0.5 * _GrassHeight*/);
+					OUT.pos = UnityObjectToClipPos(v0 - hVector);
 					OUT.norm = faceNormal;
 					OUT.diffuseColor = color;
 					OUT.uv = float2(0, 0);
 					triStream.Append(OUT);
-
+					*/
 
 				}
 		
