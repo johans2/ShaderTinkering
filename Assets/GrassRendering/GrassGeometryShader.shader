@@ -59,7 +59,7 @@ Shader "Custom/GrassGeometryShader" {
 					return OUT;
 				}
 
-				[maxvertexcount(17)]
+				[maxvertexcount(33)]
 				void geom(point v2g IN[1], inout TriangleStream<g2f> triStream) {
 					float3 lightPosition = _WorldSpaceLightPos0;
 
@@ -76,21 +76,22 @@ Shader "Custom/GrassGeometryShader" {
 					// This is a vector perpendicular to the normal of the input point.
 					float3 pVector = normalize( cross(crossA, crossB)) * _GrassHeight;
 					float3 hVector = normalize(cross(crossA, crossC)) * _GrassHeight;
-
+					float3 mVector = normalize(pVector + hVector) * _GrassHeight;
+					float3 mNegVector = normalize(pVector - hVector) * _GrassHeight;
 
 					float3 color = IN[0].color;
-
-					// Plane 1, Quad 1
+					
 					g2f OUT;
 
-					// e
+					// Plane 1, Quad 1
+					// Mid BOTTOM
 					OUT.pos = UnityObjectToClipPos(v0);
 					OUT.norm = faceNormal;
 					OUT.diffuseColor = color;
 					OUT.uv = float2(0.5, 0);
 					triStream.Append(OUT);
 
-					// f
+					// Mid TOP
 					OUT.pos = UnityObjectToClipPos(v1);
 					OUT.norm = faceNormal;
 					OUT.diffuseColor = color;
@@ -112,15 +113,14 @@ Shader "Custom/GrassGeometryShader" {
 					triStream.Append(OUT);
 
 					// Plane 1, Quad 2
-
-					// e
+					// Mid BOTTOM
 					OUT.pos = UnityObjectToClipPos(v0);
 					OUT.norm = faceNormal;
 					OUT.diffuseColor = color;
 					OUT.uv = float2(0.5, 0);
 					triStream.Append(OUT);
 
-					// f
+					// Mid TOP
 					OUT.pos = UnityObjectToClipPos(v1);
 					OUT.norm = faceNormal;
 					OUT.diffuseColor = color;
@@ -142,15 +142,14 @@ Shader "Custom/GrassGeometryShader" {
 					triStream.Append(OUT);
 
 					// Plane 2, quad 1
-
-					// e
+					// Mid BOTTOM
 					OUT.pos = UnityObjectToClipPos(v0);
 					OUT.norm = faceNormal;
 					OUT.diffuseColor = color;
 					OUT.uv = float2(0.5, 0);
 					triStream.Append(OUT);
 
-					// f
+					// Mid TOP
 					OUT.pos = UnityObjectToClipPos(v1);
 					OUT.norm = faceNormal;
 					OUT.diffuseColor = color;
@@ -173,54 +172,158 @@ Shader "Custom/GrassGeometryShader" {
 					triStream.Append(OUT);
 
 					// Plane 2, quad 2
-
-					// e
+					// Mid BOTTOM
 					OUT.pos = UnityObjectToClipPos(v0);
 					OUT.norm = faceNormal;
 					OUT.diffuseColor = color;
 					OUT.uv = float2(0.5, 0);
 					triStream.Append(OUT);
 
-					// f
+					// Mid TOP
 					OUT.pos = UnityObjectToClipPos(v1);
 					OUT.norm = faceNormal;
 					OUT.diffuseColor = color;
 					OUT.uv = float2(0.5, 1);
 					triStream.Append(OUT);
 
-					// d
+					// i
 					OUT.pos = UnityObjectToClipPos(v1 - hVector);
 					OUT.norm = faceNormal;
 					OUT.diffuseColor = color;
 					OUT.uv = float2(0, 1);
 					triStream.Append(OUT);
 
-					// b
+					// g
 					OUT.pos = UnityObjectToClipPos(v0 - hVector);
 					OUT.norm = faceNormal;
 					OUT.diffuseColor = color;
 					OUT.uv = float2(0, 0);
 					triStream.Append(OUT);
 
-					// e
+					// Plane 3, quad 1
+					// Mid BOTTOM
 					OUT.pos = UnityObjectToClipPos(v0);
 					OUT.norm = faceNormal;
 					OUT.diffuseColor = color;
 					OUT.uv = float2(0.5, 0);
 					triStream.Append(OUT);
 
-					/*
+					// Mid TOP
+					OUT.pos = UnityObjectToClipPos(v1);
+					OUT.norm = faceNormal;
+					OUT.diffuseColor = color;
+					OUT.uv = float2(0.5, 1);
+					triStream.Append(OUT);
 
+					// i
+					OUT.pos = UnityObjectToClipPos(v1 + mVector);
+					OUT.norm = faceNormal;
+					OUT.diffuseColor = color;
+					OUT.uv = float2(0, 1);
+					triStream.Append(OUT);
 
-					// e
+					// g
+					OUT.pos = UnityObjectToClipPos(v0 + mVector);
+					OUT.norm = faceNormal;
+					OUT.diffuseColor = color;
+					OUT.uv = float2(0, 0);
+					triStream.Append(OUT);
+
+					// Plane 3, quad 2
+					// Mid BOTTOM
 					OUT.pos = UnityObjectToClipPos(v0);
 					OUT.norm = faceNormal;
 					OUT.diffuseColor = color;
 					OUT.uv = float2(0.5, 0);
 					triStream.Append(OUT);
 
+					// Mid TOP
+					OUT.pos = UnityObjectToClipPos(v1);
+					OUT.norm = faceNormal;
+					OUT.diffuseColor = color;
+					OUT.uv = float2(0.5, 1);
+					triStream.Append(OUT);
 
-					*/
+					// i
+					OUT.pos = UnityObjectToClipPos(v1 - mVector);
+					OUT.norm = faceNormal;
+					OUT.diffuseColor = color;
+					OUT.uv = float2(0, 1);
+					triStream.Append(OUT);
+
+					// g
+					OUT.pos = UnityObjectToClipPos(v0 - mVector);
+					OUT.norm = faceNormal;
+					OUT.diffuseColor = color;
+					OUT.uv = float2(0, 0);
+					triStream.Append(OUT);
+					
+					// Plane 4, quad 1
+					// Mid BOTTOM
+					OUT.pos = UnityObjectToClipPos(v0);
+					OUT.norm = faceNormal;
+					OUT.diffuseColor = color;
+					OUT.uv = float2(0.5, 0);
+					triStream.Append(OUT);
+
+					// Mid TOP
+					OUT.pos = UnityObjectToClipPos(v1);
+					OUT.norm = faceNormal;
+					OUT.diffuseColor = color;
+					OUT.uv = float2(0.5, 1);
+					triStream.Append(OUT);
+
+					// i
+					OUT.pos = UnityObjectToClipPos(v1 + mNegVector);
+					OUT.norm = faceNormal;
+					OUT.diffuseColor = color;
+					OUT.uv = float2(0, 1);
+					triStream.Append(OUT);
+
+					// g
+					OUT.pos = UnityObjectToClipPos(v0 + mNegVector);
+					OUT.norm = faceNormal;
+					OUT.diffuseColor = color;
+					OUT.uv = float2(0, 0);
+					triStream.Append(OUT);
+					
+					// Plane 4, quad 1
+					// Mid BOTTOM
+					OUT.pos = UnityObjectToClipPos(v0);
+					OUT.norm = faceNormal;
+					OUT.diffuseColor = color;
+					OUT.uv = float2(0.5, 0);
+					triStream.Append(OUT);
+
+					// Mid TOP
+					OUT.pos = UnityObjectToClipPos(v1);
+					OUT.norm = faceNormal;
+					OUT.diffuseColor = color;
+					OUT.uv = float2(0.5, 1);
+					triStream.Append(OUT);
+
+					// i
+					OUT.pos = UnityObjectToClipPos(v1 - mNegVector);
+					OUT.norm = faceNormal;
+					OUT.diffuseColor = color;
+					OUT.uv = float2(0, 1);
+					triStream.Append(OUT);
+
+					// g
+					OUT.pos = UnityObjectToClipPos(v0 - mNegVector);
+					OUT.norm = faceNormal;
+					OUT.diffuseColor = color;
+					OUT.uv = float2(0, 0);
+					triStream.Append(OUT);
+					
+
+					// Lastly we need to loop back to complete the mesh
+					// Mid BOTTOM
+					OUT.pos = UnityObjectToClipPos(v0);
+					OUT.norm = faceNormal;
+					OUT.diffuseColor = color;
+					OUT.uv = float2(0.5, 0);
+					triStream.Append(OUT);
 
 				}
 		
