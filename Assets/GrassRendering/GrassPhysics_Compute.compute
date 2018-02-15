@@ -7,10 +7,13 @@
 RWTexture2D<float4> Result;
 float eTime;
 
+sampler2D Input;
+float3 deformationPos;
+
 [numthreads(8,8,1)]
 void FlashInput(uint3 id : SV_DispatchThreadID)
 {
-	// TODO: insert actual code here!
+	// Update the result texture based on the deformation pos.
 
 	//Result[id.xy] = float4(id.x & id.y, (id.x & 15)/15.0, (id.y & 15)/15.0, 0.0);
     Result[id.xy] = float4(1.0, 0.0, 0.0, 0.0);
