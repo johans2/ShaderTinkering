@@ -4,6 +4,7 @@ Shader "Custom/GrassGeometryShader" {
 	Properties{
 		_Color("Color", Color) = (1,1,1,1)
 		_MainTex("Albedo (RGB)", 2D) = "white" {}
+		_TrampleTex("Trample Texture", 2D) = "white" {}
 		_Glossiness("Smoothness", Range(0,1)) = 0.5
 		_Metallic("Metallic", Range(0,1)) = 0.0
 		_GrassHeight("Grass Height", Float) = 0.25
@@ -27,7 +28,8 @@ Shader "Custom/GrassGeometryShader" {
 				#pragma geometry geom
 
 				sampler2D _MainTex;
-		
+				sampler2D _TrampleTex;
+
 				struct v2g {
 					float4 pos : SV_POSITION;
 					float3 norm : NORMAL;
@@ -345,6 +347,7 @@ Shader "Custom/GrassGeometryShader" {
 		
 				half4 frag(g2f IN) : COLOR {
 					float4 c = tex2D(_MainTex, IN.uv);
+					float4 tc = tex2D(_TrampleTex, IN.uv);
 					clip(c.a - 0.1);
 					return c;
 				}
