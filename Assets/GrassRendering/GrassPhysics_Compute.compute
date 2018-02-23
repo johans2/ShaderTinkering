@@ -6,9 +6,11 @@
 // with cs.SetTexture
 RWTexture2D<float4> Result;
 float eTime;
+float4 tramplePos;
+float width;
+float height;
 
 sampler2D Input;
-float3 deformationPos;
 
 [numthreads(8,8,1)]
 void FlashInput(uint3 id : SV_DispatchThreadID)
@@ -24,5 +26,18 @@ void UpdatePhysics(uint3 id : SV_DispatchThreadID)
 {
 	// TODO: insert actual code here!
 
-    Result[id.xy] = float4(0.0, eTime % 1.0, 1.0, 0.0);
+	//float4 color = float4(max(id.x / width - tramplePos.x, 0), max(id.y / height - tramplePos.z, 0),0,0);
+	float4 color = float4(max(1 - abs(id.x / width - tramplePos.x) - 0.3, 0), 1 - abs(id.y / height - tramplePos.z) - 0.3, 0,0);
+	//float4 color = float4(id.x / width, id.y / width, 0 ,0  );
+	
+	
+	float s = step(0.1f,  abs(id.x / width - tramplePos.x));
+	float m  = max(id.x / width - tramplePos.x, 0);
+	float4 x = float4(tramplePos.x, 0,0,0);
+
+	Result[id.xy] = color;
+
+    //Result[id.xy] = float4(tramplePos.x, eTime % 1.0, 1.0, 0.0);
+
+
 }
