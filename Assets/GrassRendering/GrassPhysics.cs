@@ -5,6 +5,8 @@ using UnityEngine;
 public class GrassPhysics : MonoBehaviour {
     
     public Transform trampleTransform;
+    public float trampleSmooth = 2f;
+    public float trampleCutoff = 0.1f;
 
     public Material grassMat;
     public ComputeShader shader;
@@ -29,6 +31,8 @@ public class GrassPhysics : MonoBehaviour {
         shader.SetTexture(updateKernel, "Result", renderTex);
         shader.SetFloat("width", 512);
         shader.SetFloat("height", 512);
+        shader.SetFloat("trampleSmooth", trampleSmooth);
+        shader.SetFloat("trampleCutoff", trampleCutoff);
 
         grassMat.SetTexture("_TrampleTex", renderTex);
 
@@ -39,8 +43,6 @@ public class GrassPhysics : MonoBehaviour {
     }
 	
 	void Update () {
-        shader.SetFloat("eTime", Time.timeSinceLevelLoad);
-
         Vector4 tramplePos = (trampleTransform.position / 100f);
         tramplePos.x += 0.5000000f;
         tramplePos.z += 0.5000000f;
