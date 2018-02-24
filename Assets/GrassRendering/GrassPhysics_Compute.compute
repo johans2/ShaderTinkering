@@ -26,23 +26,13 @@ void FlashInput(uint3 id : SV_DispatchThreadID)
 void UpdatePhysics(uint3 id : SV_DispatchThreadID)
 {
     
-    float dist = pow(1 - distance(float2(id.x / width, id.y / height), float2(tramplePos.x, tramplePos.z)), abs(trampleSmooth));
-
-    float min = 1.0 - trampleCutoff;
-    float x = max(dist - min, 0);
-    float g = x / trampleCutoff;
-
-    float s = step(trampleCutoff, dist);
-    dist = lerp(0.0, dist, s);
-
-
-    float4 color = float4(g, g, 0, 0);
-
-
-	
-	//float s = step(0.1f,  abs(id.x / width - tramplePos.x));
-	float m  = max(id.x / width - tramplePos.x, 0);
-	//float4 x = float4(tramplePos.x, 0,0,0);
-
+    // Get the distance to the tramplerpos. Invert (1 - ...) to get better numbers to work with.
+    float dist = max(0, 1 - distance(float2(id.x / width, id.y / height), float2(tramplePos.x, tramplePos.z)));
+    
+    // Clamps the value to the cutoff distance. Linearly going from 0 -> 1 depeding on distance.
+    float c = max(dist - (1.0 - trampleCutoff), 0) / trampleCutoff;
+    
+    float4 color = float4(c, c, 0, 0);
+    
 	Result[id.xy] = color;
 }
