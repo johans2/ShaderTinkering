@@ -89,16 +89,16 @@ Shader "Custom/GrassGeometryShader" {
 
 					// This creates the base vectors from which the quads are generated.
 					// Perpendicular vector.
-					float3 pVector = normalize( cross(crossA, crossB)) * _GrassHeight;
+					float3 pVector = normalize( cross(crossA, crossB)) * _GrassWidth;
 
 					// Horizontal vector.
-					float3 hVector = normalize(cross(crossA, crossC)) * _GrassHeight;
+					float3 hVector = normalize(cross(crossA, crossC)) * _GrassWidth;
 
 					// Middle vector.
-					float3 mVector = normalize(pVector + hVector) * _GrassHeight;
+					float3 mVector = normalize(pVector + hVector) * _GrassWidth;
 
 					// Negative middle vector.
-					float3 mNegVector = normalize(pVector - hVector) * _GrassHeight;
+					float3 mNegVector = normalize(pVector - hVector) * _GrassWidth;
 
 					float3 color = IN[0].color;
 					
