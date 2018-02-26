@@ -23,7 +23,7 @@ public class GrassPhysics : MonoBehaviour {
         renderTex = new RenderTexture(512, 512, 24);
         renderTex.enableRandomWrite = true;
         renderTex.wrapMode = TextureWrapMode.Clamp;
-        renderTex.useMipMap = false;
+        
         renderTex.Create();
 
         shader.SetTexture(flashInputHandler, "Result", renderTex);
@@ -43,11 +43,12 @@ public class GrassPhysics : MonoBehaviour {
     }
 	
 	void Update () {
+
+        // These calculations are used to get the correct UV values from the world positions. 
+        // Should be fixed later on.
         Vector4 tramplePos = (trampleTransform.position / 100f);
         tramplePos.x += 0.5000000f;
-        tramplePos.z += 0.5000000f;
-
-        
+        tramplePos.z += 0.5000000f;       
         shader.SetVector("tramplePos", new Vector4(1 - tramplePos.x, tramplePos.y, 1 - tramplePos.z, 0));
 
         Debug.Log(tramplePos.x + "   " + tramplePos.z);
