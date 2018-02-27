@@ -37,8 +37,8 @@ void UpdatePhysics(uint3 id : SV_DispatchThreadID)
 
     // Clamps the value to the cutoff distance. Linearly going from 0 -> 1 depeding on distance.
 	float c = max(dist - (1.0 - trampleCutoff), 0) / trampleCutoff;
-    float cX = max(distX - (1.0 - trampleCutoff), 0) / trampleCutoff * c;
-	float cZ = max(distZ - (1.0 - trampleCutoff), 0) / trampleCutoff * c;
+    float cX = max(distX - (1.0 - trampleCutoff), 0) / trampleCutoff * c * tramplePos.w; // tramplePos.z is velocity
+	float cZ = max(distZ - (1.0 - trampleCutoff), 0) / trampleCutoff * c * tramplePos.w;
 
 	// Get the current color from the buffer
 	float4 currentColor = imgBuffer[width * id.x + id.y];
