@@ -23,7 +23,7 @@ sampler2D Input;
 void FlashInput(uint3 id : SV_DispatchThreadID)
 {
     //Result[id.xy] = float4(1.0, 0.0, 0.0, 0.0);
-	imgBuffer[id.x * id.y] = float4(1.0, 0.0, 0.0, 0.0);
+	//imgBuffer[id.x * id.y] = float4(1.0, 0.0, 0.0, 0.0);
 }
 
 [numthreads(8, 8, 1)]
@@ -31,18 +31,23 @@ void UpdatePhysics(uint3 id : SV_DispatchThreadID)
 {
     // Get the distance to the tramplerpos. Invert (1 - ...) to get better numbers to work with.
     //float dist = max(0, 1 - distance(float2(id.x / width, id.y / height), float2(tramplePos.x, tramplePos.z)));
-	float dist = max(0, 1 - distance(id.x / width, tramplePos.x));
+	float distX = max(0, 1 - distance(id.x / width, tramplePos.x));
+	float distZ = max(0, 1 - distance(id.y / height, tramplePos.z));
     // TODO: this needs to be separated in y and x component.
 
     // Clamps the value to the cutoff distance. Linearly going from 0 -> 1 depeding on distance.
-    float c = max(dist - (1.0 - trampleCutoff), 0) / trampleCutoff;
+    float cX = max(distX - (1.0 - trampleCutoff), 0) / trampleCutoff;
+	float cZ = max(distZ - (1.0 - trampleCutoff), 0) / trampleCutoff;
     
+	float cXClamped = min(cX, cZ);
+	float cZClamped = min(cZ, cX);
+
 	// Get the current color from the buffer
 	float4 currentColor = imgBuffer[width * id.x + id.y];
 
 	// Update the value
-	currentColor += float4(c % 1.0, c % 1.0, 0 ,0); 
-	currentColor -= float4(0.001, 0.001,0,0);
+	currentColor = float4(min(cXClamped, 1.0) , min(cZClamped, 1.0),  0 ,0); 
+	//currentColor -= float4(0.001, 0.001,0,0);
 
 	// Write the value to the result texture
 	Result[id.xy] = currentColor;
@@ -52,7 +57,7 @@ void UpdatePhysics(uint3 id : SV_DispatchThreadID)
 
 
 
-/*
+/*   psudo code for 2D -> 1D array indexing
 	int array[width * height];
 
 	 int SetElement(int row, int col, int value)
@@ -60,21 +65,5 @@ void UpdatePhysics(uint3 id : SV_DispatchThreadID)
 		array[width * row + col] = value;  
 	 }
 	 */
-
-	/*
-	// Decode to RGBA
-	uint currentColor = Result[id.xy];
-	float4 rgbaColor = UINTtoRGBA(currentColor);
-
-	rgbaColor.x = 1;
-	rgbaColor.y = 1;
-	rgbaColor.z = 1;
-
-	// Encode to UINT
-	uint color = RGBAtoUINT(rgbaColor);
-
-    //color = float4(c, c, 0, 0);
-	Result[id.xy] = color;
-    */
 }
 
