@@ -1,73 +1,68 @@
 ﻿// Each #kernel tells which function to compile; you can have many kernels
 #pragma kernel FlashInput
 #pragma kernel UpdatePhysics
+#include "TexturePackingUtils.cginc"
 
 // Create a RenderTexture with enableRandomWrite flag and set it
 // with cs.SetTexture
-RWTexture2D<uint> Result;
+RWTexture2D<float4> Result;
+RWStructuredBuffer<float4> imgBuffer;
+
 float trampleSmooth;
 float trampleCutoff;
 float4 tramplePos;
 float width;
 float height;
 
+float dTime;
+
 sampler2D Input;
 
-#include "TextureUtils.cginc"
 
 [numthreads(8,8,1)]
 void FlashInput(uint3 id : SV_DispatchThreadID)
 {
-    Result[id.xy] = float4(1.0, 0.0, 0.0, 0.0);
+    //Result[id.xy] = float4(1.0, 0.0, 0.0, 0.0);
+	imgBuffer[id.x * id.y] = float4(1.0, 0.0, 0.0, 0.0);
 }
 
 [numthreads(8, 8, 1)]
 void UpdatePhysics(uint3 id : SV_DispatchThreadID)
 {
-    
     // Get the distance to the tramplerpos. Invert (1 - ...) to get better numbers to work with.
-    float dist = max(0, 1 - distance(float2(id.x / width, id.y / height), float2(tramplePos.x, tramplePos.z)));
+    //float dist = max(0, 1 - distance(float2(id.x / width, id.y / height), float2(tramplePos.x, tramplePos.z)));
+	float dist = max(0, 1 - distance(id.x / width, tramplePos.x));
     // TODO: this needs to be separated in y and x component.
 
     // Clamps the value to the cutoff distance. Linearly going from 0 -> 1 depeding on distance.
     float c = max(dist - (1.0 - trampleCutoff), 0) / trampleCutoff;
     
+	// Get the current color from the buffer
+	float4 currentColor = imgBuffer[id.x * id.y];
+
+	// Update the value
+	currentColor += float4(dTime, 0,0,0); 
+
+	// Write the value to the result texture
+	Result[id.xy] = currentColor;
+
+	// Save it in the buffer again
+	imgBuffer[id.x * id.y] = currentColor;
+
+	/*
 	// Decode to RGBA
 	uint currentColor = Result[id.xy];
 	float4 rgbaColor = UINTtoRGBA(currentColor);
 
-	rgbaColor.x += 0.01;
-	rgbaColor.y += 0.01;
-	rgbaColor.z += 0.01;
+	rgbaColor.x = 1;
+	rgbaColor.y = 1;
+	rgbaColor.z = 1;
 
 	// Encode to UINT
 	uint color = RGBAtoUINT(rgbaColor);
 
-    //float4 color = float4(c, c, 0, 0);
-    
+    //color = float4(c, c, 0, 0);
 	Result[id.xy] = color;
+    */
 }
 
-
-// Texture encoding/decoding.
-inline float4 UINTtoRGBA(uint value)
-{
-    uint4 bitMask = uint4(0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
-    uint4 bitShifts = uint4(24, 16, 8, 0);
-
-    uint4 color = (uint4)value & bitMask;
-    color >>= bitShifts;
-
-    return color / 255.0f;
-}
-
-inline uint RGBAtoUINT(float4 color)
-{
-    //uint4 bitShifts = uint4(24, 16, 8, 0);
-    //uint4 colorAsBytes = uint4(color * 255.0f) << bitShifts;
-
-    uint4 kEncodeMul = uint4(16777216, 65536, 256, 1);
-    uint4 colorAsBytes = round(color * 255.0f);
-
-    return dot(colorAsBytes, kEncodeMul);
-}

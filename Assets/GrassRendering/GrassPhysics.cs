@@ -12,13 +12,23 @@ public class GrassPhysics : MonoBehaviour {
     public ComputeShader shader;
     public Material debugMat;
 
+    private int texWidth = 512;
+    private int texHeight = 512;
 
     int updateKernel;
     private RenderTexture renderTex;
 
     void Start () {
+
+        Vector4[] bufferData = new Vector4[texWidth * texHeight];
+
+        ComputeBuffer imgBuffer = new ComputeBuffer(bufferData.Length, 16); // 16 is 4 bytes for 4 floats
+        
+        
+            
         int flashInputHandler = shader.FindKernel("FlashInput");
         updateKernel = shader.FindKernel("UpdatePhysics");
+
 
         renderTex = new RenderTexture(512, 512, 24);
         renderTex.enableRandomWrite = true;
@@ -27,10 +37,13 @@ public class GrassPhysics : MonoBehaviour {
         renderTex.Create();
 
         shader.SetTexture(flashInputHandler, "Result", renderTex);
-        shader.Dispatch(flashInputHandler, 512 / 8, 512 / 8, 1);
+        shader.SetBuffer(flashInputHandler, "imgBuffer", imgBuffer);
+        shader.Dispatch(flashInputHandler, texWidth / 8, texHeight / 8, 1);
+
+        shader.SetBuffer(updateKernel, "imgBuffer", imgBuffer);
         shader.SetTexture(updateKernel, "Result", renderTex);
-        shader.SetFloat("width", 512);
-        shader.SetFloat("height", 512);
+        shader.SetFloat("width", texWidth);
+        shader.SetFloat("height", texHeight);
         shader.SetFloat("trampleSmooth", trampleSmooth);
         shader.SetFloat("trampleCutoff", trampleCutoff);
 
@@ -53,7 +66,8 @@ public class GrassPhysics : MonoBehaviour {
 
         Debug.Log(tramplePos.x + "   " + tramplePos.z);
 
-        shader.Dispatch(updateKernel, 512 / 8, 512 / 8, 1);
+        shader.SetFloat("dTime", Time.deltaTime);
+        shader.Dispatch(updateKernel, texWidth / 8, texHeight / 8, 1);
 
 
 	}
