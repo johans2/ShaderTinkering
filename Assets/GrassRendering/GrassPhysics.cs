@@ -17,12 +17,13 @@ public class GrassPhysics : MonoBehaviour {
 
     int updateKernel;
     private RenderTexture renderTex;
+    private ComputeBuffer imgBuffer;
 
     void Start () {
 
         Vector4[] bufferData = new Vector4[texWidth * texHeight];
 
-        ComputeBuffer imgBuffer = new ComputeBuffer(bufferData.Length, 16); // 16 is 4 bytes for 4 floats
+        imgBuffer = new ComputeBuffer(bufferData.Length, 16); // 16 is 4 bytes for 4 floats
         
         
             
@@ -71,4 +72,8 @@ public class GrassPhysics : MonoBehaviour {
 
 
 	}
+
+    void OnDestroy() {
+        imgBuffer.Dispose();
+    }
 }

@@ -38,16 +38,28 @@ void UpdatePhysics(uint3 id : SV_DispatchThreadID)
     float c = max(dist - (1.0 - trampleCutoff), 0) / trampleCutoff;
     
 	// Get the current color from the buffer
-	float4 currentColor = imgBuffer[id.x * id.y];
+	float4 currentColor = imgBuffer[width * id.x + id.y];
 
 	// Update the value
-	currentColor += float4(dTime, 0,0,0); 
+	currentColor += float4(c % 1.0, c % 1.0, 0 ,0); 
+	currentColor -= float4(0.001, 0.001,0,0);
 
 	// Write the value to the result texture
 	Result[id.xy] = currentColor;
 
 	// Save it in the buffer again
-	imgBuffer[id.x * id.y] = currentColor;
+	imgBuffer[width * id.x + id.y] = currentColor;
+
+
+
+/*
+	int array[width * height];
+
+	 int SetElement(int row, int col, int value)
+	 {
+		array[width * row + col] = value;  
+	 }
+	 */
 
 	/*
 	// Decode to RGBA

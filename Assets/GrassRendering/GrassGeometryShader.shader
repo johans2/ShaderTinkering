@@ -76,9 +76,6 @@ Shader "Custom/GrassGeometryShader" {
 					// Sample the trample texture
 					float4 trample = tex2Dlod(_TrampleTex, float4(1 - (IN[0].pos.x / 100 + 0.5), 1 - (IN[0].pos.z / 100 + 0.5),0,0));
 
-					uint tr = (uint)tex2Dlod(_TrampleTex, float4(1 - (IN[0].pos.x / 100 + 0.5), 1 - (IN[0].pos.z / 100 + 0.5), 0, 0));
-					float4 trrgb = UINTtoRGBA(tr);
-
 					float3 v0 = IN[0].pos.xyz;
 					float3 v1 = IN[0].pos.xyz + IN[0].norm * _GrassHeight * (1 - trample.x);
 
