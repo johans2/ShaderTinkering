@@ -52,7 +52,7 @@
 				float4 col = tex2D(_MainTex, i.uv);
 
 				//float4 decodedColor = UINTtoRGBA(col.r);
-			
+				
 				return col;
 			}
 			ENDCG

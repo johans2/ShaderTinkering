@@ -30,24 +30,22 @@ void FlashInput(uint3 id : SV_DispatchThreadID)
 void UpdatePhysics(uint3 id : SV_DispatchThreadID)
 {
     // Get the distance to the tramplerpos. Invert (1 - ...) to get better numbers to work with.
-    //float dist = max(0, 1 - distance(float2(id.x / width, id.y / height), float2(tramplePos.x, tramplePos.z)));
+    float dist = max(0, 1 - distance(float2(id.x / width, id.y / height), float2(tramplePos.x, tramplePos.z)));
 	float distX = max(0, 1 - distance(id.x / width, tramplePos.x));
 	float distZ = max(0, 1 - distance(id.y / height, tramplePos.z));
     // TODO: this needs to be separated in y and x component.
 
     // Clamps the value to the cutoff distance. Linearly going from 0 -> 1 depeding on distance.
-    float cX = max(distX - (1.0 - trampleCutoff), 0) / trampleCutoff;
-	float cZ = max(distZ - (1.0 - trampleCutoff), 0) / trampleCutoff;
-    
-	float cXClamped = min(cX, cZ);
-	float cZClamped = min(cZ, cX);
+	float c = max(dist - (1.0 - trampleCutoff), 0) / trampleCutoff;
+    float cX = max(distX - (1.0 - trampleCutoff), 0) / trampleCutoff * c;
+	float cZ = max(distZ - (1.0 - trampleCutoff), 0) / trampleCutoff * c;
 
 	// Get the current color from the buffer
 	float4 currentColor = imgBuffer[width * id.x + id.y];
 
 	// Update the value
-	currentColor = float4(min(cXClamped, 1.0) , min(cZClamped, 1.0),  0 ,0); 
-	//currentColor -= float4(0.001, 0.001,0,0);
+	currentColor = float4(min(currentColor.x + cX, 1.0) , min(currentColor.z + cZ, 1.0),  0 ,0); 
+	currentColor = float4(max(0.0, currentColor.x - 0.01), max(0.0, currentColor.z -0.01),0,0);
 
 	// Write the value to the result texture
 	Result[id.xy] = currentColor;
