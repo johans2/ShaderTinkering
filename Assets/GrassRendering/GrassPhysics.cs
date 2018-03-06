@@ -22,26 +22,20 @@ public class GrassPhysics : MonoBehaviour {
 
     void Start () {
 
-        Vector4[] bufferData = new Vector4[texWidth * texHeight];
-
-        imgBuffer = new ComputeBuffer(bufferData.Length, 16); // 16 is 4 bytes for 4 floats
         
-        
-            
-        int flashInputHandler = shader.FindKernel("FlashInput");
-        updateKernel = shader.FindKernel("UpdatePhysics");
-
-
+        // Create a rendertexture
         renderTex = new RenderTexture(512, 512, 24);
         renderTex.enableRandomWrite = true;
         renderTex.wrapMode = TextureWrapMode.Clamp;
-        
         renderTex.Create();
+        
 
-        shader.SetTexture(flashInputHandler, "Result", renderTex);
-        shader.SetBuffer(flashInputHandler, "imgBuffer", imgBuffer);
-        shader.Dispatch(flashInputHandler, texWidth / 8, texHeight / 8, 1);
-
+        // Create the compute buffer
+        Vector4[] bufferData = new Vector4[texWidth * texHeight];
+        imgBuffer = new ComputeBuffer(bufferData.Length, 16); // 16 is 4 bytes for 4 floats
+        
+        // Sets the texture and buffer for the update kernel.
+        updateKernel = shader.FindKernel("UpdatePhysics");
         shader.SetBuffer(updateKernel, "imgBuffer", imgBuffer);
         shader.SetTexture(updateKernel, "Result", renderTex);
         shader.SetFloat("width", texWidth);
@@ -49,6 +43,10 @@ public class GrassPhysics : MonoBehaviour {
         shader.SetFloat("trampleSmooth", trampleSmooth);
         shader.SetFloat("trampleCutoff", trampleCutoff);
 
+        // This makes the buffer accessible from all shaders
+        Shader.SetGlobalBuffer("imgBuffer", imgBuffer);
+
+        // Set the debug texture
         grassMat.SetTexture("_TrampleTex", renderTex);
 
         if (debugMat != null)
@@ -66,10 +64,9 @@ public class GrassPhysics : MonoBehaviour {
         tramplePos.z += 0.5000000f;       
         float velocity = Vector3.Magnitude(trampleTransform.position - previousPos);
 
-        Debug.Log(velocity);
+        //Debug.Log(velocity);
 
         shader.SetVector("tramplePos", new Vector4(1 - tramplePos.x, tramplePos.y, 1 - tramplePos.z, velocity));
-
         
         shader.Dispatch(updateKernel, texWidth / 8, texHeight / 8, 1);
 

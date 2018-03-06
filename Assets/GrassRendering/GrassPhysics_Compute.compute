@@ -1,5 +1,4 @@
 ﻿// Each #kernel tells which function to compile; you can have many kernels
-#pragma kernel FlashInput
 #pragma kernel UpdatePhysics
 #include "TexturePackingUtils.cginc"
 
@@ -19,21 +18,22 @@ float dTime;
 sampler2D Input;
 
 
-[numthreads(8,8,1)]
-void FlashInput(uint3 id : SV_DispatchThreadID)
-{
-    //Result[id.xy] = float4(1.0, 0.0, 0.0, 0.0);
-	//imgBuffer[id.x * id.y] = float4(1.0, 0.0, 0.0, 0.0);
-}
-
 [numthreads(8, 8, 1)]
 void UpdatePhysics(uint3 id : SV_DispatchThreadID)
 {
+	// IDEA:	Use the structuredbuffer in the geometry shader for trample lookup. This will allow us to write negative numbers
+	//			directly into the buffer and use them for trample offset (we can't use negative numbers in the result texture). 
+	//			Create a separate kernel for the texture writing. This is purely for debug purposes. In that texture we can clamp the
+	//			values to write actual color.
+
+
     // Get the distance to the tramplerpos. Invert (1 - ...) to get better numbers to work with.
     float dist = max(0, 1 - distance(float2(id.x / width, id.y / height), float2(tramplePos.x, tramplePos.z)));
 	float distX = max(0, 1 - distance(id.x / width, tramplePos.x));
 	float distZ = max(0, 1 - distance(id.y / height, tramplePos.z));
+
     // TODO: this needs to be separated in y and x component.
+	float2 diffVector = float2(id.x / width, id.y / height) - float2(tramplePos.x, tramplePos.z);
 
     // Clamps the value to the cutoff distance. Linearly going from 0 -> 1 depeding on distance.
 	float c = max(dist - (1.0 - trampleCutoff), 0) / trampleCutoff;
@@ -44,8 +44,9 @@ void UpdatePhysics(uint3 id : SV_DispatchThreadID)
 	float4 currentColor = imgBuffer[width * id.x + id.y];
 
 	// Update the value
-	currentColor = float4(min(currentColor.x + cX, 1.0) , min(currentColor.z + cZ, 1.0),  0 ,0); 
-	currentColor = float4(max(0.0, currentColor.x - 0.01), max(0.0, currentColor.z -0.01),0,0);
+	//currentColor = float4(min(currentColor.x + cX, 1.0) , min(currentColor.z + cZ, 1.0),  0 ,0); 
+	currentColor = float4(1 - abs(diffVector.x), 1 - abs(diffVector.y),  0 ,0); 
+
 
 	// Write the value to the result texture
 	Result[id.xy] = currentColor;

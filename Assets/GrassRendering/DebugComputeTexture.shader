@@ -17,7 +17,7 @@
 			#pragma fragment frag
 			// make fog work
 			#pragma multi_compile_fog
-			
+			#pragma target 5.0
 			#include "UnityCG.cginc"
 			#include "TexturePackingUtils.cginc"	
 
@@ -37,6 +37,9 @@
 			sampler2D _MainTex;
 			float4 _MainTex_ST;
 			
+
+			StructuredBuffer<float4> imgBuffer;
+
 			v2f vert (appdata v)
 			{
 				v2f o;
@@ -50,6 +53,8 @@
 			{
 				// sample the texture
 				float4 col = tex2D(_MainTex, i.uv);
+
+				//col = imgBuffer[500];
 
 				//float4 decodedColor = UINTtoRGBA(col.r);
 				
