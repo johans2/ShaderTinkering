@@ -34,6 +34,14 @@ void UpdatePhysics(uint3 id : SV_DispatchThreadID)
 
     // TODO: this needs to be separated in y and x component.
 	float2 diffVector = float2(id.x / width, id.y / height) - float2(tramplePos.x, tramplePos.z);
+    float lengthFactorX = smoothstep(0, trampleCutoff, abs(diffVector.x));
+    float lengthFactorY = smoothstep(0, trampleCutoff, abs(diffVector.y));
+
+    diffVector.x = lengthFactorX;
+    diffVector.y = lengthFactorY;
+
+    //diffVector.x = max(diffVector.x - (1.0 - trampleCutoff), 0) / trampleCutoff * lengthFactor;
+    //diffVector.y = max(diffVector.y - (1.0 - trampleCutoff), 0) / trampleCutoff * lengthFactor;
 
     // Clamps the value to the cutoff distance. Linearly going from 0 -> 1 depeding on distance.
 	float c = max(dist - (1.0 - trampleCutoff), 0) / trampleCutoff;
@@ -45,8 +53,8 @@ void UpdatePhysics(uint3 id : SV_DispatchThreadID)
 
 	// Update the value
 	//currentColor = float4(min(currentColor.x + cX, 1.0) , min(currentColor.z + cZ, 1.0),  0 ,0); 
-	currentColor = float4(1 - abs(diffVector.x), 1 - abs(diffVector.y),  0 ,0); 
-
+	//currentColor = float4(1 - abs(diffVector.x), 1 - abs(diffVector.y),  0 ,0); 
+    currentColor = float4(1 - abs(diffVector.x), 1 - abs(diffVector.y), 0, 0);
 
 	// Write the value to the result texture
 	Result[id.xy] = currentColor;
