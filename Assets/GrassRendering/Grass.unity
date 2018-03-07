@@ -422,7 +422,7 @@ CharacterController:
   m_SkinWidth: 0.0001
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
---- !u!43 &615968169
+--- !u!43 &740153249
 Mesh:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -832,7 +832,7 @@ MeshFilter:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1615714041}
-  m_Mesh: {fileID: 615968169}
+  m_Mesh: {fileID: 740153249}
 --- !u!114 &1615714044
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -876,7 +876,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   trampleTransform: {fileID: 469899498}
   trampleSmooth: 30
-  trampleCutoff: 0.03
+  trampleCutoff: 0.06
   grassMat: {fileID: 2100000, guid: f0a8b0c8b768ec443a3aea7da166d26d, type: 2}
   shader: {fileID: 7200000, guid: 64088c8bc882e4846b98d38948509670, type: 3}
   debugMat: {fileID: 2100000, guid: 6d6eb09347386ff4fa67317cf314c807, type: 2}

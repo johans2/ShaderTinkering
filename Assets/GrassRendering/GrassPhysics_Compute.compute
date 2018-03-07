@@ -26,23 +26,28 @@ void UpdatePhysics(uint3 id : SV_DispatchThreadID)
 	//			Create a separate kernel for the texture writing. This is purely for debug purposes. In that texture we can clamp the
 	//			values to write actual color.
     
+    // Vector from the trample point to the pixel.
     float2 diffVector = float2(tramplePos.x, tramplePos.z) - float2(id.x / width, id.y / height);
 
-    //float distanceFactor = abs((1 - length(diffVector)) * (1 - smoothstep(0, trampleCutoff, length(diffVector))));
-    float distanceFactor = 1-  smoothstep(0, trampleCutoff, length(diffVector));
+    // How much that vector is within the trample cutoff. Doesant work very well atm
+    float dist = distance(float2(tramplePos.x, tramplePos.z), float2(id.x / width, id.y / height));
+    float distanceFactor = abs((1 - dist) * (1 - smoothstep(0, trampleCutoff / 4.0, dist))); // why devide by 4 here?
     
+    // Smoothed and cut off values from from the difftector
     float xC = ((float) sign(diffVector.x)) * (1 - smoothstep(0, trampleCutoff, abs(diffVector.x))) * distanceFactor;
     float yC = ((float) sign(diffVector.y)) * (1 - smoothstep(0, trampleCutoff, abs(diffVector.y))) * distanceFactor;
     
 	// Get the current color from the buffer
 	float4 currentColor = imgBuffer[width * id.x + id.y];
 
-	// Update the value
-    float xCPacked = (xC + 1.0) / 2;
-    float yCPacked = (yC + 1.0) / 2;
+	// Update the value from the buffer
+    currentColor = float4(clamp(currentColor.x + xC, -1, 1), clamp(currentColor.y + yC, -1, 1), 0, 0);
+    currentColor.x /= 1.005;
+    currentColor.y /= 1.005;
 
-    currentColor = float4(xC, yC, 0, 0);
-
+    // Pack the values and set them in the texture. TODO: Make pack/unpack a cging function.
+    float xCPacked = (currentColor.x + 1.0) / 2;
+    float yCPacked = (currentColor.y + 1.0) / 2;
     float4 currentColorPacked = float4(xCPacked, yCPacked, 0, 0);
 
 	// Write the value to the result texture
