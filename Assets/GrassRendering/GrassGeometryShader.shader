@@ -54,9 +54,9 @@ Shader "Custom/GrassGeometryShader" {
 				half _WindStrength;
 				half _WindSpeed;
 				
-				// Written to by the compute shader. Why?
+
 				StructuredBuffer<float4> imgBuffer;
-				
+
 				v2g vert(appdata_full v) {
 					float3 v0 = v.vertex.xyz;
 
@@ -79,14 +79,17 @@ Shader "Custom/GrassGeometryShader" {
 					// Sample the trample texture
 					float4 trample = tex2Dlod(_TrampleTex, float4(1 - (IN[0].pos.x / 100 + 0.5), 1 - (IN[0].pos.z / 100 + 0.5),0,0));
 
-					int x = floor(1 - (IN[0].pos.x / 100 + 0.5));
-					int y = floor(1 - (IN[0].pos.z / 100 + 0.5));
+					int x = (int)floor(1.0 - (IN[0].pos.x / 100.0 + 0.5));
+					int y = (int)floor(1.0 - (IN[0].pos.z / 100.0 + 0.5));
 
 					float4 t = imgBuffer[512 * x + y];
 
 					float3 v0 = IN[0].pos.xyz;
-					float3 v1 = IN[0].pos.xyz + IN[0].norm * _GrassHeight * t.x;//(1 - trample.x);
-
+					float3 v1 = IN[0].pos.xyz + IN[0].norm * _GrassHeight; // *(1 - trample.x);
+					
+					v1.x += trample.x * 2 - 1;
+					v1.z += trample.y * 2 - 1;
+			
 					half time = _Time.x * _WindSpeed;
 					float3 wind = float3(sin(time + v0.x) + sin(time + v0.z * 2 + cos(time + v0.x)), 0 , cos(time + v0.x * 2) + cos(time + v0.z));
 					v1 += wind * _WindStrength;

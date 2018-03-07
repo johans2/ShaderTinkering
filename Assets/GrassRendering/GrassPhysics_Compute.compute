@@ -25,42 +25,31 @@ void UpdatePhysics(uint3 id : SV_DispatchThreadID)
 	//			directly into the buffer and use them for trample offset (we can't use negative numbers in the result texture). 
 	//			Create a separate kernel for the texture writing. This is purely for debug purposes. In that texture we can clamp the
 	//			values to write actual color.
+    
+    float2 diffVector = float2(tramplePos.x, tramplePos.z) - float2(id.x / width, id.y / height);
 
-
-    // Get the distance to the tramplerpos. Invert (1 - ...) to get better numbers to work with.
-    float dist = max(0, 1 - distance(float2(id.x / width, id.y / height), float2(tramplePos.x, tramplePos.z)));
-	float distX = max(0, 1 - distance(id.x / width, tramplePos.x));
-	float distZ = max(0, 1 - distance(id.y / height, tramplePos.z));
-
-    // TODO: this needs to be separated in y and x component.
-	float2 diffVector = float2(id.x / width, id.y / height) - float2(tramplePos.x, tramplePos.z);
-    float lengthFactorX = smoothstep(0, trampleCutoff, abs(diffVector.x));
-    float lengthFactorY = smoothstep(0, trampleCutoff, abs(diffVector.y));
-
-    diffVector.x = lengthFactorX;
-    diffVector.y = lengthFactorY;
-
-    //diffVector.x = max(diffVector.x - (1.0 - trampleCutoff), 0) / trampleCutoff * lengthFactor;
-    //diffVector.y = max(diffVector.y - (1.0 - trampleCutoff), 0) / trampleCutoff * lengthFactor;
-
-    // Clamps the value to the cutoff distance. Linearly going from 0 -> 1 depeding on distance.
-	float c = max(dist - (1.0 - trampleCutoff), 0) / trampleCutoff;
-    float cX = max(distX - (1.0 - trampleCutoff), 0) / trampleCutoff * c * tramplePos.w; // tramplePos.z is velocity
-	float cZ = max(distZ - (1.0 - trampleCutoff), 0) / trampleCutoff * c * tramplePos.w;
-
+    //float distanceFactor = abs((1 - length(diffVector)) * (1 - smoothstep(0, trampleCutoff, length(diffVector))));
+    float distanceFactor = 1-  smoothstep(0, trampleCutoff, length(diffVector));
+    
+    float xC = ((float) sign(diffVector.x)) * (1 - smoothstep(0, trampleCutoff, abs(diffVector.x))) * distanceFactor;
+    float yC = ((float) sign(diffVector.y)) * (1 - smoothstep(0, trampleCutoff, abs(diffVector.y))) * distanceFactor;
+    
 	// Get the current color from the buffer
 	float4 currentColor = imgBuffer[width * id.x + id.y];
 
 	// Update the value
-	//currentColor = float4(min(currentColor.x + cX, 1.0) , min(currentColor.z + cZ, 1.0),  0 ,0); 
-	//currentColor = float4(1 - abs(diffVector.x), 1 - abs(diffVector.y),  0 ,0); 
-    currentColor = float4(1 - abs(diffVector.x), 1 - abs(diffVector.y), 0, 0);
+    float xCPacked = (xC + 1.0) / 2;
+    float yCPacked = (yC + 1.0) / 2;
+
+    currentColor = float4(xC, yC, 0, 0);
+
+    float4 currentColorPacked = float4(xCPacked, yCPacked, 0, 0);
 
 	// Write the value to the result texture
-	Result[id.xy] = currentColor;
+    Result[id.xy] = currentColorPacked;
 
 	// Save it in the buffer again
-	imgBuffer[width * id.x + id.y] = currentColor;
+    imgBuffer[width * id.x + id.y] = currentColor;
 
 
 

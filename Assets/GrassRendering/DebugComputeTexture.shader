@@ -55,8 +55,12 @@
 				float4 col = tex2D(_MainTex, i.uv);
 
 				//col = imgBuffer[500];
+				
+				col.x *= 2;
+				col.x -= 1.0;
 
-				//float4 decodedColor = UINTtoRGBA(col.r);
+				col.y *= 2;
+				col.y -= 1.0;
 				
 				return col;
 			}
