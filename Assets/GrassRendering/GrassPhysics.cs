@@ -61,13 +61,15 @@ public class GrassPhysics : MonoBehaviour {
         // Should be fixed later on.
         Vector4 tramplePos = (trampleTransform.position / 100f);
         tramplePos.x += 0.5000000f;
-        tramplePos.z += 0.5000000f;       
-        float velocity = Vector3.Magnitude(trampleTransform.position - previousPos);
+        tramplePos.z += 0.5000000f;
+        Vector3 moveDir = trampleTransform.position - previousPos;
+        float velocity = Vector3.Magnitude(moveDir);
 
         //Debug.Log(velocity);
 
         shader.SetVector("tramplePos", new Vector4(1 - tramplePos.x, tramplePos.y, 1 - tramplePos.z, velocity));
-        
+        shader.SetVector("moveDir", new Vector2(moveDir.x, moveDir.y));
+
         shader.Dispatch(updateKernel, texWidth / 8, texHeight / 8, 1);
 
         previousPos = trampleTransform.position;

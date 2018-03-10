@@ -53,7 +53,7 @@ Shader "Custom/GrassGeometryShader" {
 				half _GrassWidth;
 				half _WindStrength;
 				half _WindSpeed;
-				
+				static const float PI = 3.14159265f;
 
 				StructuredBuffer<float4> imgBuffer;
 
@@ -85,6 +85,8 @@ Shader "Custom/GrassGeometryShader" {
 					// Add trample (unpack the texture values)
 					v1.x += trample.x * 2 - 1;
 					v1.z += trample.y * 2 - 1;
+					//v1.y -= 1 * _GrassHeight; // length(trample.xy);
+					
 								
 					half time = _Time.x * _WindSpeed;
 					float3 wind = float3(sin(time + v0.x) + sin(time + v0.z * 2 + cos(time + v0.x)), 0 , cos(time + v0.x * 2) + cos(time + v0.z));
