@@ -93,7 +93,7 @@ Shader "Custom/GrassGeometryShader" {
 					v1.z += trample.y * 2 - 1;
 					
 					// Push down the grass with its xz diff. TODO: make this not linear.
-					float2 vDown = max(0.1, smoothstep(0,1, length(v1.xz - v1start.xz)));
+					float2 vDown = _GrassHeight * smoothstep(0,1, length(v1.xz - v1start.xz));
 					v1.y -= vDown;
 
 					float3 crossA = IN[0].norm;
