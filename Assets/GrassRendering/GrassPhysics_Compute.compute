@@ -47,8 +47,8 @@ void UpdatePhysics(uint3 id : SV_DispatchThreadID)
 
 	// Update the value from the buffer
     currentColor = float4(clamp(currentColor.x + xC, -1, 1), clamp(currentColor.y + yC, -1, 1), 0, 0);
-    currentColor.x /= 1.004;
-    currentColor.y /= 1.004;
+    currentColor.x /= 1.01;
+    currentColor.y /= 1.01;
 
     // Pack the values and set them in the texture. TODO: Make pack/unpack a cging function.
     float xCPacked = (currentColor.x + 1.0) / 2;
