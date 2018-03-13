@@ -78,32 +78,21 @@ Shader "Custom/GrassGeometryShader" {
 					float4 trample = tex2Dlod(_TrampleTex, float4(1 - (IN[0].pos.x / 100 + 0.5), 1 - (IN[0].pos.z / 100 + 0.5),0,0));
 					trample.x = UnPackFloat(trample.x);
 					trample.y = UnPackFloat(trample.y);
+					trample.z = UnPackFloat(trample.z);
 
-					// smoothstep(min, max, x)
-
-					float3 trampleFactor = float3(trample.x,  0, trample.y);
+					float3 trampleFactor = float3(trample.x, trample.y, trample.z);
 
 					float3 v0 = IN[0].pos.xyz;
 					float3 v1 = IN[0].pos.xyz + IN[0].norm * _GrassHeight + trampleFactor;
-					float3 v1start = v1;
-
+					
 
 					// Add wind
 					half time = _Time.x * _WindSpeed;
 					float3 wind = float3(sin(time + v0.x) + sin(time + v0.z * 2 + cos(time + v0.x)), 0 , cos(time + v0.x * 2) + cos(time + v0.z));
 					v1 += wind * _WindStrength;
 
-					// Add trample (unpack the texture values)
-					
-					//v1.x += trample.x * 2 - 1;
-					//v1.z += trample.y * 2 - 1;
-					
-					
-					//v1.y = _GrassHeight;// *sin((PI / 2) * length(trample));
-					//v1.y -= min(_GrassHeight * 0.3, _GrassHeight * smoothstep(0, 1, length(v1.xz - v1start.xz)));
-					
-					//v1 *= 0.1f;
 
+					// Build the quads
 					float3 crossA = IN[0].norm;
 					float3 crossB = crossA + float3(1, 0, 0);
 					float3 crossC = crossA + float3(0, 0, 1);

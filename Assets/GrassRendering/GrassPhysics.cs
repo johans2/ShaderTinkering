@@ -17,7 +17,7 @@ public class GrassPhysics : MonoBehaviour {
     int updateKernel;
     private RenderTexture renderTex;
     private ComputeBuffer imgBuffer;
-    private Vector3 previousPos;
+    private Vector2 previousPos;
 
     void Start () {
 
@@ -57,20 +57,21 @@ public class GrassPhysics : MonoBehaviour {
 
         // These calculations are used to get the correct UV values from the world positions. 
         // Should be fixed later on.
-        Vector4 tramplePos = (trampleTransform.position / 100f);
-        tramplePos.x += 0.5000000f;
-        tramplePos.z += 0.5000000f;
-        Vector3 moveDir = trampleTransform.position - previousPos;
+        Vector2 tramplePos = new Vector2(trampleTransform.position.x, trampleTransform.position.z);
+        tramplePos /= 100f;
+        tramplePos.x += 0.50000000f;
+        tramplePos.y += 0.50000000f;
+        Vector2 moveDir = tramplePos - previousPos;
         float velocity = Vector3.Magnitude(moveDir);
 
-        //Debug.Log(velocity);
+        //Debug.Log("T: " + tramplePos + " P: " + previousPos + " ==> M: " + moveDir);
 
-        shader.SetVector("tramplePos", new Vector4(1 - tramplePos.x, tramplePos.y, 1 - tramplePos.z, velocity));
+        shader.SetVector("tramplePos", new Vector2(1 - tramplePos.x, 1 - tramplePos.y));
         shader.SetVector("moveDir", new Vector2(moveDir.x, moveDir.y));
 
         shader.Dispatch(updateKernel, texWidth / 8, texHeight / 8, 1);
 
-        previousPos = trampleTransform.position;
+        previousPos = tramplePos;
 	}
 
     void OnDestroy() {

@@ -54,15 +54,9 @@
 				// sample the texture
 				float4 col = tex2D(_MainTex, i.uv);
 
-				//col = imgBuffer[500];
-				
-				col.x *= 2;
-				col.x -= 1.0;
-				col.x = abs(col.x);
-
-				col.y *= 2;
-				col.y -= 1.0;
-				col.y = abs(col.y);
+				col.x = UnPackFloat(col.x);
+				col.y = UnPackFloat(col.y);
+				col.z = UnPackFloat(col.z);
 
 				return col;
 			}
