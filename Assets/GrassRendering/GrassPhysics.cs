@@ -5,7 +5,12 @@ using UnityEngine;
 public class GrassPhysics : MonoBehaviour {
     
     public Transform trampleTransform;
+
+    [Range(0.001f, 1f)]
     public float trampleCutoff = 0.1f;
+
+    [Range(0.001f, 1f)]
+    public float springiness = 0.01f;
 
     public Material grassMat;
     public ComputeShader shader;
@@ -20,33 +25,29 @@ public class GrassPhysics : MonoBehaviour {
     private Vector2 previousPos;
 
     void Start () {
-
-        
-        // Create a rendertexture
+        // Create a rendertexture, for reading results.
         renderTex = new RenderTexture(512, 512, 24);
         renderTex.enableRandomWrite = true;
         renderTex.wrapMode = TextureWrapMode.Clamp;
         renderTex.Create();
         
-
-        // Create the compute buffer
+        // Create the compute buffer, for storing previous values.
         Vector4[] bufferData = new Vector4[texWidth * texHeight];
         imgBuffer = new ComputeBuffer(bufferData.Length, 16); // 16 is 4 bytes for 4 floats
         
         // Sets the texture and buffer for the update kernel.
         updateKernel = shader.FindKernel("UpdatePhysics");
-        shader.SetBuffer(updateKernel, "imgBuffer", imgBuffer);
         shader.SetTexture(updateKernel, "Result", renderTex);
+        shader.SetBuffer(updateKernel, "imgBuffer", imgBuffer);
         shader.SetFloat("width", texWidth);
         shader.SetFloat("height", texHeight);
         shader.SetFloat("trampleCutoff", trampleCutoff);
-
-        // This makes the buffer accessible from all shaders
-        Shader.SetGlobalBuffer("imgBuffer", imgBuffer);
-
-        // Set the debug texture
+        shader.SetFloat("springiness", springiness);
+        
+        // Set the result texture in the grass material.
         grassMat.SetTexture("_TrampleTex", renderTex);
-
+        
+        // Set the debug texture
         if (debugMat != null)
         {
             debugMat.SetTexture("_MainTex", renderTex);
@@ -63,9 +64,8 @@ public class GrassPhysics : MonoBehaviour {
         tramplePos.y += 0.50000000f;
         Vector2 moveDir = tramplePos - previousPos;
         float velocity = Vector3.Magnitude(moveDir);
-
-        //Debug.Log("T: " + tramplePos + " P: " + previousPos + " ==> M: " + moveDir);
-
+        
+        // Update the trample position and the move direction.
         shader.SetVector("tramplePos", new Vector2(1 - tramplePos.x, 1 - tramplePos.y));
         shader.SetVector("moveDir", new Vector2(moveDir.x, moveDir.y));
 

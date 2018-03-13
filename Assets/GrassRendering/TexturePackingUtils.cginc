@@ -31,3 +31,23 @@ inline float UnPackFloat(float value)
 {
     return (value * 2) - 1;
 }
+
+float4 PackFloat4(float4 value)
+{
+    float4 packed;
+    packed.x = (value.x + 1.0) / 2;
+    packed.y = (value.y + 1.0) / 2;
+    packed.z = (value.z + 1.0) / 2;
+    packed.w = (value.w + 1.0) / 2;
+    return packed;
+}
+
+float4 UnPackFloat4(float4 value)
+{
+    float4 unpacked;
+    unpacked.x = (value.x * 2) - 1;
+    unpacked.y = (value.y * 2) - 1;
+    unpacked.z = (value.z * 2) - 1;
+    unpacked.w = (value.w * 2) - 1;
+    return unpacked;
+}
