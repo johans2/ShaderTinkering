@@ -7,17 +7,14 @@
 RWTexture2D<float4> Result;
 RWStructuredBuffer<float4> imgBuffer;
 
-float trampleSmooth;
 float trampleCutoff;
 float4 tramplePos;
 float2 moveDir;
 float width;
 float height;
 
-float dTime;
 
-sampler2D Input;
-
+const float PI = 3.14159265f;
 
 [numthreads(8, 8, 1)]
 void UpdatePhysics(uint3 id : SV_DispatchThreadID)
@@ -33,27 +30,33 @@ void UpdatePhysics(uint3 id : SV_DispatchThreadID)
     // Vector from the trample point to the pixel.
     float2 diffVector = float2(tramplePos.x, tramplePos.z) - float2(id.x / width, id.y / height);
 
-    // How much that vector is within the trample cutoff. Doesant work very well atm
+    // How much that vector is within the trample cutoff. 
     float dist = distance(float2(tramplePos.x, tramplePos.z), float2(id.x / width, id.y / height));
-    float distanceFactor = abs((1 - dist) * (1 - smoothstep(0, trampleCutoff/4, dist))); // why devide by 4 here?
     
+
+    float shouldBeTramepled = step(dist, trampleCutoff);
+    float distanceFactor = 1 - lerp(0, trampleCutoff, dist);
+
     // Smoothed and cut off values from from the difftector
-    float xC = normalize(((float) sign(diffVector.x))) *  /*(1 - smoothstep(0, trampleCutoff, abs(diffVector.x))) **/ distanceFactor * (1.0 - abs(currentColor.x));
-    float yC = normalize(((float) sign(diffVector.y))) *  /*(1 - smoothstep(0, trampleCutoff, abs(diffVector.y))) **/ distanceFactor * (1.0 - abs(currentColor.y));
+    //float xC = normalize(((float) sign(diffVector.x))) *  /*(1 - smoothstep(0, trampleCutoff, abs(diffVector.x))) **/ distanceFactor * (1.0 - abs(currentColor.x));
+    //float yC = normalize(((float) sign(diffVector.y))) *  /*(1 - smoothstep(0, trampleCutoff, abs(diffVector.y))) **/ distanceFactor * (1.0 - abs(currentColor.y));
     
     float directionFactor = step(0, dot(normalize(diffVector), normalize(moveDir)));
-    xC *= directionFactor;
-    yC *= directionFactor;
+    diffVector = normalize(diffVector);
+    diffVector *= directionFactor;
+    diffVector *= shouldBeTramepled;
+    diffVector *= distanceFactor;
+
+    //xC *= directionFactor;
+    //yC *= directionFactor;
 
 	// Update the value from the buffer
-    currentColor = float4(clamp(currentColor.x + xC, -1, 1), clamp(currentColor.y + yC, -1, 1), 0, 0);
+    currentColor = float4(clamp(currentColor.x + diffVector.x, -1, 1), clamp(currentColor.y + diffVector.y, -1, 1), 0, 0);
     currentColor.x /= 1.01;
     currentColor.y /= 1.01;
 
-    // Pack the values and set them in the texture. TODO: Make pack/unpack a cging function.
-    float xCPacked = (currentColor.x + 1.0) / 2;
-    float yCPacked = (currentColor.y + 1.0) / 2;
-    float4 currentColorPacked = float4(xCPacked, yCPacked, 0, 0);
+    // Pack the values and set them in the texture.
+    float4 currentColorPacked = float4(PackFloat(currentColor.x), PackFloat(currentColor.y), 0, 0);
 
 	// Write the value to the result texture
     Result[id.xy] = currentColorPacked;

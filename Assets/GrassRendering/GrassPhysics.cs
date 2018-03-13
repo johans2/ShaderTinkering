@@ -5,7 +5,6 @@ using UnityEngine;
 public class GrassPhysics : MonoBehaviour {
     
     public Transform trampleTransform;
-    public float trampleSmooth = 2f;
     public float trampleCutoff = 0.1f;
 
     public Material grassMat;
@@ -40,7 +39,6 @@ public class GrassPhysics : MonoBehaviour {
         shader.SetTexture(updateKernel, "Result", renderTex);
         shader.SetFloat("width", texWidth);
         shader.SetFloat("height", texHeight);
-        shader.SetFloat("trampleSmooth", trampleSmooth);
         shader.SetFloat("trampleCutoff", trampleCutoff);
 
         // This makes the buffer accessible from all shaders

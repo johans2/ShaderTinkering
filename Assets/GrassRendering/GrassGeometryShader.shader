@@ -53,9 +53,7 @@ Shader "Custom/GrassGeometryShader" {
 				half _GrassWidth;
 				half _WindStrength;
 				half _WindSpeed;
-				static const float PI = 3.14159265f;
-
-				StructuredBuffer<float4> imgBuffer;
+				const float PI = 3.14159265f;
 
 				v2g vert(appdata_full v) {
 					float3 v0 = v.vertex.xyz;
@@ -76,12 +74,13 @@ Shader "Custom/GrassGeometryShader" {
 					float3 perpendicularAngle = float3(1, 0, 0);
 					float3 faceNormal = cross(perpendicularAngle, IN[0].norm);
 
+					// Sample the trample texture
+					float4 trample = tex2Dlod(_TrampleTex, float4(1 - (IN[0].pos.x / 100 + 0.5), 1 - (IN[0].pos.z / 100 + 0.5),0,0));
+
 					float3 v0 = IN[0].pos.xyz;
 					float3 v1 = IN[0].pos.xyz + IN[0].norm * _GrassHeight;
 					float3 v1start = v1;
 
-					// Sample the trample texture
-					float4 trample = tex2Dlod(_TrampleTex, float4(1 - (IN[0].pos.x / 100 + 0.5), 1 - (IN[0].pos.z / 100 + 0.5),0,0));
 
 					// Add wind
 					half time = _Time.x * _WindSpeed;
@@ -91,8 +90,11 @@ Shader "Custom/GrassGeometryShader" {
 					// Add trample (unpack the texture values)
 					v1.x += trample.x * 2 - 1;
 					v1.z += trample.y * 2 - 1;
-					v1.y -= min(_GrassHeight * 0.3, _GrassHeight * smoothstep(0, 1, length(v1.xz - v1start.xz)));
+					//v1.y = _GrassHeight;// *sin((PI / 2) * length(trample));
+					//v1.y -= min(_GrassHeight * 0.3, _GrassHeight * smoothstep(0, 1, length(v1.xz - v1start.xz)));
 					
+					//v1 *= 0.1f;
+
 					float3 crossA = IN[0].norm;
 					float3 crossB = crossA + float3(1, 0, 0);
 					float3 crossC = crossA + float3(0, 0, 1);

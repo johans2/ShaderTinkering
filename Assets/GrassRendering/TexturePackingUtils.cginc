@@ -21,3 +21,13 @@ float4 UINTtoRGBA(uint value)
 
     return color / 255.0f;
 }
+
+inline float PackFloat(float value)
+{
+    return (value + 1.0) / 2;
+}
+
+inline float UnPackFloat(float value)
+{
+    return (value * 2) - 1;
+}
