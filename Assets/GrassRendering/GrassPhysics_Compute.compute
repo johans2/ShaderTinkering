@@ -1,60 +1,67 @@
-﻿// Each #kernel tells which function to compile; you can have many kernels
-#pragma kernel UpdatePhysics
+﻿#pragma kernel UpdatePhysics
 #include "TexturePackingUtils.cginc"
 
-// Create a RenderTexture with enableRandomWrite flag and set it
-// with cs.SetTexture
+struct Trampler
+{
+    float2 pos;
+    float2 moveDir;
+};
+
 RWTexture2D<float4> Result;
-RWStructuredBuffer<float4> imgBuffer;
+RWStructuredBuffer<float4> trampleBuffer;
+RWStructuredBuffer<Trampler> tramplerObjects;
 
 float trampleCutoff;
 float springiness;
-float2 tramplePos;
-float2 moveDir;
 float width;
 float height;
-
 
 const float PI = 3.14159265f;
 
 [numthreads(8, 8, 1)]
 void UpdatePhysics(uint3 id : SV_DispatchThreadID)
 {
-    float2 trample;
-
-	// Get the current color from the buffer
-	float4 currentColor = imgBuffer[width * id.x + id.y];
     
-    // Vector from the trample point to the pixel.
-    float2 deltaPos = float2(tramplePos.x, tramplePos.y) - float2(id.x / width, id.y / height);
-
-    // Cut off all values outside the trampleCutoff range.
-    float shouldBeTramepled = step(length(deltaPos), trampleCutoff);
-
-    // Smooth out the trample amount within the trampleCutoff range.  
-    float distanceFactor = 1 - smoothstep(0, trampleCutoff, length(deltaPos));
+	
+    // Get the current color from the buffer
+    float4 currentTrample = trampleBuffer[width * id.x + id.y];
     
-    // Cut off all values behind the trampler (grass behind should not bend backwards).
-    float directionFactor = step(0, dot(deltaPos, normalize(moveDir)));
+    for (uint i = 0; i < tramplerObjects.Length; ++i)
+    {
+        float2 trample;
 
-    // Sum up the trample amount for the position.
-    trample = normalize(deltaPos);
-    trample *= directionFactor;
-    trample *= shouldBeTramepled;
-    trample *= distanceFactor;
+        // Vector from the trample point to the pixel.
+        float2 deltaPos = tramplerObjects[i].pos - float2(id.x / width, id.y / height);
+
+        // Cut off all values outside the trampleCutoff range.
+        float shouldBeTramepled = step(length(deltaPos), trampleCutoff);
+
+        // Smooth out the trample amount within the trampleCutoff range.  
+        float distanceFactor = 1 - smoothstep(0, trampleCutoff, length(deltaPos));
     
-	// Update the value from the buffer
-    currentColor = float4(clamp(currentColor.x + trample.x, -1, 1), sin(clamp(currentColor.y - length(trample), -1, 1)), clamp(currentColor.z + trample.y, -1, 1), 0);
-    currentColor /= (1.0 + springiness);
+        // Cut off all values behind the trampler (grass behind should not bend backwards).
+        float directionFactor = step(0, dot(deltaPos, normalize(tramplerObjects[i].moveDir)));
+
+        // Sum up the trample amount for the position.
+        trample = normalize(deltaPos);
+        trample *= directionFactor;
+        trample *= shouldBeTramepled;
+        trample *= distanceFactor;
+    
+	    // Update the value from the buffer
+        currentTrample = float4(clamp(currentTrample.x + trample.x, -1, 1), sin(clamp(currentTrample.y - length(trample), -1, 1)), clamp(currentTrample.z + trample.y, -1, 1), 0);
+    }
+    
+    currentTrample /= (1.0 + springiness);
     
     // Pack the values and set them in the texture.
-    float4 currentColorPacked = PackFloat4(currentColor);
+    float4 currentTramplePacked = PackFloat4(currentTrample);
 
 	// Write the value to the result texture
-    Result[id.xy] = currentColorPacked;
+    Result[id.xy] = currentTramplePacked;
 
 	// Save it in the buffer again
-    imgBuffer[width * id.x + id.y] = currentColor;
+    trampleBuffer[width * id.x + id.y] = currentTrample;
     
 }
 
