@@ -8,11 +8,18 @@ public class Trampler : MonoBehaviour {
 
     CharacterController ctrl;
 
-	void Start () {
+	IEnumerator Start () {
         ctrl = GetComponent<CharacterController>();
+        ctrl.enabled = false;
+        yield return new WaitForEndOfFrame();
+        ctrl.enabled = true;
 	}
 	
 	void Update () {
+        if (!ctrl.enabled) {
+            return;
+        }
+
         Vector3 moveDir = new Vector3();
 
         if(Input.GetKey(KeyCode.UpArrow) ) {
