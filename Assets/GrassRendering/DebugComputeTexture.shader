@@ -3,7 +3,7 @@
 
 	Properties
 	{
-		_MainTex ("Texture", 2D) = "white" {}
+		_MainTex ("Texture", 2D) = "black" {}
 	}
 	SubShader
 	{
@@ -58,10 +58,12 @@
 				
 				col.x *= 2;
 				col.x -= 1.0;
+				col.x = abs(col.x);
 
 				col.y *= 2;
 				col.y -= 1.0;
-				
+				col.y = abs(col.y);
+
 				return col;
 			}
 			ENDCG

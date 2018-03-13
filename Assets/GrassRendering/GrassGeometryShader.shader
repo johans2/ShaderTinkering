@@ -76,9 +76,15 @@ Shader "Custom/GrassGeometryShader" {
 
 					// Sample the trample texture
 					float4 trample = tex2Dlod(_TrampleTex, float4(1 - (IN[0].pos.x / 100 + 0.5), 1 - (IN[0].pos.z / 100 + 0.5),0,0));
+					trample.x = UnPackFloat(trample.x);
+					trample.y = UnPackFloat(trample.y);
+
+					// smoothstep(min, max, x)
+
+					float3 trampleFactor = float3(trample.x,  0, trample.y);
 
 					float3 v0 = IN[0].pos.xyz;
-					float3 v1 = IN[0].pos.xyz + IN[0].norm * _GrassHeight;
+					float3 v1 = IN[0].pos.xyz + IN[0].norm * _GrassHeight + trampleFactor;
 					float3 v1start = v1;
 
 
@@ -88,8 +94,11 @@ Shader "Custom/GrassGeometryShader" {
 					v1 += wind * _WindStrength;
 
 					// Add trample (unpack the texture values)
-					v1.x += trample.x * 2 - 1;
-					v1.z += trample.y * 2 - 1;
+					
+					//v1.x += trample.x * 2 - 1;
+					//v1.z += trample.y * 2 - 1;
+					
+					
 					//v1.y = _GrassHeight;// *sin((PI / 2) * length(trample));
 					//v1.y -= min(_GrassHeight * 0.3, _GrassHeight * smoothstep(0, 1, length(v1.xz - v1start.xz)));
 					
