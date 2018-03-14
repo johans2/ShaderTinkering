@@ -45,9 +45,13 @@ public class GrassPhysics : MonoBehaviour {
         trampleBuffer = new ComputeBuffer(bufferData.Length, 16); // 16 is 4 bytes for 4 floats
         
         // Sets the texture and buffer for the update kernel.
-        updateKernel = shader.FindKernel("UpdatePhysics");
+        updateKernel = shader.FindKernel("UpdateTrample");
+        
+        // Set the texture and buffer in the compute shader.
         shader.SetTexture(updateKernel, "Result", renderTex);
         shader.SetBuffer(updateKernel, "trampleBuffer", trampleBuffer);
+
+        // Set some grass/trample settings in the compute shader.
         shader.SetFloat("width", texWidth);
         shader.SetFloat("height", texHeight);
         shader.SetFloat("trampleCutoff", trampleCutoff);

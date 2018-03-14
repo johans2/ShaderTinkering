@@ -1,5 +1,5 @@
 ﻿#pragma enable_d3d11_debug_symbols
-#pragma kernel UpdatePhysics
+#pragma kernel UpdateTrample
 #include "TexturePackingUtils.cginc"
 
 struct Trampler
@@ -20,10 +20,9 @@ float height;
 const float PI = 3.14159265f;
 
 [numthreads(8, 8, 1)]
-void UpdatePhysics(uint3 id : SV_DispatchThreadID)
+void UpdateTrample(uint3 id : SV_DispatchThreadID)
 {
     
-	
     // Get the current color from the buffer
     float4 currentTrample = trampleBuffer[width * id.x + id.y];
     

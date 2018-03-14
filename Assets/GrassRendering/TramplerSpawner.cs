@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TramplerSpawner : MonoBehaviour {
 
-    [Range(0, 30)]
+    [Range(0, 100)]
     public int numBots = 0; 
     public GameObject tramplerPrefab;
 

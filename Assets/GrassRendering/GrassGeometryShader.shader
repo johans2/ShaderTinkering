@@ -11,6 +11,7 @@ Shader "Custom/GrassGeometryShader" {
 		_GrassWidth("Grass Width", Float) = 0.25
 		_WindStrength("Wind strength", Float) = 1
 		_WindSpeed("Wind speed", Float) = 1
+		_TrampleMultiplier("Trample multiplier", Float) = 1
 	}
 	SubShader{
 			Pass{
@@ -52,6 +53,7 @@ Shader "Custom/GrassGeometryShader" {
 				half _GrassWidth;
 				half _WindStrength;
 				half _WindSpeed;
+				half _TrampleMultiplier;
 				const float PI = 3.14159265f;
 
 				v2g vert(appdata_full v) {
@@ -64,31 +66,31 @@ Shader "Custom/GrassGeometryShader" {
 					return OUT;
 				}
 
-				void buildQuad(inout TriangleStream<g2f> triStream, float3 v0, float3 v1, float3 faceNormal, float3 quadOffset) {
+				void buildQuad(inout TriangleStream<g2f> triStream, float3 v0, float3 v1,float3 quadOffset) {
 
 					g2f OUT;
 
 					// 1
 					OUT.pos = UnityObjectToClipPos(v1 + quadOffset);
-					OUT.norm = faceNormal;
+					OUT.norm = _WorldSpaceCameraPos - v0;
 					OUT.uv = float2(1, 1);
 					triStream.Append(OUT);
 
 					// 2
 					OUT.pos = UnityObjectToClipPos(v0 + quadOffset);
-					OUT.norm = faceNormal;
+					OUT.norm = _WorldSpaceCameraPos - v0;
 					OUT.uv = float2(1, 0);
 					triStream.Append(OUT);
 
 					// 3
 					OUT.pos = UnityObjectToClipPos(v1 - quadOffset);
-					OUT.norm = faceNormal;
+					OUT.norm = _WorldSpaceCameraPos - v0;
 					OUT.uv = float2(0, 1);
 					triStream.Append(OUT);
 
 					// 4
 					OUT.pos = UnityObjectToClipPos(v0 - quadOffset);
-					OUT.norm = faceNormal;
+					OUT.norm = _WorldSpaceCameraPos - v0;
 					OUT.uv = float2(0, 0);
 					triStream.Append(OUT);
 
@@ -97,18 +99,14 @@ Shader "Custom/GrassGeometryShader" {
 
 				[maxvertexcount(16)]
 				void geom(point v2g IN[1], inout TriangleStream<g2f> triStream) {
-					float3 lightPosition = _WorldSpaceLightPos0;
-
-					float3 perpendicularAngle = float3(1, 0, 0);
-					float3 faceNormal = _WorldSpaceCameraPos - IN[0].pos.xyz;
-
+					
 					// Sample and unpack the trample values
 					float4 trample = tex2Dlod(_TrampleTex, float4(1 - (IN[0].pos.x / 100 + 0.5), 1 - (IN[0].pos.z / 100 + 0.5),0,0));
 					trample = UnPackFloat4(trample);
 
 					// Calculate the two base vertices.
 					float3 v0 = IN[0].pos.xyz;
-					float3 v1 = IN[0].pos.xyz + IN[0].norm * _GrassHeight + trample;
+					float3 v1 = IN[0].pos.xyz + IN[0].norm * _GrassHeight + (trample *_TrampleMultiplier);
 					
 					// Add wind.
 					half time = _Time.x * _WindSpeed;
@@ -135,10 +133,10 @@ Shader "Custom/GrassGeometryShader" {
 					float3 mNegVector = normalize(pVector - hVector) * _GrassWidth;
 
 					// Build the grass quads.
-					buildQuad(triStream, v0, v1, faceNormal, pVector);
-					buildQuad(triStream, v0, v1, faceNormal, hVector);
-					buildQuad(triStream, v0, v1, faceNormal, mVector);
-					buildQuad(triStream, v0, v1, faceNormal, mNegVector);
+					buildQuad(triStream, v0, v1, pVector);
+					buildQuad(triStream, v0, v1, hVector);
+					buildQuad(triStream, v0, v1, mVector);
+					buildQuad(triStream, v0, v1, mNegVector);
 					
 				}
 
