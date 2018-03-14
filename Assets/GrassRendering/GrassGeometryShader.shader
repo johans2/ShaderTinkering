@@ -95,7 +95,7 @@ Shader "Custom/GrassGeometryShader" {
 					triStream.RestartStrip();
 				}
 
-				[maxvertexcount(33)]
+				[maxvertexcount(16)]
 				void geom(point v2g IN[1], inout TriangleStream<g2f> triStream) {
 					float3 lightPosition = _WorldSpaceLightPos0;
 
