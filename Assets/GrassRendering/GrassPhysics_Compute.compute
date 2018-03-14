@@ -49,7 +49,7 @@ void UpdateTrample(uint3 id : SV_DispatchThreadID)
         trample *= distanceFactor;
     
 	    // Update the value from the buffer
-        currentTrample = float4(clamp(currentTrample.x + trample.x, -1, 1), sin(clamp(currentTrample.y - length(trample), -1, 1)), clamp(currentTrample.z + trample.y, -1, 1), 0);
+        currentTrample = float4(clamp(currentTrample.x + trample.x, -1, 1), sin(PI * 0.5 * clamp(currentTrample.y - length(trample), -1, 0)), clamp(currentTrample.z + trample.y, -1, 1), 0);
     }
     
     currentTrample /= (1.0 + springiness);

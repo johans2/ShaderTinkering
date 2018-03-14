@@ -680,7 +680,7 @@ MonoBehaviour:
   tramplers:
   - {fileID: 469899498}
   trampleCutoff: 0.02
-  springiness: 0.001
+  springiness: 0.002
   grassMat: {fileID: 2100000, guid: f0a8b0c8b768ec443a3aea7da166d26d, type: 2}
   shader: {fileID: 7200000, guid: 64088c8bc882e4846b98d38948509670, type: 3}
   debugMat: {fileID: 2100000, guid: 6d6eb09347386ff4fa67317cf314c807, type: 2}

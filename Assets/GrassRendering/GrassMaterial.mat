@@ -66,7 +66,7 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _GrassHeight: 1.5
+    - _GrassHeight: 1.7
     - _GrassWidth: 0.9
     - _Metallic: 0
     - _Mode: 0
@@ -75,6 +75,7 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
+    - _TrampleMultiplier: 1
     - _UVSec: 0
     - _WindSpeed: 100
     - _WindStrength: 0.05

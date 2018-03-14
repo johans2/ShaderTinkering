@@ -103,6 +103,7 @@ Shader "Custom/GrassGeometryShader" {
 					// Sample and unpack the trample values
 					float4 trample = tex2Dlod(_TrampleTex, float4(1 - (IN[0].pos.x / 100 + 0.5), 1 - (IN[0].pos.z / 100 + 0.5),0,0));
 					trample = UnPackFloat4(trample);
+					trample.y *= _GrassHeight;
 
 					// Calculate the two base vertices.
 					float3 v0 = IN[0].pos.xyz;
