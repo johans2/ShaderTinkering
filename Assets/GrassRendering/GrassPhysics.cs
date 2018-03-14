@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class GrassPhysics : MonoBehaviour {
-    
-    public Transform[] trampleTransforms;
+
+    public List<Transform> tramplers;
+
+    private Transform[] trampleTransforms;
 
     [Range(0.001f, 1f)]
     public float trampleCutoff = 0.1f;
@@ -28,6 +30,7 @@ public class GrassPhysics : MonoBehaviour {
     private Vector2[] previousPos;
 
     void Start () {
+        trampleTransforms = tramplers.ToArray();
         tramplerData = new Vector4[trampleTransforms.Length];
         previousPos = new Vector2[trampleTransforms.Length];
         
