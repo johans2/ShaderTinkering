@@ -1,4 +1,5 @@
-﻿#pragma kernel UpdatePhysics
+﻿#pragma enable_d3d11_debug_symbols
+#pragma kernel UpdatePhysics
 #include "TexturePackingUtils.cginc"
 
 struct Trampler

@@ -4,4 +4,7 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/GrassRendering/Grass.unity
+    guid: a7074ab2e7a927d4a9e275ece036a8cb
