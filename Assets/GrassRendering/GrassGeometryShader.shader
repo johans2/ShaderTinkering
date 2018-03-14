@@ -16,7 +16,7 @@ Shader "Custom/GrassGeometryShader" {
 			Pass{
 				Tags { "RenderType" = "Transparent" }
 				LOD 200
-				CULL off
+				CULL back
 
 				CGPROGRAM
 
