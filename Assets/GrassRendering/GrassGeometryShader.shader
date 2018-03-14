@@ -100,7 +100,7 @@ Shader "Custom/GrassGeometryShader" {
 					float3 lightPosition = _WorldSpaceLightPos0;
 
 					float3 perpendicularAngle = float3(1, 0, 0);
-					float3 faceNormal = cross(perpendicularAngle, IN[0].norm);
+					float3 faceNormal = _WorldSpaceCameraPos - IN[0].pos.xyz;
 
 					// Sample and unpack the trample values
 					float4 trample = tex2Dlod(_TrampleTex, float4(1 - (IN[0].pos.x / 100 + 0.5), 1 - (IN[0].pos.z / 100 + 0.5),0,0));
