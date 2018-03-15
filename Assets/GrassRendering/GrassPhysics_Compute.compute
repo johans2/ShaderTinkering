@@ -1,67 +1,67 @@
-﻿// Each #kernel tells which function to compile; you can have many kernels
-#pragma kernel FlashInput
-#pragma kernel UpdatePhysics
+﻿#pragma enable_d3d11_debug_symbols
+#pragma kernel UpdateTrample
 #include "TexturePackingUtils.cginc"
 
-// Create a RenderTexture with enableRandomWrite flag and set it
-// with cs.SetTexture
-RWTexture2D<float4> Result;
-RWStructuredBuffer<float4> imgBuffer;
+struct Trampler
+{
+    float2 pos;
+    float2 moveDir;
+};
 
-float trampleSmooth;
+RWTexture2D<float4> Result;
+RWStructuredBuffer<float4> trampleBuffer;
+RWStructuredBuffer<Trampler> tramplerObjects;
+
 float trampleCutoff;
-float4 tramplePos;
+float springiness;
 float width;
 float height;
 
-float dTime;
-
-sampler2D Input;
-
-
-[numthreads(8,8,1)]
-void FlashInput(uint3 id : SV_DispatchThreadID)
-{
-    //Result[id.xy] = float4(1.0, 0.0, 0.0, 0.0);
-	//imgBuffer[id.x * id.y] = float4(1.0, 0.0, 0.0, 0.0);
-}
+const float PI = 3.14159265f;
 
 [numthreads(8, 8, 1)]
-void UpdatePhysics(uint3 id : SV_DispatchThreadID)
+void UpdateTrample(uint3 id : SV_DispatchThreadID)
 {
-    // Get the distance to the tramplerpos. Invert (1 - ...) to get better numbers to work with.
-    float dist = max(0, 1 - distance(float2(id.x / width, id.y / height), float2(tramplePos.x, tramplePos.z)));
-	float distX = max(0, 1 - distance(id.x / width, tramplePos.x));
-	float distZ = max(0, 1 - distance(id.y / height, tramplePos.z));
-    // TODO: this needs to be separated in y and x component.
+    
+    // Get the current color from the buffer
+    float4 currentTrample = trampleBuffer[width * id.x + id.y];
+    
+    for (uint i = 0; i < tramplerObjects.Length; ++i)
+    {
+        float2 trample;
 
-    // Clamps the value to the cutoff distance. Linearly going from 0 -> 1 depeding on distance.
-	float c = max(dist - (1.0 - trampleCutoff), 0) / trampleCutoff;
-    float cX = max(distX - (1.0 - trampleCutoff), 0) / trampleCutoff * c * tramplePos.w; // tramplePos.z is velocity
-	float cZ = max(distZ - (1.0 - trampleCutoff), 0) / trampleCutoff * c * tramplePos.w;
+        // Vector from the trample point to the pixel.
+        float2 deltaPos = tramplerObjects[i].pos - float2(id.x / width, id.y / height);
 
-	// Get the current color from the buffer
-	float4 currentColor = imgBuffer[width * id.x + id.y];
+        // Cut off all values outside the trampleCutoff range.
+        float shouldBeTramepled = step(length(deltaPos), trampleCutoff);
 
-	// Update the value
-	currentColor = float4(min(currentColor.x + cX, 1.0) , min(currentColor.z + cZ, 1.0),  0 ,0); 
-	currentColor = float4(max(0.0, currentColor.x - 0.01), max(0.0, currentColor.z -0.01),0,0);
+        // Smooth out the trample amount within the trampleCutoff range.  
+        float distanceFactor = 1 - smoothstep(0, trampleCutoff, length(deltaPos));
+    
+        // Cut off all values behind the trampler (grass behind should not bend backwards).
+        float directionFactor = step(0, dot(deltaPos, normalize(tramplerObjects[i].moveDir)));
+
+        // Sum up the trample amount for the position.
+        trample = normalize(deltaPos);
+        trample *= directionFactor;
+        trample *= shouldBeTramepled;
+        trample *= distanceFactor;
+    
+	    // Update the value from the buffer
+        currentTrample = float4(clamp(currentTrample.x + trample.x, -1, 1), sin(PI * 0.5 * clamp(currentTrample.y - length(trample), -1, 0)), clamp(currentTrample.z + trample.y, -1, 1), 0);
+    }
+    
+    currentTrample /= (1.0 + springiness);
+    
+    // Pack the values and set them in the texture.
+    float4 currentTramplePacked = PackFloat4(currentTrample);
 
 	// Write the value to the result texture
-	Result[id.xy] = currentColor;
+    Result[id.xy] = currentTramplePacked;
 
 	// Save it in the buffer again
-	imgBuffer[width * id.x + id.y] = currentColor;
-
-
-
-/*   psudo code for 2D -> 1D array indexing
-	int array[width * height];
-
-	 int SetElement(int row, int col, int value)
-	 {
-		array[width * row + col] = value;  
-	 }
-	 */
+    trampleBuffer[width * id.x + id.y] = currentTrample;
+    
 }
 
