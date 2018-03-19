@@ -52,13 +52,15 @@ void UpdateTrample(uint3 id : SV_DispatchThreadID)
         currentTrample = float4(clamp(currentTrample.x + trample.x, -1, 1), sin(PI * 0.5 * clamp(currentTrample.y - length(trample), -1, 0)), clamp(currentTrample.z + trample.y, -1, 1), 0);
     }
     
-    currentTrample /= (1.0 + springiness);
     
     // Pack the values and set them in the texture.
     float4 currentTramplePacked = PackFloat4(currentTrample);
 
 	// Write the value to the result texture
     Result[id.xy] = currentTramplePacked;
+
+    // Spring back the grass
+    currentTrample /= (1.0 + springiness);
 
 	// Save it in the buffer again
     trampleBuffer[width * id.x + id.y] = currentTrample;

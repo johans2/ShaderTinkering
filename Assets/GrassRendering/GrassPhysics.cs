@@ -18,8 +18,8 @@ public class GrassPhysics : MonoBehaviour {
     public ComputeShader shader;
     public Material debugMat;
 
-    private int texWidth = 512;
-    private int texHeight = 512;
+    private int texWidth= 1024;
+    private int texHeight = 1024;
 
     int updateKernel;
     private RenderTexture renderTex;
@@ -35,7 +35,7 @@ public class GrassPhysics : MonoBehaviour {
         previousPos = new Vector2[trampleTransforms.Length];
         
         // Create a rendertexture, for reading results.
-        renderTex = new RenderTexture(512, 512, 24);
+        renderTex = new RenderTexture(texHeight, texHeight, 24);
         renderTex.enableRandomWrite = true;
         renderTex.wrapMode = TextureWrapMode.Clamp;
         renderTex.Create();
