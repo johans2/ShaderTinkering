@@ -28,7 +28,6 @@
  
     SubShader
     {
-		Blend SrcAlpha OneMinusSrcAlpha
 		Cull back
 
         Pass
