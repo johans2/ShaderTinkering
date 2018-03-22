@@ -8,7 +8,7 @@ Material:
   m_PrefabInternal: {fileID: 0}
   m_Name: Stone
   m_Shader: {fileID: 4800000, guid: 3c63025010bfaee42893f001ea183d3f, type: 3}
-  m_ShaderKeywords: ENABLE_ADVANCED_SHADOWS ENABLE_RIM
+  m_ShaderKeywords: ENABLE_ADVANCED_SHADOWS ENABLE_RIM ENABLE_SPEC
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -83,6 +83,7 @@ Material:
     - _Ambient: 0.025
     - _BumpScale: 1
     - _Cutoff: 0.5
+    - _CutourAlphaEnabled: 0
     - _DetailNormalMapScale: 1
     - _Diffuse: 1
     - _DstBlend: 0
@@ -101,7 +102,7 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _Snininess: 10
     - _Spec: 0
-    - _SpecEnabled: 0
+    - _SpecEnabled: 1
     - _SpecIntensity: 0.039
     - _SpecSize: 0
     - _SpecularHighlights: 1

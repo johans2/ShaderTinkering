@@ -20,7 +20,7 @@
         _RimColor ("Rim color", color) = (1., 1., 1., 1.)
         _RimPower ("Rim power", Range(0.1, 10)) = 3.
 
-		[Header(Advanced Shadows)]
+		[Header(Recieve shadows)]
         [Toggle(ENABLE_ADVANCED_SHADOWS)] _AdvancedShadowsEnabled ("Enabled", Float) = 0
 		_ShadowRamp("Shadow ramp", 2D) = "white" {}
 
@@ -28,17 +28,21 @@
  
     SubShader
     {
+		Blend SrcAlpha OneMinusSrcAlpha
+		Cull back
+
         Pass
         {
-            Tags { "RenderType"="Opaque" "LightMode"="ForwardBase" }
- 
+            Tags { "RenderType"="Opaque" "LightMode"="ForwardBase" "Pass" = "OnlyDirectional"}
+
             CGPROGRAM
             #pragma vertex vert
-            #pragma fragment frag
+            #pragma fragment frag 
             #pragma multi_compile_fwdbase
             #pragma shader_feature ENABLE_SPEC
             #pragma shader_feature ENABLE_RIM
             #pragma shader_feature ENABLE_ADVANCED_SHADOWS
+			#pragma shader_feature ENABLE_CUTOUT_ALPHA
  
             #include "UnityCG.cginc"
             #include "AutoLight.cginc"
@@ -185,6 +189,10 @@
             	c.rbg *= _Color;
                 c.rgb *= light.rgb;
 
+				// ------------------- ALPHA CLIPPING ----------------------
+
+				clip(c.a - 0.1);
+
                 return c;
             }
  
@@ -192,5 +200,5 @@
         }
     }
     // This fallback makes the shader cast shadows
-	Fallback "Legacy Shaders/Diffuse"
+	Fallback "Transparent/Cutout/Diffuse"
 }
