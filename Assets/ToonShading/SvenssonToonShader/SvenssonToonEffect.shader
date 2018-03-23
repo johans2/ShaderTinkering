@@ -107,24 +107,24 @@
                 // -------------------- DIFFUSE LIGHT ----------------------
 
                 // Light direction
-                float3 lightDir = normalize(_WorldSpaceLightPos0.xyz);
+                half3 lightDir = normalize(_WorldSpaceLightPos0.xyz);
  
                 // Camera direction
-                float3 viewDir = normalize(_WorldSpaceCameraPos.xyz - i.worldPos.xyz);
+                half3 viewDir = normalize(_WorldSpaceCameraPos.xyz - i.worldPos.xyz);
  
                 // Compute the diffuse lighting
-                float NdotL = max(0., dot(i.worldNormal, lightDir));
+                half NdotL = max(0., dot(i.worldNormal, lightDir));
 
 				// Sample the lut texture, float2(<the light value [0...1]>, 0). Creating the cell shading.                
-				float toonRamp = tex2D(_ToonRamp, float2(NdotL, 0));
+				half toonRamp = tex2D(_ToonRamp, float2(NdotL, 0));
                 
-				float3 directDiffuse = toonRamp * _LightColor0;
+				half3 directDiffuse = toonRamp * _LightColor0;
 
 				// This will be light added to all parts of the obejct, including dark ones.
-				float3 indirectDiffuse = unity_AmbientSky;
+				half3 indirectDiffuse = unity_AmbientSky;
 
                 //light = directDiffuse + indirectDiffuse;
- 				float3 diffuse = directDiffuse + indirectDiffuse;
+ 				half3 diffuse = directDiffuse + indirectDiffuse;
 
 				// Add shadow color.
 				diffuse += (_ShadowColor * (1.0 - toonRamp));
@@ -134,27 +134,27 @@
                 #if ENABLE_SPEC
 
                 // Get the light reflection across the normal.
-                float3 refl = normalize(reflect(-lightDir, i.worldNormal));
+                half3 refl = normalize(reflect(-lightDir, i.worldNormal));
 
                 // Calculate dot product between the reflection diretion and the view direction [0...1]
-                float RdotV = max(0., dot(refl, viewDir));
+                half RdotV = max(0., dot(refl, viewDir));
 
                 // Make large values really large and small values really small.
-                float specPow = pow(RdotV, _Shininess);
+                half specPow = pow(RdotV, _Shininess);
 
                 // Sample the ramp texture for a smooth falloff.
-                float3 specRamp = tex2D(_SpecRamp , float2(specPow, 0));
+                half3 specRamp = tex2D(_SpecRamp , float2(specPow, 0));
 
                 // Multiply by NdotL to make non lit areas not  get spec (kinda works).
-                float3 spec = specRamp * toonRamp * _LightColor0 * _SpecColor * pow(_SpecIntensity,2);
+                half3 spec = specRamp * toonRamp * _LightColor0 * _SpecColor * pow(_SpecIntensity,2);
 
                 #endif
 
                 // ----------------------- RIM LIGHT ------------------------
 
                 #if ENABLE_RIM
-                float rimAmount = 1 - saturate(dot(normalize(viewDir), i.worldNormal));
-            	float3 rim = _RimColor * pow(rimAmount, _RimPower);
+                half rimAmount = 1 - saturate(dot(normalize(viewDir), i.worldNormal));
+            	half3 rim = _RimColor * pow(rimAmount, _RimPower);
                 #endif
 
 
@@ -162,10 +162,10 @@
 
             	#if ENABLE_ADVANCED_SHADOWS
             	// Get the light attenuation
-                float attenuation = LIGHT_ATTENUATION(i);
+                half attenuation = LIGHT_ATTENUATION(i);
 
                 // Get the ramped shadow from the _ShadowRamp texture based on attenuation
-                float shadowRamp = tex2D(_ShadowRamp /*_ShadowRamp*/, float2(attenuation, 0)).r;
+                half shadowRamp = tex2D(_ShadowRamp /*_ShadowRamp*/, float2(attenuation, 0)).r;
 
                 // Modify existing light based on the ramped shadow
                 diffuse = indirectDiffuse + (directDiffuse * shadowRamp);
