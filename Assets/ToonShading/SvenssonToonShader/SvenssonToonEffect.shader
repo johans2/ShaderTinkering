@@ -121,10 +121,13 @@
 				float3 directDiffuse = toonRamp * _LightColor0;
 
 				// This will be light added to all parts of the obejct, including dark ones.
-				float3 indirectDiffuse = unity_AmbientSky;// * lerp(_ShadowColor, (1.0,1.0,1.0,1.0), toonRamp);// + unity_AmbientSky * (_ShadowColor * (1 - toonRamp)); 
+				float3 indirectDiffuse = unity_AmbientSky;
 
                 //light = directDiffuse + indirectDiffuse;
  				float3 diffuse = directDiffuse + indirectDiffuse;
+
+				// Add shadow color.
+				diffuse += (_ShadowColor * (1.0 - toonRamp));
 
                 // -------------------- SPECULAR LIGHT ----------------------
                 
@@ -162,10 +165,13 @@
                 float attenuation = LIGHT_ATTENUATION(i);
 
                 // Get the ramped shadow from the _ShadowRamp texture based on attenuation
-                float shadowRamp = tex2D(_ShadowRamp, float2(attenuation, 0));
+                float shadowRamp = tex2D(_ShadowRamp /*_ShadowRamp*/, float2(attenuation, 0)).r;
 
                 // Modify existing light based on the ramped shadow
-                diffuse = indirectDiffuse + (directDiffuse * shadowRamp);// * lerp(_ShadowColor, (1.0,1.0,1.0,1.0), shadowRamp);   //(directDiffuse * shadowRamp) + (directDiffuse * (_ShadowColor * (1 - shadowRamp)));
+                diffuse = indirectDiffuse + (directDiffuse * shadowRamp);
+				
+				// Add Shadow color
+				diffuse += (_ShadowColor * (1.0 - min(shadowRamp, toonRamp)));
 
                 #if ENABLE_SPEC
                 spec *= shadowRamp;
