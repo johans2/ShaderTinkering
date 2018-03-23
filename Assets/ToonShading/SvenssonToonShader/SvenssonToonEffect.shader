@@ -104,27 +104,28 @@
  				
                 float3 light = {0.0,0.0,0.0};
 
-                // -------------------- DIFFUSE LIGHT ----------------------
-
                 // Light direction
                 half3 lightDir = normalize(_WorldSpaceLightPos0.xyz);
- 
-                // Camera direction
-                half3 viewDir = normalize(_WorldSpaceCameraPos.xyz - i.worldPos.xyz);
- 
-                // Compute the diffuse lighting
-                half NdotL = max(0., dot(i.worldNormal, lightDir));
-
-				// Sample the lut texture, float2(<the light value [0...1]>, 0). Creating the cell shading.                
-				half toonRamp = tex2D(_ToonRamp, float2(NdotL, 0));
                 
-				half3 directDiffuse = toonRamp * _LightColor0;
+				// Camera direction
+                half3 viewDir = normalize(_WorldSpaceCameraPos.xyz - i.worldPos.xyz);
+
+                // -------------------- DIFFUSE LIGHT ----------------------
 
 				// This will be light added to all parts of the obejct, including dark ones.
 				half3 indirectDiffuse = unity_AmbientSky;
 
-                //light = directDiffuse + indirectDiffuse;
- 				half3 diffuse = directDiffuse + indirectDiffuse;
+				// Compute the diffuse lighting
+                half NdotL = max(0., dot(i.worldNormal, lightDir));
+
+				// Sample the lut texture, float2(<the light value [0...1]>, 0). Creating the cell shading.                
+				half toonRamp = tex2D(_ToonRamp, float2(NdotL, 0));
+
+				// Diffuse based on light source
+				half3 directDiffuse = toonRamp * _LightColor0;
+
+                // Light = direct + indirect;
+ 				half3 diffuse = indirectDiffuse + directDiffuse;
 
 				// Add shadow color.
 				diffuse += (_ShadowColor * (1.0 - toonRamp));
@@ -153,19 +154,20 @@
                 // ----------------------- RIM LIGHT ------------------------
 
                 #if ENABLE_RIM
+				// Light based only on view direction and normal
                 half rimAmount = 1 - saturate(dot(normalize(viewDir), i.worldNormal));
             	half3 rim = _RimColor * pow(rimAmount, _RimPower);
                 #endif
 
 
-                // ------------------- ADVANCED SHADOWS ---------------------
+                // ------------------- RECIEVE SHADOWS ---------------------
 
             	#if ENABLE_ADVANCED_SHADOWS
             	// Get the light attenuation
                 half attenuation = LIGHT_ATTENUATION(i);
 
                 // Get the ramped shadow from the _ShadowRamp texture based on attenuation
-                half shadowRamp = tex2D(_ShadowRamp /*_ShadowRamp*/, float2(attenuation, 0)).r;
+                half shadowRamp = tex2D(_ShadowRamp , float2(attenuation, 0)).r;
 
                 // Modify existing light based on the ramped shadow
                 diffuse = indirectDiffuse + (directDiffuse * shadowRamp);
