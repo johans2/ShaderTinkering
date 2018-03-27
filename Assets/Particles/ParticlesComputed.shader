@@ -1,4 +1,7 @@
 ﻿Shader "Custom/ParticlesComputed" {
+	Properties {
+		_ParticleSize("ParticleSize", Float) = 0.01
+	}
 
 	SubShader {
 		Pass {
@@ -8,6 +11,7 @@
 
 			CGPROGRAM
 			#pragma vertex vert
+			#pragma geometry geom
 			#pragma fragment frag
 
 			#include "UnityCG.cginc"
@@ -21,18 +25,27 @@
 				float life;
 			};
 
-			struct PS_INPUT {
+			struct v2g {
 				float4 position : SV_POSITION;
 				float4 color : COLOR;
-				float life : LIFE;
+				//float life : LIFE;
 			};
+
+
+			struct g2f {
+				float4 pos : SV_POSITION;
+				float3 norm : NORMAL;
+				float2 uv : TEXCOORD0;
+				float4 color: COLOR;
+			};
+
 			// particles' data
 			StructuredBuffer<Particle> particleBuffer;
 
 
-			PS_INPUT vert(uint vertex_id : SV_VertexID, uint instance_id : SV_InstanceID)
+			v2g vert(uint vertex_id : SV_VertexID, uint instance_id : SV_InstanceID)
 			{
-				PS_INPUT o = (PS_INPUT)0;
+				v2g o = (v2g)0;
 
 				// Color
 				float life = particleBuffer[instance_id].life;
@@ -44,8 +57,21 @@
 
 				return o;
 			}
+			
+			[maxvertexcount(1)]
+			void geom(point v2g IN[1], inout PointStream<g2f> triStream) {
 
-			float4 frag(PS_INPUT i) : COLOR
+				g2f OUT;
+				OUT.pos = IN[0].position;
+				OUT.norm = float3(1, 1, 1);
+				OUT.uv = float2(0.5, 0.5);
+				OUT.color = IN[0].color;
+
+				triStream.Append(OUT);
+
+			}
+			
+			float4 frag(g2f i) : COLOR
 			{
 				return i.color;
 			}
@@ -53,5 +79,5 @@
 			ENDCG
 		}
 	}
-	FallBack Off
+	FallBack off
 }
