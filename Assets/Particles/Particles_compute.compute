@@ -11,7 +11,11 @@ struct Particle
     float life;
 };
 
-RWStructuredBuffer<Particle> particles;
+RWStructuredBuffer<Particle> particleBuffer;
+
+// Variables set from the CPU
+float deltaTime;
+float2 emitterPos;
 
 // A super fast way of generating random numbers. 
 uint rng_state;
@@ -63,6 +67,25 @@ float3 curlNoise(float3 p)
 [numthreads(256,1,1)]
 void UpdateParticles (uint3 id : SV_DispatchThreadID)
 {
+    
+	// subtract the life based on deltaTime
+    particleBuffer[id.x].life -= deltaTime * 2;
+    particleBuffer[id.x].position += curlNoise(particleBuffer[id.x].position) * 0.1;
 
+
+    if (particleBuffer[id.x].life < 0)
+    {
+		// http://www.reedbeta.com/blog/quick-and-easy-gpu-random-numbers-in-d3d11/
+        rng_state = id.x;
+        float f0 = float(rand_xorshift()) * (1.0 / 4294967296.0) - 0.5;
+        float f1 = float(rand_xorshift()) * (1.0 / 4294967296.0) - 0.5;
+        float f2 = float(rand_xorshift()) * (1.0 / 4294967296.0) - 0.5;
+        float3 normalF3 = normalize(float3(f0, f1, f2)) * 0.2f;
+        normalF3 *= float(rand_xorshift()) * (1.0 / 4294967296.0);
+        particleBuffer[id.x].position = float3(normalF3.x + emitterPos.x, normalF3.y + emitterPos.y, normalF3.z + 3.0);
+		// reset the life of this particle
+        particleBuffer[id.x].life = 5;
+		//particleBuffer[id.x].velocity = float3(0, 0, 0);
+    }
 
 }
