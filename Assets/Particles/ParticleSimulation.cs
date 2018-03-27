@@ -14,6 +14,18 @@ public class ParticleSimulation : MonoBehaviour {
     }
 
     /// <summary>
+    /// Material used to draw the Particle on screen.
+    /// </summary>
+    public Material material;
+
+    /// <summary>
+    /// Compute shader used to update the Particles.
+    /// </summary>
+    public ComputeShader computeShader;
+
+    public Transform emitterTransform;
+
+    /// <summary>
 	/// Size in octet of the Particle struct.
     /// since float = 4 bytes...
     /// 4 floats = 16 bytes
@@ -25,17 +37,6 @@ public class ParticleSimulation : MonoBehaviour {
     /// Number of Particle created in the system.
     /// </summary>
     private int particleCount = 1000000;
-
-    /// <summary>
-    /// Material used to draw the Particle on screen.
-    /// </summary>
-    public Material material;
-
-    /// <summary>
-    /// Compute shader used to update the Particles.
-    /// </summary>
-    public ComputeShader computeShader;
-
     /// <summary>
     /// Id of the kernel used.
     /// </summary>
@@ -119,11 +120,11 @@ public class ParticleSimulation : MonoBehaviour {
     // Update is called once per frame
     void Update() {
 
-        float[] mousePosition2D = { cursorPos.x, cursorPos.y };
+        float[] emitterPosition = { emitterTransform.position.x, emitterTransform.position.y, emitterTransform.position.z };
 
         // Send datas to the compute shader
         computeShader.SetFloat("deltaTime", Time.deltaTime);
-        computeShader.SetFloats("emitterPos", mousePosition2D);
+        computeShader.SetFloats("emitterPos", emitterPosition);
 
         // Update the Particles
         computeShader.Dispatch(mComputeShaderKernelID, mWarpCount, 1, 1);

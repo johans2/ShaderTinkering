@@ -15,7 +15,7 @@ RWStructuredBuffer<Particle> particleBuffer;
 
 // Variables set from the CPU
 float deltaTime;
-float2 emitterPos;
+float3 emitterPos;
 
 // A super fast way of generating random numbers. 
 uint rng_state;
@@ -82,7 +82,7 @@ void UpdateParticles (uint3 id : SV_DispatchThreadID)
         float f2 = float(rand_xorshift()) * (1.0 / 4294967296.0) - 0.5;
         float3 normalF3 = normalize(float3(f0, f1, f2)) * 0.2f;
         normalF3 *= float(rand_xorshift()) * (1.0 / 4294967296.0);
-        particleBuffer[id.x].position = float3(normalF3.x + emitterPos.x, normalF3.y + emitterPos.y, normalF3.z + 3.0);
+        particleBuffer[id.x].position = float3(normalF3.x + emitterPos.x, normalF3.y + emitterPos.y, normalF3.z + emitterPos.z);
 		// reset the life of this particle
         particleBuffer[id.x].life = 3;
 		//particleBuffer[id.x].velocity = float3(0, 0, 0);
