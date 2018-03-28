@@ -8,10 +8,11 @@
 		Pass {
 			Tags {"Queue" = "Transparent" "RenderType" = "Transparent" }
 			LOD 200
-			//Blend SrcAlpha one
+			Cull off
+			ZWrite off
+		
 			Blend SrcAlpha OneMinusSrcAlpha
-		//Blend One One
-		//Blend One OneMinusSrcAlpha
+		
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma geometry geom
