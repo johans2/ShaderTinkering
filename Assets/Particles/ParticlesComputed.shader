@@ -12,7 +12,11 @@
 			ZWrite off
 		
 			Blend SrcAlpha OneMinusSrcAlpha
-		
+			
+			BlendOp Add
+
+
+			//Blend SrcAlpha One
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma geometry geom
@@ -70,7 +74,7 @@
 
 				g2f OUT;
 
-				float pSize = 0.02;
+				float pSize = 0.015;
 
 				float3 v0 = IN[0].position - float4(0, pSize, 0,0);
 				float3 v1 = IN[0].position + float4(0, pSize, 0,0);
