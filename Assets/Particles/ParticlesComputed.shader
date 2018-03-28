@@ -1,14 +1,17 @@
 ﻿Shader "Custom/ParticlesComputed" {
 	Properties {
 		_ParticleSize("ParticleSize", Float) = 0.01
+		_MainTex("Particle texture", 2D) = "white" {}
 	}
 
 	SubShader {
 		Pass {
-			Tags { "RenderType" = "Opaque" }
+			Tags {"Queue" = "Transparent" "RenderType" = "Transparent" }
 			LOD 200
-			Blend SrcAlpha one
-
+			//Blend SrcAlpha one
+			Blend SrcAlpha OneMinusSrcAlpha
+		//Blend One One
+		//Blend One OneMinusSrcAlpha
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma geometry geom
@@ -39,6 +42,9 @@
 				float4 color: COLOR;
 			};
 
+			half _ParticleSize;
+			sampler2D _MainTex;
+			
 			// particles' data
 			StructuredBuffer<Particle> particleBuffer;
 
@@ -52,28 +58,56 @@
 				float lerpVal = life * 0.25f;
 				o.color = fixed4(1.0f - lerpVal + 0.1, lerpVal + 0.1, 1.0f, lerpVal);
 
-				// Position
-				o.position = UnityObjectToClipPos(float4(particleBuffer[instance_id].position, 1.0f));
+				// Position in worldspace
+				o.position = float4(particleBuffer[instance_id].position, 1.0f);
 
 				return o;
 			}
 			
-			[maxvertexcount(1)]
-			void geom(point v2g IN[1], inout PointStream<g2f> triStream) {
+			[maxvertexcount(4)]
+			void geom(point v2g IN[1], inout TriangleStream<g2f> triStream) {
 
 				g2f OUT;
-				OUT.pos = IN[0].position;
-				OUT.norm = float3(1, 1, 1);
-				OUT.uv = float2(0.5, 0.5);
-				OUT.color = IN[0].color;
 
+				float pSize = 0.02;
+
+				float3 v0 = IN[0].position - float4(0, pSize, 0,0);
+				float3 v1 = IN[0].position + float4(0, pSize, 0,0);
+				float3 quadOffset = float3(1, 0, 0) * pSize;
+				// 1
+				OUT.pos = UnityObjectToClipPos(v1 + quadOffset);
+				OUT.norm = float3(0,1,0);
+				OUT.uv = float2(1, 1);
+				OUT.color = IN[0].color;
 				triStream.Append(OUT);
 
+				// 2
+				OUT.pos = UnityObjectToClipPos(v0 + quadOffset);
+				OUT.norm = float3(0, 1, 0);
+				OUT.uv = float2(1, 0);
+				triStream.Append(OUT);
+
+				// 3
+				OUT.pos = UnityObjectToClipPos(v1 - quadOffset);
+				OUT.norm = float3(0, 1, 0);;
+				OUT.uv = float2(0, 1);
+				triStream.Append(OUT);
+
+				// 4
+				OUT.pos = UnityObjectToClipPos(v0 - quadOffset);
+				OUT.norm = float3(0, 1, 0);;
+				OUT.uv = float2(0, 0);
+				triStream.Append(OUT);
+
+				
 			}
 			
-			float4 frag(g2f i) : COLOR
+			float4 frag(g2f IN) : COLOR
 			{
-				return i.color;
+				float4 c = tex2D(_MainTex, IN.uv) * IN.color;
+				clip(c.a - 0.1);
+
+				return c;
 			}
 
 			ENDCG
