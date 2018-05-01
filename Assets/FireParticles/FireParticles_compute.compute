@@ -11,20 +11,26 @@ struct Particle
     float life;
 };
 
-struct MeshVertice
+struct MeshTriangle
 {
-    float3 pos;
+    float3 vert1;
+    float3 vert2;
+    float3 vert3;
 };
 
 
-StructuredBuffer<MeshVertice> meshBuffer;
+StructuredBuffer<MeshTriangle> meshBuffer;
 RWStructuredBuffer<Particle> particleBuffer;
 
 // Variables set from the CPU
 float deltaTime;
+float elapsedTime;
 float3 emitterPos;
+float randSeed;
 
-float numVertices;
+int numVertices;
+
+const float uintMax = 4294967296.0;
 
 // A super fast way of generating random numbers. 
 uint rng_state;
@@ -73,6 +79,31 @@ float3 curlNoise(float3 p)
 
 }
 
+float3 GetRandomPointOnTriangle(MeshTriangle tri, uint rngState)
+{
+    rng_state = rngState;
+
+    // Get a random float position on one side of the triangle
+    float rng01 = float(rand_xorshift() * (1.0 / 4294967296.0));
+    float3 sideA = lerp(tri.vert1, tri.vert3, rng01);
+
+    // Update the random state
+    rng_state += 11;
+
+    // Get a random float position on the other side of the triangle
+    rng01 = float(rand_xorshift() * (1.0 / 4294967296.0));
+    float3 sideB = lerp(tri.vert2, tri.vert3, rng01);
+
+    // Update the random state
+    rng_state += 23;
+    
+    // Get the final random position between the two above calculated ones.
+    rng01 = float(rand_xorshift() * (1.0 / 4294967296.0));
+    float3 finalPoint = lerp(sideA, sideB, rng01);
+
+    return finalPoint;
+}
+
 [numthreads(256, 1, 1)]
 void UpdateParticles(uint3 id : SV_DispatchThreadID)
 {
@@ -87,17 +118,12 @@ void UpdateParticles(uint3 id : SV_DispatchThreadID)
 
 
 		// http://www.reedbeta.com/blog/quick-and-easy-gpu-random-numbers-in-d3d11/
-        rng_state = id.x;
-        float f0 = float(rand_xorshift()) * (1.0 / 4294967296.0) - 0.5;
-        float f1 = float(rand_xorshift()) * (1.0 / 4294967296.0) - 0.5;
-        float f2 = float(rand_xorshift()) * (1.0 / 4294967296.0) - 0.5;
-        float3 normalF3 = normalize(float3(f0, f1, f2)) * 0.2f;
-        normalF3 *= float(rand_xorshift()) * (1.0 / 4294967296.0);
+        rng_state = id.x + elapsedTime;
         
-        // TODO: Set this position as a random one from the mesh we will pass in.
-        MeshVertice vert = meshBuffer[rand_xorshift() % numVertices];
+        uint randomIndex = float(rand_xorshift()) * (1.0 / 4294967296.0) * float(numVertices);
+        MeshTriangle tri = meshBuffer[randomIndex % numVertices];
         
-        particleBuffer[id.x].position = vert.pos + emitterPos; //        float3(startPos.x + emitterPos.x, startPos.y + emitterPos.y, startPos.z + emitterPos.z);
+        particleBuffer[id.x].position = GetRandomPointOnTriangle(tri, rng_state) + emitterPos; //        float3(startPos.x + emitterPos.x, startPos.y + emitterPos.y, startPos.z + emitterPos.z);
 		// reset the life of this particle
         particleBuffer[id.x].life = 3;
 		//particleBuffer[id.x].velocity = float3(0, 0, 0);

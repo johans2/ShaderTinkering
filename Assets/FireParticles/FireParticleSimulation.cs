@@ -15,16 +15,18 @@ public class FireParticleSimulation : MonoBehaviour
         public float life;
     }
 
-    struct MeshVertice
+    struct MeshTriangle
     {
-        public Vector3 pos;
+        public Vector3 vert1;
+        public Vector3 vert2;
+        public Vector3 vert3;
     }
 
 
     public MeshFilter meshFilter;
     public Transform emitterTrans;
     List<Vector3> verts = new List<Vector3>();
-
+    ComputeBuffer meshBuffer;
 
     /// <summary>
     /// Material used to draw the Particle on screen.
@@ -69,15 +71,11 @@ public class FireParticleSimulation : MonoBehaviour
     /// Number of warp needed.
     /// </summary>
     private int mWarpCount; // TODO?
-
-    //public ComputeShader shader;
-
+    
     // Use this for initialization
     void Start()
     {
-
         
-
         InitComputeShader();
 
     }
@@ -118,13 +116,13 @@ public class FireParticleSimulation : MonoBehaviour
 
 
         // Get the mesh buffer into the compute shader
-        MeshVertice[] meshVerts = GetMeshVertices();
+        MeshTriangle[] meshVerts = GetMeshTriangles();
 
-        ComputeBuffer meshBuffer = new ComputeBuffer(meshVerts.Length, 12);
+        meshBuffer = new ComputeBuffer(meshVerts.Length, 36);
 
         meshBuffer.SetData(meshVerts);
         computeShader.SetBuffer(mComputeShaderKernelID, "meshBuffer", meshBuffer);
-        computeShader.SetFloat("numVertices", meshVerts.Length);
+        computeShader.SetInt("numVertices", meshVerts.Length);
 
         // create compute buffer
         particleBuffer = new ComputeBuffer(particleCount, SIZE_PARTICLE);
@@ -147,6 +145,8 @@ public class FireParticleSimulation : MonoBehaviour
     {
         if (particleBuffer != null)
             particleBuffer.Release();
+        if (meshBuffer != null)
+            meshBuffer.Release();
     }
     
     void Update()
@@ -156,18 +156,43 @@ public class FireParticleSimulation : MonoBehaviour
 
         // Send datas to the compute shader
         computeShader.SetFloat("deltaTime", Time.deltaTime);
+        computeShader.SetFloat("elapsedTime", ((int)(Time.timeSinceLevelLoad * 1000f) % int.MaxValue));
         computeShader.SetFloats("emitterPos", emitterPosition);
+        computeShader.SetFloat("randSeed", Random.Range(0.0f, verts.Count));
+
+        Debug.Log("random: " + Random.Range(0.0f, verts.Count));
 
         // Update the Particles
         computeShader.Dispatch(mComputeShaderKernelID, mWarpCount, 1, 1);
     }
     
-    private MeshVertice[] GetMeshVertices() {
+    private MeshTriangle[] GetMeshTriangles() {
 
-        List<MeshVertice> meshVerts = new List<MeshVertice>();
+        List<MeshTriangle> triangles = new List<MeshTriangle>();
+
 
         meshFilter.mesh.GetVertices(verts);
 
+
+        int[] triangelIndices = meshFilter.mesh.GetTriangles(0);
+        Debug.Log("tris: " + triangelIndices.Length);
+        Debug.Log("verts: " + verts.Count);
+        
+        for (int i = 0; i < triangelIndices.Length; i += 3)
+        {
+            MeshTriangle triangle = new MeshTriangle
+            {
+                vert1 = verts[triangelIndices[i]],
+                vert2 = verts[triangelIndices[i + 1]],
+                vert3 = verts[triangelIndices[i + 2]]
+            };
+
+            triangles.Add(triangle);
+        }
+
+        Debug.Log(triangles.Count + " triangels added.");
+
+        /*
         for (int i = 0; i < verts.Count; i++)
         {
             Vector3 pos = verts[i];
@@ -182,12 +207,12 @@ public class FireParticleSimulation : MonoBehaviour
 
 
             // All the vert positions are now in the verts list
-            MeshVertice vert = new MeshVertice { pos = pos };
+            MeshTriangle vert = new MeshVertice { pos = pos };
             meshVerts.Add(vert);
 
-        }
+        }*/
 
-        return meshVerts.ToArray();
+        return triangles.ToArray();
 
     }
 
@@ -206,7 +231,7 @@ public class FireParticleSimulation : MonoBehaviour
 
 
 
-            Gizmos.DrawSphere(pos, .1f);
+            //Gizmos.DrawSphere(pos, .1f);
 
         }
 

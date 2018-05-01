@@ -81,26 +81,26 @@
 				float3 quadOffset = float3(1, 0, 0) * pSize;
 				// 1
 				OUT.pos = UnityObjectToClipPos(v1 + quadOffset);
-				OUT.norm = float3(0,1,0);
+				OUT.norm = float3(1,0,0);
 				OUT.uv = float2(1, 1);
 				OUT.color = IN[0].color;
 				triStream.Append(OUT);
 
 				// 2
 				OUT.pos = UnityObjectToClipPos(v0 + quadOffset);
-				OUT.norm = float3(0, 1, 0);
+				OUT.norm = float3(1, 0, 0);
 				OUT.uv = float2(1, 0);
 				triStream.Append(OUT);
 
 				// 3
 				OUT.pos = UnityObjectToClipPos(v1 - quadOffset);
-				OUT.norm = float3(0, 1, 0);;
+				OUT.norm = float3(1,0, 0);;
 				OUT.uv = float2(0, 1);
 				triStream.Append(OUT);
 
 				// 4
 				OUT.pos = UnityObjectToClipPos(v0 - quadOffset);
-				OUT.norm = float3(0, 1, 0);;
+				OUT.norm = float3(1,0, 0);;
 				OUT.uv = float2(0, 0);
 				triStream.Append(OUT);
 

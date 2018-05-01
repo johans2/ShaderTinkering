@@ -76,10 +76,10 @@ void UpdateParticles (uint3 id : SV_DispatchThreadID)
     if (particleBuffer[id.x].life < 0)
     {
 		// http://www.reedbeta.com/blog/quick-and-easy-gpu-random-numbers-in-d3d11/
-        rng_state = id.x;
+        rng_state = id.x;                        //4294967295 max uint
         float f0 = float(rand_xorshift()) * (1.0 / 4294967296.0) - 0.5;
         float f1 = float(rand_xorshift()) * (1.0 / 4294967296.0) - 0.5;
-        float f2 = float(rand_xorshift()) * (1.0 / 4294967296.0) - 0.5;
+        float f2 = float(rand_xorshift()) * (1.0 / 4294967296.0) - 0.5; // -0.5 gives a range getween -0.5 and 0.5
         float3 normalF3 = normalize(float3(f0, f1, f2)) * 0.5f;
         normalF3 *= float(rand_xorshift()) * (1.0 / 4294967296.0);
         particleBuffer[id.x].position = float3(normalF3.x + emitterPos.x, normalF3.y + emitterPos.y, normalF3.z + emitterPos.z);
