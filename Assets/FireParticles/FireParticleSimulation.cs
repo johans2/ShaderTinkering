@@ -166,8 +166,6 @@ public class FireParticleSimulation : MonoBehaviour
         computeShader.SetFloats("emitterPos", emitterPosition);
         computeShader.SetFloat("randSeed", Random.Range(0.0f, verts.Count));
         
-        Debug.Log("random: " + Random.Range(0.0f, verts.Count));
-
         // Update the Particles
         computeShader.Dispatch(mComputeShaderKernelID, mWarpCount, 1, 1);
     }
