@@ -224,6 +224,7 @@ MonoBehaviour:
   meshFilter: {fileID: 336962300}
   emitterTrans: {fileID: 336962301}
   curlE: 0.1
+  curlMultiplier: 0.05
   material: {fileID: 2100000, guid: c596b2424f6db0d4e8bd4df53006961a, type: 2}
   computeShader: {fileID: 7200000, guid: 9ac023cbf14a5964fa4c5d1555353e57, type: 3}
   emitterTransform: {fileID: 336962301}
@@ -233,7 +234,7 @@ MeshRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 336962297}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -267,7 +268,7 @@ MeshFilter:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 336962297}
-  m_Mesh: {fileID: 4300000, guid: 38aa1a80e986d06438401a7faab331a3, type: 3}
+  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!4 &336962301
 Transform:
   m_ObjectHideFlags: 0
