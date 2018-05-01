@@ -118,7 +118,7 @@ void UpdateParticles(uint3 id : SV_DispatchThreadID)
 
 
 		// http://www.reedbeta.com/blog/quick-and-easy-gpu-random-numbers-in-d3d11/
-        rng_state = id.x + elapsedTime;
+        rng_state = id.x + randSeed;
         
         uint randomIndex = float(rand_xorshift()) * (1.0 / 4294967296.0) * float(numVertices);
         MeshTriangle tri = meshBuffer[randomIndex % numVertices];
