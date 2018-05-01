@@ -4,9 +4,7 @@ using UnityEngine;
 
 public class FireParticleSimulation : MonoBehaviour
 {
-
-    private Vector2 cursorPos;
-
+    
     // struct
     struct Particle
     {
@@ -27,6 +25,9 @@ public class FireParticleSimulation : MonoBehaviour
     public Transform emitterTrans;
     List<Vector3> verts = new List<Vector3>();
     ComputeBuffer meshBuffer;
+
+    [Range(0.001f,1f)]
+    public float curlE = 0.1f;
 
     /// <summary>
     /// Material used to draw the Particle on screen.
@@ -156,7 +157,7 @@ public class FireParticleSimulation : MonoBehaviour
 
         // Send datas to the compute shader
         computeShader.SetFloat("deltaTime", Time.deltaTime);
-        computeShader.SetFloat("elapsedTime", ((int)(Time.timeSinceLevelLoad * 1000f) % int.MaxValue));
+        computeShader.SetFloat("curlE", curlE);
         computeShader.SetFloats("emitterPos", emitterPosition);
         computeShader.SetFloat("randSeed", Random.Range(0.0f, verts.Count));
 
@@ -192,25 +193,6 @@ public class FireParticleSimulation : MonoBehaviour
 
         Debug.Log(triangles.Count + " triangels added.");
 
-        /*
-        for (int i = 0; i < verts.Count; i++)
-        {
-            Vector3 pos = verts[i];
-            pos.x *= emitterTrans.localScale.x;
-            pos.y *= emitterTrans.localScale.y;
-            pos.z *= emitterTrans.localScale.z;
-
-            pos += emitterTrans.position;
-
-
-            // Rotation?
-
-
-            // All the vert positions are now in the verts list
-            MeshTriangle vert = new MeshVertice { pos = pos };
-            meshVerts.Add(vert);
-
-        }*/
 
         return triangles.ToArray();
 
