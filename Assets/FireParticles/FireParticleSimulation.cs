@@ -29,6 +29,10 @@ public class FireParticleSimulation : MonoBehaviour
     [Range(0.001f,1f)]
     public float curlE = 0.1f;
 
+    [Range(0.001f, 0.3f)]
+    public float curlMultiplier = 0.05f;
+
+
     /// <summary>
     /// Material used to draw the Particle on screen.
     /// </summary>
@@ -158,9 +162,10 @@ public class FireParticleSimulation : MonoBehaviour
         // Send datas to the compute shader
         computeShader.SetFloat("deltaTime", Time.deltaTime);
         computeShader.SetFloat("curlE", curlE);
+        computeShader.SetFloat("curlMultiplier", curlMultiplier);
         computeShader.SetFloats("emitterPos", emitterPosition);
         computeShader.SetFloat("randSeed", Random.Range(0.0f, verts.Count));
-
+        
         Debug.Log("random: " + Random.Range(0.0f, verts.Count));
 
         // Update the Particles

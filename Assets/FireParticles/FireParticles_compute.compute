@@ -25,6 +25,7 @@ RWStructuredBuffer<Particle> particleBuffer;
 // Variables set from the CPU
 float deltaTime;
 float curlE;
+float curlMultiplier;
 float3 emitterPos;
 float randSeed;
 
@@ -120,7 +121,7 @@ void UpdateParticles(uint3 id : SV_DispatchThreadID)
     
 	// subtract the life based on deltaTime
     particleBuffer[id.x].life -= deltaTime;
-    particleBuffer[id.x].position += curlNoise(particleBuffer[id.x].position, curlE) * 0.05 + float3(0, 0.025, 0);
+    particleBuffer[id.x].position += curlNoise(particleBuffer[id.x].position, curlE) * curlMultiplier + float3(0, 0.025, 0);
 
 
     if (particleBuffer[id.x].life < 0)
@@ -135,7 +136,7 @@ void UpdateParticles(uint3 id : SV_DispatchThreadID)
         
         particleBuffer[id.x].position = GetRandomPointOnTriangle(tri, rng_state) + emitterPos; //        float3(startPos.x + emitterPos.x, startPos.y + emitterPos.y, startPos.z + emitterPos.z);
 		// reset the life of this particle
-        particleBuffer[id.x].life = lerp(3, 5, float(wang_hash(id.x) * (1.0 / 4294967296.0)));
+        particleBuffer[id.x].life = lerp(2, 6, float(wang_hash(id.x) * (1.0 / 4294967296.0)));
 		//particleBuffer[id.x].velocity = float3(0, 0, 0);
     }
 
