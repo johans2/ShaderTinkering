@@ -4,6 +4,7 @@
 		_MainTex("Particle texture", 2D) = "white" {}
 		_ColorRampTex("Color ramp texture", 2D) = "white" {}
 		_ParticleMaxLife("Particle max life", Float) = 5.0
+		_TotalSmokeDistance("Particle total smoke distance", Float) = 5.0
 	}
 
 		SubShader{
@@ -29,10 +30,11 @@
 		// Use shader model 5.0 target, to be able to use buffers
 #pragma target 5.0
 
-		struct Particle {
+	struct Particle {
 		float3 position;
 		float3 velocity;
 		float life;
+		float3 startPos;
 	};
 
 	struct v2g {
@@ -51,6 +53,7 @@
 
 	half _ParticleSize;
 	half _ParticleMaxLife;
+	half _TotalSmokeDistance;
 	sampler2D _MainTex;
 	sampler2D _ColorRampTex;
 
@@ -63,14 +66,16 @@
 		v2g o = (v2g)0;
 
 		// Color
-		float life = particleBuffer[instance_id].life;
-		float lerpVal = life * 0.25f;
-		float colorLookupValue = (_ParticleMaxLife - life) / _ParticleMaxLife;
+		float3 pos = particleBuffer[instance_id].position;
+		float3 startPos = particleBuffer[instance_id].startPos;
 
-		float4 lookupUV = float4(colorLookupValue, 0,0,0);
-		float4 color = tex2Dlod(_ColorRampTex, lookupUV);
+		// Use this to sample the texture;
+		float distance = length(pos - startPos);
+		float colorLookup = clamp(clamp(distance, 0, _TotalSmokeDistance) / _TotalSmokeDistance, 0.0,1.0) - 0.01;
 
-		o.color = color;//fixed4(1.0f - lerpVal + 0.1, lerpVal + 0.1, 1.0f, lerpVal);
+		float4 color = tex2Dlod(_ColorRampTex, float4(colorLookup, 0, 0, 0));
+
+		o.color = color;
 
 		// Position in worldspace
 		o.position = float4(particleBuffer[instance_id].position, 1.0f);

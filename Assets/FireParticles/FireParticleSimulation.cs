@@ -10,6 +10,7 @@ public class FireParticleSimulation : MonoBehaviour
         public Vector3 position;
         public Vector3 velocity;
         public float life;
+        public Vector3 startPos;
     }
 
     struct MeshTriangle
@@ -53,7 +54,7 @@ public class FireParticleSimulation : MonoBehaviour
     /// 4 floats = 16 bytes
 	/// </summary>
 	//private const int SIZE_PARTICLE = 24;
-    private const int SIZE_PARTICLE = 28; // since property "life" is added...
+    private const int SIZE_PARTICLE = 40; // since property "life" is added...
 
     /// <summary>
     /// Number of Particle created in the system.

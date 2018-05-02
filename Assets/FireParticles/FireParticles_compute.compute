@@ -9,6 +9,7 @@ struct Particle
     float3 position;
     float3 velocity;
     float life;
+	float3 startPos;
 };
 
 struct MeshTriangle
@@ -129,16 +130,21 @@ void UpdateParticles(uint3 id : SV_DispatchThreadID)
     if (particleBuffer[id.x].life < 0)
     {
 
-
 		// http://www.reedbeta.com/blog/quick-and-easy-gpu-random-numbers-in-d3d11/
         rng_state = id.x + randSeed;
         
         uint randomIndex = float(wang_hash(rng_state)) * (1.0 / 4294967296.0) * float(numVertices);
         MeshTriangle tri = meshBuffer[randomIndex % numVertices];
         
-        particleBuffer[id.x].position = GetRandomPointOnTriangle(tri, rng_state) + emitterPos; //        float3(startPos.x + emitterPos.x, startPos.y + emitterPos.y, startPos.z + emitterPos.z);
+		// Set the new position
+        particleBuffer[id.x].position = GetRandomPointOnTriangle(tri, rng_state) + emitterPos; 
+		
+		// Set the starting position
+		particleBuffer[id.x].startPos = particleBuffer[id.x].position;
+		
 		// reset the life of this particle
         particleBuffer[id.x].life = lerp(particleMinLife, particleMaxLife, float(wang_hash(id.x) * (1.0 / 4294967296.0)));
+
     }
 
 }
