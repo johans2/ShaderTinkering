@@ -30,6 +30,7 @@ float curlMultiplier;
 float particleMinLife;
 float particleMaxLife;
 float3 emitterPos;
+float3 emitterScale;
 float randSeed;
 
 int numVertices;
@@ -139,7 +140,7 @@ void UpdateParticles(uint3 id : SV_DispatchThreadID)
         MeshTriangle tri = meshBuffer[randomIndex % numVertices];
         
 		// Set the new position
-        particleBuffer[id.x].position = GetRandomPointOnTriangle(tri, rng_state) + emitterPos; 
+        particleBuffer[id.x].position = GetRandomPointOnTriangle(tri, rng_state) * emitterScale + emitterPos;
 		
 		// Set the starting position
 		particleBuffer[id.x].startPos = particleBuffer[id.x].position;

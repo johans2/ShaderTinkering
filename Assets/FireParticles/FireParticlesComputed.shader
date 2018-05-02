@@ -92,7 +92,6 @@
 
 				float3 v0 = IN[0].position - float4(0, pSize, 0,0);
 				float3 v1 = IN[0].position + float4(0, pSize, 0,0);
-				float3 quadOffset = float3(1, 0, 0) * pSize;
 		
 				float3 camToPos = IN[0].position - _WorldSpaceCameraPos;
 		

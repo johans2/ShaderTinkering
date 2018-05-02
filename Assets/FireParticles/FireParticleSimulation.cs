@@ -165,12 +165,13 @@ public class FireParticleSimulation : MonoBehaviour
 
 
         float[] emitterPosition = { emitterTransform.position.x, emitterTransform.position.y, emitterTransform.position.z };
-
+        float[] emitterScale = { emitterTransform.localScale.x, emitterTransform.localScale.y, emitterTransform.localScale.z };
         // Send datas to the compute shader
         computeShader.SetFloat("deltaTime", Time.deltaTime);
         computeShader.SetFloat("curlE", curlE);
         computeShader.SetFloat("curlMultiplier", curlMultiplier);
         computeShader.SetFloats("emitterPos", emitterPosition);
+        computeShader.SetFloats("emitterScale", emitterScale);
         computeShader.SetFloat("randSeed", Random.Range(0.0f, verts.Count));
         
         // Update the Particles
