@@ -93,27 +93,34 @@
 		float3 v0 = IN[0].position - float4(0, pSize, 0,0);
 		float3 v1 = IN[0].position + float4(0, pSize, 0,0);
 		float3 quadOffset = float3(1, 0, 0) * pSize;
+		
+		float3 camToPos = IN[0].position - _WorldSpaceCameraPos;
+		
+		float3 perpVector = normalize(cross(camToPos, float3(0, 1, 0))) * pSize;
+
+
+
 		// 1
-		OUT.pos = UnityObjectToClipPos(v1 + quadOffset);
+		OUT.pos = UnityObjectToClipPos(v1 + perpVector);
 		OUT.norm = float3(1,0,0);
 		OUT.uv = float2(1, 1);
 		OUT.color = IN[0].color;
 		triStream.Append(OUT);
 
 		// 2
-		OUT.pos = UnityObjectToClipPos(v0 + quadOffset);
+		OUT.pos = UnityObjectToClipPos(v0 + perpVector);
 		OUT.norm = float3(1, 0, 0);
 		OUT.uv = float2(1, 0);
 		triStream.Append(OUT);
 
 		// 3
-		OUT.pos = UnityObjectToClipPos(v1 - quadOffset);
+		OUT.pos = UnityObjectToClipPos(v1 - perpVector);
 		OUT.norm = float3(1,0, 0);;
 		OUT.uv = float2(0, 1);
 		triStream.Append(OUT);
 
 		// 4
-		OUT.pos = UnityObjectToClipPos(v0 - quadOffset);
+		OUT.pos = UnityObjectToClipPos(v0 - perpVector);
 		OUT.norm = float3(1,0, 0);;
 		OUT.uv = float2(0, 0);
 		triStream.Append(OUT);
