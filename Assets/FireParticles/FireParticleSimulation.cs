@@ -63,7 +63,7 @@ public class FireParticleSimulation : MonoBehaviour
     /// <summary>
     /// Number of Particle created in the system.
     /// </summary>
-    private int particleCount = 1000000;
+    private int particleCount = 2000000;
     /// <summary>
     /// Id of the kernel used.
     /// </summary>
