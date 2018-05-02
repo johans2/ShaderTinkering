@@ -31,6 +31,9 @@ public class FireParticleSimulation : MonoBehaviour
     [Range(0.001f, 0.3f)]
     public float curlMultiplier = 0.05f;
 
+    public float particleMaxLife = 6.0f;
+
+    public float particleMinLife = 2.0f;
 
     /// <summary>
     /// Material used to draw the Particle on screen.
@@ -127,7 +130,8 @@ public class FireParticleSimulation : MonoBehaviour
         meshBuffer.SetData(meshVerts);
         computeShader.SetBuffer(mComputeShaderKernelID, "meshBuffer", meshBuffer);
         computeShader.SetInt("numVertices", meshVerts.Length);
-
+        computeShader.SetFloat("particleMinLife", particleMinLife);
+        computeShader.SetFloat("particleMaxLife", particleMaxLife);
         // create compute buffer
         particleBuffer = new ComputeBuffer(particleCount, SIZE_PARTICLE);
         
@@ -137,6 +141,8 @@ public class FireParticleSimulation : MonoBehaviour
         // bind the compute buffer to the shader and the compute shader
         computeShader.SetBuffer(mComputeShaderKernelID, "particleBuffer", particleBuffer);
         material.SetBuffer("particleBuffer", particleBuffer);
+        material.SetFloat("_ParticleMaxLife", particleMaxLife);
+        
     }
     
     void OnRenderObject()
