@@ -124,7 +124,9 @@ void UpdateParticles(uint3 id : SV_DispatchThreadID)
     
 	// subtract the life based on deltaTime
     particleBuffer[id.x].life -= deltaTime;
-    particleBuffer[id.x].position += curlNoise(particleBuffer[id.x].position, curlE) * curlMultiplier + float3(0, 0.025, 0);
+    
+	// Update the position by curling it
+	particleBuffer[id.x].position += curlNoise(particleBuffer[id.x].position, curlE) * curlMultiplier + float3(0, 0.025, 0);
 
 
     if (particleBuffer[id.x].life < 0)

@@ -36,6 +36,10 @@ public class FireParticleSimulation : MonoBehaviour
 
     public float particleMinLife = 2.0f;
 
+    public float curlEmin = 0.1f;
+    public float curlEmax = 0.3f;
+    public float curlESpeed = 1f;
+
     /// <summary>
     /// Material used to draw the Particle on screen.
     /// </summary>
@@ -79,7 +83,9 @@ public class FireParticleSimulation : MonoBehaviour
     /// Number of warp needed.
     /// </summary>
     private int mWarpCount; // TODO?
-    
+
+    private const float away = 99999999.0f;
+
     // Use this for initialization
     void Start()
     {
@@ -88,6 +94,9 @@ public class FireParticleSimulation : MonoBehaviour
 
     }
 
+    void UpdateCurlE() {
+        curlE = Mathf.Lerp(curlEmin, curlEmax, Mathf.Sin(Time.timeSinceLevelLoad * curlESpeed) / 2.0f + 0.5f);
+    }
 
     void InitComputeShader()
     {
@@ -98,18 +107,9 @@ public class FireParticleSimulation : MonoBehaviour
 
         for (int i = 0; i < particleCount; i++)
         {
-            float x = Random.value * 2 - 1.0f;
-            float y = Random.value * 2 - 1.0f;
-            float z = Random.value * 2 - 1.0f;
-            Vector3 xyz = new Vector3(x, y, z);
-            xyz.Normalize();
-            xyz *= Random.value;
-            xyz *= 0.5f;
-
-
-            particleArray[i].position.x = xyz.x;
-            particleArray[i].position.y = xyz.y;
-            particleArray[i].position.z = xyz.z + 3;
+            particleArray[i].position.x = away;
+            particleArray[i].position.y = away;
+            particleArray[i].position.z = away;
 
             particleArray[i].velocity.x = 0;
             particleArray[i].velocity.y = 0;
@@ -125,11 +125,10 @@ public class FireParticleSimulation : MonoBehaviour
 
         // Get the mesh buffer into the compute shader
         MeshTriangle[] meshVerts = GetMeshTriangles();
-
         meshBuffer = new ComputeBuffer(meshVerts.Length, 36);
-
         meshBuffer.SetData(meshVerts);
         computeShader.SetBuffer(mComputeShaderKernelID, "meshBuffer", meshBuffer);
+
         computeShader.SetInt("numVertices", meshVerts.Length);
         computeShader.SetFloat("particleMinLife", particleMinLife);
         computeShader.SetFloat("particleMaxLife", particleMaxLife);
@@ -162,6 +161,8 @@ public class FireParticleSimulation : MonoBehaviour
     
     void Update()
     {
+        UpdateCurlE();
+
 
         float[] emitterPosition = { emitterTransform.position.x, emitterTransform.position.y, emitterTransform.position.z };
 
