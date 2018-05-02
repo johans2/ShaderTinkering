@@ -5,7 +5,6 @@ using UnityEngine;
 public class FireParticleSimulation : MonoBehaviour
 {
     
-    // struct
     struct Particle
     {
         public Vector3 position;
