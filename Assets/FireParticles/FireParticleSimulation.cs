@@ -40,6 +40,9 @@ public class FireParticleSimulation : MonoBehaviour
     public float curlEmax = 0.3f;
     public float curlESpeed = 1f;
 
+    public float sizeByLifeMin = 0.015f;
+    public float sizeByLifeMax = 0.03f;
+
     /// <summary>
     /// Material used to draw the Particle on screen.
     /// </summary>
@@ -51,7 +54,7 @@ public class FireParticleSimulation : MonoBehaviour
     public ComputeShader computeShader;
 
     public Transform emitterTransform;
-
+    
     /// <summary>
 	/// Size in octet of the Particle struct.
     /// since float = 4 bytes...
@@ -141,8 +144,10 @@ public class FireParticleSimulation : MonoBehaviour
         // bind the compute buffer to the shader and the compute shader
         computeShader.SetBuffer(mComputeShaderKernelID, "particleBuffer", particleBuffer);
         material.SetBuffer("particleBuffer", particleBuffer);
-        material.SetFloat("_ParticleMaxLife", particleMaxLife);
+        material.SetFloat("_SizeByLifeMin", sizeByLifeMin);
+        material.SetFloat("_SizeByLifeMax", sizeByLifeMax);
         
+
     }
     
     void OnRenderObject()
@@ -173,7 +178,10 @@ public class FireParticleSimulation : MonoBehaviour
         computeShader.SetFloats("emitterPos", emitterPosition);
         computeShader.SetFloats("emitterScale", emitterScale);
         computeShader.SetFloat("randSeed", Random.Range(0.0f, verts.Count));
-        
+
+        material.SetFloat("_SizeByLifeMin", sizeByLifeMin);
+        material.SetFloat("_SizeByLifeMax", sizeByLifeMax);
+
         // Update the Particles
         computeShader.Dispatch(mComputeShaderKernelID, mWarpCount, 1, 1);
     }

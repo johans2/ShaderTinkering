@@ -3,8 +3,9 @@
 		_ParticleSize("ParticleSize", Float) = 0.01
 		_MainTex("Particle texture", 2D) = "white" {}
 		_ColorRampTex("Color ramp texture", 2D) = "white" {}
-		_ParticleMaxLife("Particle max life", Float) = 5.0
 		_TotalSmokeDistance("Particle total smoke distance", Float) = 5.0
+		_SizeByLifeMin("Size by life min",  Float) = 0.015
+		_SizeByLifeMax("Size by life min",  Float) = 0.03
 	}
 
 	SubShader {
@@ -40,7 +41,7 @@
 			struct v2g {
 				float4 position : SV_POSITION;
 				float4 color : COLOR;
-				//float life : LIFE;
+				float distance : DISTANCE;
 			};
 
 
@@ -52,8 +53,9 @@
 			};
 
 			half _ParticleSize;
-			half _ParticleMaxLife;
 			half _TotalSmokeDistance;
+			half _SizeByLifeMin;
+			half _SizeByLifeMax;
 			sampler2D _MainTex;
 			sampler2D _ColorRampTex;
 
@@ -63,7 +65,7 @@
 
 			v2g vert(uint vertex_id : SV_VertexID, uint instance_id : SV_InstanceID)
 			{
-				v2g o = (v2g)0;
+				v2g output = (v2g)0;
 
 				// Color
 				float3 pos = particleBuffer[instance_id].position;
@@ -75,12 +77,12 @@
 
 				float4 color = tex2Dlod(_ColorRampTex, float4(colorLookup, 0, 0, 0));
 
-				o.color = color;
-
+				output.color = color;
+				output.distance = distance;
 				// Position in worldspace
-				o.position = float4(particleBuffer[instance_id].position, 1.0f);
+				output.position = float4(particleBuffer[instance_id].position, 1.0f);
 
-				return o;
+				return output;
 			}
 
 			[maxvertexcount(4)]
@@ -88,8 +90,8 @@
 
 				g2f OUT;
 
-				float pSize = 0.015;
-
+				float pSize = lerp(_SizeByLifeMin, _SizeByLifeMax, saturate(IN[0].distance / _TotalSmokeDistance));//0.015;
+				
 				float3 v0 = IN[0].position - float4(0, pSize, 0,0);
 				float3 v1 = IN[0].position + float4(0, pSize, 0,0);
 		
@@ -130,7 +132,7 @@
 			float4 frag(g2f IN) : COLOR
 			{
 				float4 c = tex2D(_MainTex, IN.uv) * IN.color;
-				clip(c.a - 0.1);
+				//clip(c.a - 0.1);
 
 				return c;
 			}
