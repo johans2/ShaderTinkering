@@ -107,34 +107,34 @@ float3 RotateAroundX(float3 p, float angle) {
 							0, sin(angle), cos(angle)
 							);
 
-	return mul(p,m);
-	/*
-	float a = (PI / 180) * angle;
-
-	float3 pr = float3(
-		p.x, 
-		p.y*cos(a) - p.z*sin(a),
-		p.y*sin(a) + p.z*cos(a)
-		);
-	p = pr;*/
-}
-/*
-void RotateAroundY(inout float3 p, float angle) {
-	p = float3( 
-		p.x * cos(angle) + p.z* sin(angle), 
-		p.y, 
-		−p.x * sin(angle) + p.z* cos(angle) 
-		);
+	return mul(p, m);
 }
 
-void RotateAroundZ(inout float3 p, float angle) {
-	p = float3(
-		p.x*cos(angle) − p.y*sin(angle),
-		p.x*sin(angle) + p.y*cos(angle),
-		p.z
+float3 RotateAroundY(float3 p, float angle) {
+
+	angle = (3.14159265359 / 180.0) * -angle;
+
+	float3x3 m = float3x3(
+			cos(angle), 0, sin(angle),
+			0, 1, 0,
+			-sin(angle), 0, cos(angle)
 		);
+
+	return mul(p, m);
 }
-*/
+
+float3 RotateAroundZ(float3 p, float angle) {
+	angle = (3.14159265359 / 180.0) * -angle;
+
+	float3x3 m = float3x3(
+		cos(angle), -sin(angle), 0,
+		sin(angle), cos(angle), 0,
+		0, 0, 1
+		);
+
+	return mul(p, m);
+}
+
 float3 GetRandomPointOnTriangle(MeshTriangle tri, uint rngState)
 {
     rng_state = rngState;
@@ -182,6 +182,10 @@ void UpdateParticles(uint3 id : SV_DispatchThreadID)
         MeshTriangle tri = meshBuffer[randomIndex % numVertices];
         
 		float3 newPos = GetRandomPointOnTriangle(tri, rng_state);
+
+		// Mirror the transform of the emitter
+		newPos = RotateAroundZ(newPos, emitterRot.z);
+		newPos = RotateAroundY(newPos, emitterRot.y);
 		newPos = RotateAroundX(newPos, emitterRot.x);
 		newPos *= emitterScale;
 		newPos += emitterPos;
