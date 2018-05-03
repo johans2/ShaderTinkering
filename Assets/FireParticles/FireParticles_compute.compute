@@ -170,6 +170,10 @@ void UpdateParticles(uint3 id : SV_DispatchThreadID)
 	// Update the position by curling it
 	particleBuffer[id.x].position += curlNoise(particleBuffer[id.x].position, curlE) * curlMultiplier + float3(0, 0.025, 0);
 
+	//float3 toCenter = float3(0, 0, 0) - particleBuffer[id.x].position;
+	//float distance = length( float3(0, 0, 0) - particleBuffer[id.x].position);
+	//particleBuffer[id.x].position.xz += (normalize(toCenter.xz) * 0.04) * (clamp(distance / 2.0, 0.0, 1.0));
+	//particleBuffer[id.x].position.xz = lerp(particleBuffer[id.x].position.xz, float2(0,0), distance/5.0);
 
     if (particleBuffer[id.x].life < 0)
     {
