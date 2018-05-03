@@ -66,7 +66,7 @@ public class FireParticleSimulation : MonoBehaviour
     /// <summary>
     /// Number of Particle created in the system.
     /// </summary>
-    private int particleCount = 1000000;
+    private int particleCount = 2000000;
     /// <summary>
     /// Id of the kernel used.
     /// </summary>
@@ -171,12 +171,14 @@ public class FireParticleSimulation : MonoBehaviour
 
         float[] emitterPosition = { emitterTransform.position.x, emitterTransform.position.y, emitterTransform.position.z };
         float[] emitterScale = { emitterTransform.localScale.x, emitterTransform.localScale.y, emitterTransform.localScale.z };
+        float[] emitterRot = { emitterTransform.rotation.eulerAngles.x, emitterTransform.rotation.eulerAngles.y, emitterTransform.rotation.eulerAngles.z };
         // Send datas to the compute shader
         computeShader.SetFloat("deltaTime", Time.deltaTime);
         computeShader.SetFloat("curlE", curlE);
         computeShader.SetFloat("curlMultiplier", curlMultiplier);
         computeShader.SetFloats("emitterPos", emitterPosition);
         computeShader.SetFloats("emitterScale", emitterScale);
+        computeShader.SetFloats("emitterRot", emitterRot);
         computeShader.SetFloat("randSeed", Random.Range(0.0f, verts.Count));
 
         material.SetFloat("_SizeByLifeMin", sizeByLifeMin);

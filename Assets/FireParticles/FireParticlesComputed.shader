@@ -73,7 +73,7 @@
 
 				// Use this to sample the texture;
 				float distance = length(pos - startPos);
-				float colorLookup = clamp(clamp(distance, 0, _TotalSmokeDistance) / _TotalSmokeDistance, 0.0,1.0) - 0.01;
+				float colorLookup = clamp(clamp(distance, 0, _TotalSmokeDistance) / _TotalSmokeDistance, 0.0,1.0) - 0.001;
 
 				float4 color = tex2Dlod(_ColorRampTex, float4(colorLookup, 0, 0, 0));
 

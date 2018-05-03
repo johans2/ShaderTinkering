@@ -1,7 +1,7 @@
 ﻿#pragma kernel UpdateParticles
 
 // Noise functions from https://github.com/keijiro/NoiseShader/blob/master/Assets/HLSL/SimplexNoise3D.hlsl
-#include "../Particles/SimplexNoise3D.hlsl"
+#include "SimplexNoise3D.hlsl"
 
 
 struct Particle
@@ -31,6 +31,7 @@ float particleMinLife;
 float particleMaxLife;
 float3 emitterPos;
 float3 emitterScale;
+float3 emitterRot;
 float randSeed;
 
 int numVertices;
@@ -94,6 +95,46 @@ float3 curlNoise(float3 p, float E)
 
 }
 
+float PI = 3.14159265359;
+
+//https://stackoverflow.com/questions/14607640/rotating-a-vector-in-3d-space
+float3 RotateAroundX(float3 p, float angle) {
+
+	angle = (3.14159265359 / 180.0) * -angle;
+
+	float3x3 m = float3x3(	1, 0, 0,
+							0, cos(angle), -sin(angle),
+							0, sin(angle), cos(angle)
+							);
+
+	return mul(p,m);
+	/*
+	float a = (PI / 180) * angle;
+
+	float3 pr = float3(
+		p.x, 
+		p.y*cos(a) - p.z*sin(a),
+		p.y*sin(a) + p.z*cos(a)
+		);
+	p = pr;*/
+}
+/*
+void RotateAroundY(inout float3 p, float angle) {
+	p = float3( 
+		p.x * cos(angle) + p.z* sin(angle), 
+		p.y, 
+		−p.x * sin(angle) + p.z* cos(angle) 
+		);
+}
+
+void RotateAroundZ(inout float3 p, float angle) {
+	p = float3(
+		p.x*cos(angle) − p.y*sin(angle),
+		p.x*sin(angle) + p.y*cos(angle),
+		p.z
+		);
+}
+*/
 float3 GetRandomPointOnTriangle(MeshTriangle tri, uint rngState)
 {
     rng_state = rngState;
@@ -133,17 +174,24 @@ void UpdateParticles(uint3 id : SV_DispatchThreadID)
     if (particleBuffer[id.x].life < 0)
     {
 
+
 		// http://www.reedbeta.com/blog/quick-and-easy-gpu-random-numbers-in-d3d11/
         rng_state = id.x + randSeed;
         
         uint randomIndex = float(wang_hash(rng_state)) * (1.0 / 4294967296.0) * float(numVertices);
         MeshTriangle tri = meshBuffer[randomIndex % numVertices];
         
+		float3 newPos = GetRandomPointOnTriangle(tri, rng_state);
+		newPos = RotateAroundX(newPos, emitterRot.x);
+		newPos *= emitterScale;
+		newPos += emitterPos;
+
+
 		// Set the new position
-        particleBuffer[id.x].position = GetRandomPointOnTriangle(tri, rng_state) * emitterScale + emitterPos;
+        particleBuffer[id.x].position = newPos;
 		
 		// Set the starting position
-		particleBuffer[id.x].startPos = particleBuffer[id.x].position;
+		particleBuffer[id.x].startPos = newPos;
 		
 		// reset the life of this particle
         particleBuffer[id.x].life = lerp(particleMinLife, particleMaxLife, float(wang_hash(id.x) * (1.0 / 4294967296.0)));
