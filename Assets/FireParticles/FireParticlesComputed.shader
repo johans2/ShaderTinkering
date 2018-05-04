@@ -36,6 +36,7 @@
 				float3 velocity;
 				float life;
 				float3 startPos;
+				float3 convergenceTarget;
 			};
 
 			struct v2g {

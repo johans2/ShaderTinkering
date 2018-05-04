@@ -11,6 +11,7 @@ public class FireParticleSimulation : MonoBehaviour
         public Vector3 velocity;
         public float life;
         public Vector3 startPos;
+        public Vector3 convergenceTarget;
     }
 
     struct MeshTriangle
@@ -23,8 +24,7 @@ public class FireParticleSimulation : MonoBehaviour
 
     public MeshFilter meshFilter;
     public Transform emitterTrans;
-    List<Vector3> verts = new List<Vector3>();
-    ComputeBuffer meshBuffer;
+    
 
     [Range(0.001f,1f)]
     public float curlE = 0.1f;
@@ -32,16 +32,31 @@ public class FireParticleSimulation : MonoBehaviour
     [Range(0.001f, 0.3f)]
     public float curlMultiplier = 0.05f;
 
+    [Range(0.0f, 10f)]
     public float particleMaxLife = 6.0f;
 
+    [Range(0.0f, 10f)]
     public float particleMinLife = 2.0f;
 
+    [Range(0.001f, 1f)]
     public float curlEmin = 0.1f;
+
+    [Range(0.001f, 1f)]
     public float curlEmax = 0.3f;
+
+    [Range(0.0f, 20f)]
     public float curlESpeed = 1f;
 
+    [Range(0.001f, 0.1f)]
     public float sizeByLifeMin = 0.015f;
+
+    [Range(0.001f, 0.1f)]
     public float sizeByLifeMax = 0.03f;
+
+    public Vector3 convergencePoint = new Vector3(0, 2, 0);
+
+    [Range(0.0f, 0.3f)]
+    public float convergenceStrength = 0.01f;
 
     /// <summary>
     /// Material used to draw the Particle on screen.
@@ -54,19 +69,23 @@ public class FireParticleSimulation : MonoBehaviour
     public ComputeShader computeShader;
 
     public Transform emitterTransform;
-    
+
     /// <summary>
-	/// Size in octet of the Particle struct.
-    /// since float = 4 bytes...
-    /// 4 floats = 16 bytes
-	/// </summary>
-	//private const int SIZE_PARTICLE = 24;
-    private const int SIZE_PARTICLE = 40; // since property "life" is added...
+    /// Size in octet of the Particle struct.
+    /// Vector3 position            = 12 bytes
+    /// Vector3 velocity            = 12 bytes
+    /// float   life                = 4 bytes
+    /// Vector3 startPos            = 12 bytes
+    /// Vector3 convergenceTarget   = 12 bytes
+    ///                             ----------
+    /// TOTAL                       = 52 bytes
+    /// </summary>
+    private const int SIZE_PARTICLE = 52;
 
     /// <summary>
     /// Number of Particle created in the system.
     /// </summary>
-    private int particleCount = 2000000;
+    private int particleCount = 3000000;
     /// <summary>
     /// Id of the kernel used.
     /// </summary>
@@ -86,6 +105,18 @@ public class FireParticleSimulation : MonoBehaviour
     /// Number of warp needed.
     /// </summary>
     private int mWarpCount; // TODO?
+
+    /// <summary>
+    /// temporary list for storing mesh verts.
+    /// </summary>
+    private List<Vector3> verts = new List<Vector3>();
+
+
+    /// <summary>
+    /// Compute buffer used for storing mesh triangles.
+    /// </summary>
+    private ComputeBuffer meshBuffer;
+
 
     private const float away = 99999999.0f;
 
@@ -135,6 +166,9 @@ public class FireParticleSimulation : MonoBehaviour
         computeShader.SetInt("numVertices", meshVerts.Length);
         computeShader.SetFloat("particleMinLife", particleMinLife);
         computeShader.SetFloat("particleMaxLife", particleMaxLife);
+        computeShader.SetFloats("convergencePoint", new float[] { convergencePoint.x, convergencePoint.y, convergencePoint.z } );
+        computeShader.SetFloat("convergenceStrength", convergenceStrength);
+
         // create compute buffer
         particleBuffer = new ComputeBuffer(particleCount, SIZE_PARTICLE);
         
@@ -146,10 +180,8 @@ public class FireParticleSimulation : MonoBehaviour
         material.SetBuffer("particleBuffer", particleBuffer);
         material.SetFloat("_SizeByLifeMin", sizeByLifeMin);
         material.SetFloat("_SizeByLifeMax", sizeByLifeMax);
-        
-
     }
-    
+
     void OnRenderObject()
     {
         material.SetPass(0);
@@ -180,6 +212,9 @@ public class FireParticleSimulation : MonoBehaviour
         computeShader.SetFloats("emitterScale", emitterScale);
         computeShader.SetFloats("emitterRot", emitterRot);
         computeShader.SetFloat("randSeed", Random.Range(0.0f, verts.Count));
+        computeShader.SetFloats("convergencePoint", new float[] { convergencePoint.x, convergencePoint.y, convergencePoint.z });
+        computeShader.SetFloat("convergenceStrength", convergenceStrength);
+
 
         material.SetFloat("_SizeByLifeMin", sizeByLifeMin);
         material.SetFloat("_SizeByLifeMax", sizeByLifeMax);
@@ -220,24 +255,7 @@ public class FireParticleSimulation : MonoBehaviour
     }
 
     void OnDrawGizmosSelected() {
-        for (int i = 0; i < verts.Count; i++)
-        {
-            Vector3 pos = verts[i];
-            pos.x *= emitterTrans.localScale.x;
-            pos.y *= emitterTrans.localScale.y;
-            pos.z *= emitterTrans.localScale.z;
-            
-            pos += emitterTrans.position;
-            
-
-            // Rotation?
-
-
-
-            //Gizmos.DrawSphere(pos, .1f);
-
-        }
-
+        Gizmos.DrawSphere(emitterTrans.position + convergencePoint, .1f);
     }
 
 }
