@@ -12,6 +12,9 @@ public class FireParticleSimulation : MonoBehaviour
         public float life;
         public Vector3 startPos;
         public Vector3 convergenceTarget;
+        public float STRIDE_FILLER1;
+        public float STRIDE_FILLER2;
+        public float STRIDE_FILLER3;
     }
 
     struct MeshTriangle
@@ -83,7 +86,7 @@ public class FireParticleSimulation : MonoBehaviour
     ///                             ----------
     /// TOTAL                       = 52 bytes
     /// </summary>
-    private const int SIZE_PARTICLE = 52;
+    private const int SIZE_PARTICLE = 64;
 
     /// <summary>
     /// Number of Particle created in the system.
@@ -107,7 +110,7 @@ public class FireParticleSimulation : MonoBehaviour
     /// <summary>
     /// Number of warp needed.
     /// </summary>
-    private int mWarpCount; // TODO?
+    private int numThreadGroups; // TODO?
 
     /// <summary>
     /// temporary list for storing mesh verts.
@@ -137,7 +140,7 @@ public class FireParticleSimulation : MonoBehaviour
 
     void InitComputeShader()
     {
-        mWarpCount = Mathf.CeilToInt((float)particleCount / WARP_SIZE);
+        numThreadGroups = Mathf.CeilToInt((float)particleCount / WARP_SIZE);
 
         // initialize the particles
         Particle[] particleArray = new Particle[particleCount];
@@ -226,7 +229,7 @@ public class FireParticleSimulation : MonoBehaviour
         material.SetFloat("_SizeByLifeMax", sizeByLifeMax);
 
         // Update the Particles
-        computeShader.Dispatch(mComputeShaderKernelID, mWarpCount, 1, 1);
+        computeShader.Dispatch(mComputeShaderKernelID, numThreadGroups, 1, 1);
     }
     
     private MeshTriangle[] GetMeshTriangles() {

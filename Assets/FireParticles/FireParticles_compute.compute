@@ -11,6 +11,9 @@ struct Particle
     float life;
 	float3 startPos;
 	float3 convergenceTarget;
+	float STRIDE_FILLER1;
+	float STRIDE_FILLER2;
+	float STRIDE_FILLER3;
 };
 
 struct MeshTriangle

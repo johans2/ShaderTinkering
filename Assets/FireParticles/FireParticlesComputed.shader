@@ -37,6 +37,9 @@
 				float life;
 				float3 startPos;
 				float3 convergenceTarget;
+				float STRIDE_FILLER1;
+				float STRIDE_FILLER2;
+				float STRIDE_FILLER3;
 			};
 
 			struct v2g {
@@ -86,7 +89,7 @@
 				return output;
 			}
 
-			[maxvertexcount(4)]
+			[maxvertexcount(3)]
 			void geom(point v2g IN[1], inout TriangleStream<g2f> triStream) {
 
 				g2f OUT;
@@ -120,13 +123,13 @@
 				OUT.norm = float3(1,0, 0);;
 				OUT.uv = float2(0, 1);
 				triStream.Append(OUT);
-
+				/*
 				// 4
 				OUT.pos = UnityObjectToClipPos(v0 - perpVector);
 				OUT.norm = float3(1,0, 0);;
 				OUT.uv = float2(0, 0);
 				triStream.Append(OUT);
-
+				*/
 
 			}
 
