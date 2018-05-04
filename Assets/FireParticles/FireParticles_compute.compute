@@ -35,6 +35,8 @@ float3 emitterScale;
 float3 emitterRot;
 float3 convergencePoint;
 float convergenceStrength;
+float updraft;
+
 
 float randSeed;
 
@@ -173,7 +175,7 @@ void UpdateParticles(uint3 id : SV_DispatchThreadID)
     particleBuffer[id.x].life -= deltaTime;
     
 	// Update the position by curling it
-	particleBuffer[id.x].position += curlNoise(particleBuffer[id.x].position, curlE) * curlMultiplier + float3(0, 0.025, 0);
+	particleBuffer[id.x].position += curlNoise(particleBuffer[id.x].position, curlE) * curlMultiplier + float3(0, updraft, 0);
 
 	// Update the position by the convergence.
 	float2 convergence = normalize( particleBuffer[id.x].convergenceTarget.xz - particleBuffer[id.x].position.xz);

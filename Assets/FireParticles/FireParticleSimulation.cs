@@ -58,6 +58,9 @@ public class FireParticleSimulation : MonoBehaviour
     [Range(0.0f, 0.3f)]
     public float convergenceStrength = 0.01f;
 
+    [Range(-0.3f, 0.3f)]
+    public float updraft = 0.025f;
+
     /// <summary>
     /// Material used to draw the Particle on screen.
     /// </summary>
@@ -168,6 +171,7 @@ public class FireParticleSimulation : MonoBehaviour
         computeShader.SetFloat("particleMaxLife", particleMaxLife);
         computeShader.SetFloats("convergencePoint", new float[] { convergencePoint.x, convergencePoint.y, convergencePoint.z } );
         computeShader.SetFloat("convergenceStrength", convergenceStrength);
+        computeShader.SetFloat("updraft", updraft);
 
         // create compute buffer
         particleBuffer = new ComputeBuffer(particleCount, SIZE_PARTICLE);
@@ -208,13 +212,15 @@ public class FireParticleSimulation : MonoBehaviour
         computeShader.SetFloat("deltaTime", Time.deltaTime);
         computeShader.SetFloat("curlE", curlE);
         computeShader.SetFloat("curlMultiplier", curlMultiplier);
+        computeShader.SetFloat("particleMinLife", particleMinLife);
+        computeShader.SetFloat("particleMaxLife", particleMaxLife);
         computeShader.SetFloats("emitterPos", emitterPosition);
         computeShader.SetFloats("emitterScale", emitterScale);
         computeShader.SetFloats("emitterRot", emitterRot);
         computeShader.SetFloat("randSeed", Random.Range(0.0f, verts.Count));
         computeShader.SetFloats("convergencePoint", new float[] { convergencePoint.x, convergencePoint.y, convergencePoint.z });
         computeShader.SetFloat("convergenceStrength", convergenceStrength);
-
+        computeShader.SetFloat("updraft", updraft);
 
         material.SetFloat("_SizeByLifeMin", sizeByLifeMin);
         material.SetFloat("_SizeByLifeMax", sizeByLifeMax);
