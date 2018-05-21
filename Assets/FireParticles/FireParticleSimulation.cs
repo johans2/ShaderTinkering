@@ -83,8 +83,11 @@ public class FireParticleSimulation : MonoBehaviour
     /// float   life                = 4 bytes
     /// Vector3 startPos            = 12 bytes
     /// Vector3 convergenceTarget   = 12 bytes
+    /// float STRIDE_FILLER1        = 4 bytes
+    /// float STRIDE_FILLER2        = 4 bytes
+    /// float STRIDE_FILLER3        = 4 bytes
     ///                             ----------
-    /// TOTAL                       = 52 bytes
+    /// TOTAL                       = 64 bytes
     /// </summary>
     private const int SIZE_PARTICLE = 64;
 
