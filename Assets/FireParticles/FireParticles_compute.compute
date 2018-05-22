@@ -6,14 +6,14 @@
 
 struct Particle
 {
+    float3 startPos;
     float3 position;
     float3 velocity;
-    float life;
-	float3 startPos;
 	float3 convergenceTarget;
+    float life;
+	float colorLookup;
 	float STRIDE_FILLER1;
 	float STRIDE_FILLER2;
-	float STRIDE_FILLER3;
 };
 
 struct MeshTriangle
@@ -38,6 +38,7 @@ float3 emitterScale;
 float3 emitterRot;
 float3 convergencePoint;
 float convergenceStrength;
+float totalSmokeDistance;
 float updraft;
 
 
@@ -178,14 +179,19 @@ void UpdateParticles(uint3 id : SV_DispatchThreadID)
     particleBuffer[id.x].life -= deltaTime;
     
 	// Update the position by curling it
-	particleBuffer[id.x].position += curlNoise(particleBuffer[id.x].position, curlE) * curlMultiplier + float3(0, updraft, 0);
+	particleBuffer[id.x].position += curlNoise(particleBuffer[id.x].position, curlE) * deltaTime * curlMultiplier + float3(0, updraft, 0);
 
 	// Update the position by the convergence.
 	float2 convergence = normalize( particleBuffer[id.x].convergenceTarget.xz - particleBuffer[id.x].position.xz);
 	convergence *= convergenceStrength;
 	convergence *= clamp( (particleBuffer[id.x].position.y - emitterPos.y) / ( convergencePoint.y - emitterPos.y ), 0,1);
-
 	particleBuffer[id.x].position.xz += convergence;
+
+    
+    // Update the color lookup value. Also make it from the emitter pos.
+    float distance = length(particleBuffer[id.x].position - particleBuffer[id.x].startPos);
+    float colorLookup = saturate(distance / totalSmokeDistance);
+    particleBuffer[id.x].colorLookup = colorLookup;
 
     if (particleBuffer[id.x].life <= 0)
     {
@@ -207,8 +213,11 @@ void UpdateParticles(uint3 id : SV_DispatchThreadID)
 		// Set the new position
         particleBuffer[id.x].position = newPos;
 		
-		// Set the starting position
-		particleBuffer[id.x].startPos = newPos;
+        // Set the starting position
+        particleBuffer[id.x].startPos = newPos;
+
+		// Reset color lookup
+		particleBuffer[id.x].colorLookup = 0.01;
 		
 		// Set the convergence point
 		particleBuffer[id.x].convergenceTarget = emitterPos + convergencePoint;

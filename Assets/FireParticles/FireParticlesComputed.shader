@@ -31,15 +31,16 @@
 					// Use shader model 5.0 target, to be able to use buffers
 			#pragma target 5.0
 
-			struct Particle {
+			struct Particle
+			{
+				float3 startPos;
 				float3 position;
 				float3 velocity;
-				float life;
-				float3 startPos;
 				float3 convergenceTarget;
+				float life;
+				float colorLookup;
 				float STRIDE_FILLER1;
 				float STRIDE_FILLER2;
-				float STRIDE_FILLER3;
 			};
 
 			struct v2g {
@@ -74,12 +75,14 @@
 				// Color
 				float3 pos = particleBuffer[instance_id].position;
 				float3 startPos = particleBuffer[instance_id].startPos;
+				float distance = length(pos - startPos);
 
 				// Use this to sample the texture;
-				float distance = length(pos - startPos);
-				float colorLookup = clamp(clamp(distance, 0, _TotalSmokeDistance) / _TotalSmokeDistance, 0.0,1.0) - 0.001;
 
-				float4 color = tex2Dlod(_ColorRampTex, float4(colorLookup, 0, 0, 0));
+				// I need this as an input from the compute shader. Not calculated here. It causes start particles to sometimes be smoke. 
+				//float colorLookup = clamp(clamp(distance, 0, _TotalSmokeDistance) / _TotalSmokeDistance, 0.0,1.0) - 0.001;
+
+				float4 color = tex2Dlod(_ColorRampTex, float4(particleBuffer[instance_id].colorLookup - 0.001, 0, 0, 0));
 
 				output.color = color;
 				output.distance = distance;
@@ -106,22 +109,22 @@
 
 
 				// 1
-				OUT.pos = UnityObjectToClipPos(v1 + perpVector);
+				OUT.pos = UnityObjectToClipPos(v1);
 				OUT.norm = float3(1,0,0);
-				OUT.uv = float2(1, 1);
+				OUT.uv = float2(1, 0.5);
 				OUT.color = IN[0].color;
 				triStream.Append(OUT);
 
 				// 2
 				OUT.pos = UnityObjectToClipPos(v0 + perpVector);
 				OUT.norm = float3(1, 0, 0);
-				OUT.uv = float2(1, 0);
+				OUT.uv = float2(0, 0);
 				triStream.Append(OUT);
 
 				// 3
-				OUT.pos = UnityObjectToClipPos(v1 - perpVector);
+				OUT.pos = UnityObjectToClipPos(v0 - perpVector);
 				OUT.norm = float3(1,0, 0);;
-				OUT.uv = float2(0, 1);
+				OUT.uv = float2(1, 0);
 				triStream.Append(OUT);
 				/*
 				// 4

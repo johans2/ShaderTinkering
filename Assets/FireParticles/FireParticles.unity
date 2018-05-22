@@ -232,10 +232,11 @@ MonoBehaviour:
   curlEmin: 0.1
   curlEmax: 0.4
   curlESpeed: 5
-  sizeByLifeMin: 0.0174
-  sizeByLifeMax: 0.0231
+  sizeByLifeMin: 0.0576
+  sizeByLifeMax: 0.077
   convergencePoint: {x: 0, y: 2, z: 0}
   convergenceStrength: 0.01
+  updraft: 0.025
   material: {fileID: 2100000, guid: c596b2424f6db0d4e8bd4df53006961a, type: 2}
   computeShader: {fileID: 7200000, guid: 9ac023cbf14a5964fa4c5d1555353e57, type: 3}
   emitterTransform: {fileID: 336962301}
@@ -245,7 +246,7 @@ MeshRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 336962297}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1

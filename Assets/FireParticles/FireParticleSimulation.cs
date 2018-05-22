@@ -7,14 +7,14 @@ public class FireParticleSimulation : MonoBehaviour
     
     struct Particle
     {
+        public Vector3 startPos;
         public Vector3 position;
         public Vector3 velocity;
-        public float life;
-        public Vector3 startPos;
         public Vector3 convergenceTarget;
+        public float life;
+        public float colorLookup;
         public float STRIDE_FILLER1;
         public float STRIDE_FILLER2;
-        public float STRIDE_FILLER3;
     }
 
     struct MeshTriangle
@@ -32,7 +32,7 @@ public class FireParticleSimulation : MonoBehaviour
     [Range(0.001f,1f)]
     public float curlE = 0.1f;
 
-    [Range(0.001f, 0.3f)]
+    [Range(1f, 100f)]
     public float curlMultiplier = 0.05f;
 
     [Range(0.0f, 10f)]
@@ -64,6 +64,9 @@ public class FireParticleSimulation : MonoBehaviour
     [Range(-0.3f, 0.3f)]
     public float updraft = 0.025f;
 
+    [Range(0f, 20f)]
+    public float totalSmokeDistance = 5f;
+
     /// <summary>
     /// Material used to draw the Particle on screen.
     /// </summary>
@@ -81,11 +84,11 @@ public class FireParticleSimulation : MonoBehaviour
     /// Vector3 position            = 12 bytes
     /// Vector3 velocity            = 12 bytes
     /// float   life                = 4 bytes
-    /// Vector3 startPos            = 12 bytes
+    /// float startPos              = 12 bytes
+    /// float colorLookup           = 4 bytes
     /// Vector3 convergenceTarget   = 12 bytes
     /// float STRIDE_FILLER1        = 4 bytes
     /// float STRIDE_FILLER2        = 4 bytes
-    /// float STRIDE_FILLER3        = 4 bytes
     ///                             ----------
     /// TOTAL                       = 64 bytes
     /// </summary>
@@ -94,7 +97,7 @@ public class FireParticleSimulation : MonoBehaviour
     /// <summary>
     /// Number of Particle created in the system.
     /// </summary>
-    private int particleCount = 3000000;
+    private int particleCount = 1000000;
     /// <summary>
     /// Id of the kernel used.
     /// </summary>
@@ -178,6 +181,7 @@ public class FireParticleSimulation : MonoBehaviour
         computeShader.SetFloats("convergencePoint", new float[] { convergencePoint.x, convergencePoint.y, convergencePoint.z } );
         computeShader.SetFloat("convergenceStrength", convergenceStrength);
         computeShader.SetFloat("updraft", updraft);
+        computeShader.SetFloat("totalSmokeDistance", totalSmokeDistance);
 
         // create compute buffer
         particleBuffer = new ComputeBuffer(particleCount, SIZE_PARTICLE);
@@ -227,6 +231,7 @@ public class FireParticleSimulation : MonoBehaviour
         computeShader.SetFloats("convergencePoint", new float[] { convergencePoint.x, convergencePoint.y, convergencePoint.z });
         computeShader.SetFloat("convergenceStrength", convergenceStrength);
         computeShader.SetFloat("updraft", updraft);
+        computeShader.SetFloat("totalSmokeDistance", totalSmokeDistance);
 
         material.SetFloat("_SizeByLifeMin", sizeByLifeMin);
         material.SetFloat("_SizeByLifeMax", sizeByLifeMax);
