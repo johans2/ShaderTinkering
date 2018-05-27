@@ -10,14 +10,14 @@
 
 	SubShader {
 		Pass {
-			Tags{ "Queue" = "Transparent" "RenderType" = "Transparent" }
+			Tags{ "Queue" = "Opaque" "RenderType" = "Opaque" }
 			LOD 200
-			Cull off
+			Cull front
 			ZWrite off
 
 			Blend SrcAlpha OneMinusSrcAlpha
 
-			BlendOp Add
+			//BlendOp Add
 
 
 			//Blend SrcAlpha One
@@ -72,17 +72,14 @@
 			{
 				v2g output = (v2g)0;
 
-				// Color
+				// Need to calculate the distance from the start position in order to alter the size from that value in the geom function.
 				float3 pos = particleBuffer[instance_id].position;
 				float3 startPos = particleBuffer[instance_id].startPos;
 				float distance = length(pos - startPos);
 
-				// Use this to sample the texture;
-
-				// I need this as an input from the compute shader. Not calculated here. It causes start particles to sometimes be smoke. 
-				//float colorLookup = clamp(clamp(distance, 0, _TotalSmokeDistance) / _TotalSmokeDistance, 0.0,1.0) - 0.001;
-
+				// Color
 				float4 color = tex2Dlod(_ColorRampTex, float4(particleBuffer[instance_id].colorLookup - 0.001, 0, 0, 0));
+				color.a = 1.1 - particleBuffer[instance_id].colorLookup;
 
 				output.color = color;
 				output.distance = distance;
@@ -111,7 +108,7 @@
 				// 1
 				OUT.pos = UnityObjectToClipPos(v1);
 				OUT.norm = float3(1,0,0);
-				OUT.uv = float2(1, 0.5);
+				OUT.uv = float2(0.5,1);
 				OUT.color = IN[0].color;
 				triStream.Append(OUT);
 
@@ -126,13 +123,6 @@
 				OUT.norm = float3(1,0, 0);;
 				OUT.uv = float2(1, 0);
 				triStream.Append(OUT);
-				/*
-				// 4
-				OUT.pos = UnityObjectToClipPos(v0 - perpVector);
-				OUT.norm = float3(1,0, 0);;
-				OUT.uv = float2(0, 0);
-				triStream.Append(OUT);
-				*/
 
 			}
 
