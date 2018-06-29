@@ -3,12 +3,14 @@
 	Properties
 	{
 		_MainTex ("Texture", 2D) = "white" {}
-		
+		_L("Wavelength",  Float) = 0.1
+		_Amplitude("Amplitude", Float) = 0.001
 	}
 	SubShader
 	{
 		Tags { "RenderType"="Opaque" }
 		LOD 100
+		Cull off
 
 		Pass
 		{
@@ -32,23 +34,25 @@
 
 			sampler2D _MainTex;
 			float4 _MainTex_ST;
+			float _L;
+			float _Amplitude;
 			
 			// https://developer.nvidia.com/gpugems/GPUGems/gpugems_ch01.html
 			v2f vert (vertData IN)
 			{
 				v2f o;
 
-				float L = 0.1;
-				float waveLength = 2 / L;
+				//float L = 0.1;
+				float waveLength = 2 / _L;
 
 
 				float amp = 0.001;
 				float2 direction = float2(0.5,0.5);
 				float speed = 20;
 
-				float phaseSpeed = speed * (2 / L);
+				float phaseSpeed = speed * (2 / _L);
 
-				float totalWave = amp * sin( /*direction * */IN.uv.x * waveLength + _Time * speed);
+				float totalWave = _Amplitude * sin( /*direction * */IN.uv.x * waveLength + _Time * speed);
 
 				IN.position.z += totalWave;
 

@@ -15,7 +15,7 @@
 			Cull front
 			ZWrite off
 
-			Blend SrcAlpha OneMinusSrcAlpha
+			Blend One OneMinusSrcAlpha
 
 			//BlendOp Add
 
@@ -130,6 +130,7 @@
 			{
 				float4 c = tex2D(_MainTex, IN.uv) * IN.color;
 				//clip(c.a - 0.1);
+				c.rgb *= c.a;
 
 				return c;
 			}
