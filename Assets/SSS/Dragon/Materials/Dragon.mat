@@ -36,11 +36,11 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _Distortion: 1
-    - _Glossiness: 0.443
+    - _Glossiness: 0.39
     - _Metallic: 0
-    - _Power: 0.7
-    - _Scale: 0.69
+    - _Power: 10
+    - _Scale: 0.4
     - _Shininess: 0.1829303
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.9044118, g: 0.9025773, b: 0.87781143, a: 1}
     - _SpecColor: {r: 0.50735295, g: 0.50735295, b: 0.50735295, a: 1}
