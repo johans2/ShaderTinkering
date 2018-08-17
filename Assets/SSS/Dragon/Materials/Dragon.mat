@@ -36,7 +36,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _Distortion: 1
-    - _Glossiness: 0.425
+    - _Glossiness: 0.54
     - _Metallic: 0.092
     - _Power: 7.35
     - _Scale: 0.39

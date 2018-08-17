@@ -54,7 +54,7 @@ Shader "Custom/SSS" {
 			float3 I = (VdotH + unity_AmbientSky) * thickness;
 
 			// Final add
-			pbr.rgb = pbr.rgb + gi.light.color * I * _Color;
+			pbr.rgb = pbr.rgb + gi.light.color * I;
 			return pbr;
 		}
 
