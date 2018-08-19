@@ -75,8 +75,8 @@ public class GrassPhysics : MonoBehaviour {
             // Should be fixed later on.
             Vector2 tramplePos = new Vector2(trampleTransforms[i].position.x, trampleTransforms[i].position.z);
             tramplePos /= 100f;
-            tramplePos.x += 0.50000000f;
-            tramplePos.y += 0.50000000f;
+            tramplePos.x += 0.5f;
+            tramplePos.y += 0.5f;
             Vector2 moveDir = tramplePos - previousPos[i];
             
             tramplerData[i] = new Vector4(1f - tramplePos.x, 1f - tramplePos.y, moveDir.x, moveDir.y);
