@@ -5,6 +5,7 @@
 		_MainTex ("Texture", 2D) = "white" {}
 		_L("Wavelength",  Float) = 0.1
 		_Amplitude("Amplitude", Float) = 0.001
+		_Speed("Speed", Float) = 1
 	}
 	SubShader
 	{
@@ -34,8 +35,9 @@
 
 			sampler2D _MainTex;
 			float4 _MainTex_ST;
-			float _L;
+			float _L; 
 			float _Amplitude;
+			float _Speed;
 			
 			// https://developer.nvidia.com/gpugems/GPUGems/gpugems_ch01.html
 			v2f vert (vertData IN)
@@ -43,18 +45,18 @@
 				v2f o;
 
 				//float L = 0.1;
-				float waveLength = 2 / _L;
-
-
+				float frequency = 2 / _L;
 				float amp = 0.001;
 				float2 direction = float2(0.5,0.5);
-				float speed = 20;
 
-				float phaseSpeed = speed * (2 / _L);
+				float phaseConstantSpeed = _Speed * (2 / _L);
 
-				float totalWave = _Amplitude * sin( /*direction * */IN.uv.x * waveLength + _Time * speed);
+				float waveX = _Amplitude * sin(direction.x * IN.uv.x * frequency + _Time.x * phaseConstantSpeed);
+				float waveZ = _Amplitude * sin(direction.y * IN.uv.y * frequency + _Time.x * phaseConstantSpeed);
 
-				IN.position.z += totalWave;
+				float totalWave = waveX + waveZ;
+
+				IN.position.z = totalWave;
 
 
 				o.vertex = UnityObjectToClipPos(IN.position);
