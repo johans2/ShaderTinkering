@@ -51,8 +51,8 @@
 
 				float phaseConstantSpeed = _Speed * (2 / _L);
 
-				float waveX = _Amplitude * sin(direction.x * IN.uv.x * frequency + _Time.x * phaseConstantSpeed);
-				float waveZ = _Amplitude * sin(direction.y * IN.uv.y * frequency + _Time.x * phaseConstantSpeed);
+				float waveX = _Amplitude * sin(direction.x * IN.position.x * frequency + _Time.x * phaseConstantSpeed);
+				float waveZ = _Amplitude * sin(direction.y * IN.position.y * frequency + _Time.x * phaseConstantSpeed);
 
 				float totalWave = waveX + waveZ;
 
