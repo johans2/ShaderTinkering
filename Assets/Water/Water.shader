@@ -3,7 +3,7 @@
 	Properties
 	{
 		_MainTex ("Texture", 2D) = "white" {}
-		_L("Wavelength",  Float) = 0.1
+		_WaveLength("Wavelength",  Float) = 0.1
 		_Amplitude("Amplitude", Float) = 0.001
 		_Speed("Speed", Float) = 1
 	}
@@ -19,6 +19,7 @@
 			#pragma vertex vert
 			#pragma fragment frag
 			#include "UnityCG.cginc"
+			#include "WaterIncludes.cginc"
 
 			struct vertData {
 				float3 position : POSITION;
@@ -36,7 +37,7 @@
 
 			sampler2D _MainTex;
 			float4 _MainTex_ST;
-			float _L; 
+			float _WaveLength;
 			float _Amplitude;
 			float _Speed;
 			
@@ -45,43 +46,26 @@
 			{
 				v2f o;
 
-				float frequency = 2 / _L;
-				float phaseConstantSpeed = _Speed * (2 / _L);
+				float frequency = 2 / _WaveLength;
+				float phaseConstantSpeed = _Speed * (2 / _WaveLength);
 
 				// Wave 1
 
 				float2 direction1 = normalize(float2(1,1));
-				/*
-				float wave1 = _Amplitude * sin(dot(direction1, float2(IN.position.x, IN.position.y)) * frequency + _Time.x * phaseConstantSpeed);
-
-				float normal1X = frequency * direction1.x * _Amplitude * cos(dot(direction1, float2(IN.position.x, IN.position.y)) * frequency + _Time.x * phaseConstantSpeed);
-				float normal1Y = frequency * direction1.y * _Amplitude * cos(dot(direction1, float2(IN.position.x, IN.position.y)) * frequency + _Time.x * phaseConstantSpeed);
-				float3 normal1 = float3(-normal1X, -normal1Y, 1);
-				*/
 				float Q = 1;
 
 				float fi = _Time.x  * phaseConstantSpeed;
 				float dirDotPos = dot(direction1, float2(IN.position.x, IN.position.y));
 
-				float waveGretzX = IN.position.x + Q * _Amplitude * direction1.x * cos(frequency * dirDotPos + fi);
-				float waveGretzY = IN.position.y + Q * _Amplitude * direction1.y * cos(frequency * dirDotPos + fi);
-				float waveGretzZ = _Amplitude * sin(frequency * dirDotPos + fi);
+				float waveGretsX = IN.position.x + Q * _Amplitude * direction1.x * cos(frequency * dirDotPos + fi);
+				float waveGretsY = IN.position.y + Q * _Amplitude * direction1.y * cos(frequency * dirDotPos + fi);
+				float waveGretsZ = _Amplitude * sin(frequency * dirDotPos + fi);
 
-				/*
-				// Wave 2
 
-				float2 direction2 = normalize(float2(-1, 1));
-				float wave2 = _Amplitude * sin(dot(direction2, float2(IN.position.x, IN.position.y)) * frequency + _Time.x * phaseConstantSpeed);
+				float3 wavePoint = WavePoint(IN.position.xy, _Amplitude, _WaveLength, _Speed, direction1, 0.8);
 
-				float normal2X = frequency * direction2.x * _Amplitude * cos(dot(direction2, float2(IN.position.x, IN.position.y)) * frequency + _Time.x * phaseConstantSpeed);
-				float normal2Y = frequency * direction2.y * _Amplitude * cos(dot(direction2, float2(IN.position.x, IN.position.y)) * frequency + _Time.x * phaseConstantSpeed);
-				float3 normal2 = float3(-normal2X, -normal2Y, 1);
-				*/
-				IN.position = float3(waveGretzX, waveGretzY, waveGretzZ);
+				IN.position = wavePoint; //float3(waveGretsX, waveGretsY, waveGretsZ);
 
-				//IN.position.z += wave1; // +wave2;
-
-				//o.normal = normal1; // +normal2;
 				o.vertex = UnityObjectToClipPos(IN.position);
 				o.uv = TRANSFORM_TEX(IN.uv, _MainTex);
 				return o;
@@ -97,6 +81,22 @@
 				
 				return col;
 			}
+
+			float3 WavePoint(float2 position, float wavelength, float speed, float2 direction, float steepness) {
+				float frequency = 2 / wavelength;
+				float phaseConstantSpeed = speed * (2 / wavelength);
+
+				float fi = _Time.x  * phaseConstantSpeed;
+				float dirDotPos = dot(direction, position);
+
+				float waveGretsX = position.x + steepness * _Amplitude * direction.x * cos(frequency * dirDotPos + fi);
+				float waveGretsY = position.y + steepness * _Amplitude * direction.y * cos(frequency * dirDotPos + fi);
+				float waveGretsZ = _Amplitude * sin(frequency * dirDotPos + fi);
+
+				return float3(waveGretsX, waveGretsY, waveGretsZ);
+			}
+
+
 			ENDCG
 		}
 	}
