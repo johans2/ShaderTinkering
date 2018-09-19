@@ -45,34 +45,42 @@
 			v2f vert (vertData IN)
 			{
 				v2f o;
-
+				// Wave directions
 				float2 direction1 = normalize(float2(1,1));
 				float2 direction2 = normalize(float2(-1,1));
 
+				// Wave points
 				float3 wavePoint1 = WavePoint(IN.position.xy, _Amplitude, _WaveLength, _Speed, direction1, 0.8);
 				float3 wavePoint2 = WavePoint(IN.position.xy, _Amplitude, _WaveLength, _Speed, direction2, 0.8);
 
 				float3 totalWave = float3(IN.position.x, IN.position.y, 0) + wavePoint1 + wavePoint2;
 
-				
+				// Wave normals
+				float3 waveNormal1 = WaveNormal(wavePoint1, _Amplitude, _WaveLength, _Speed, direction1, 0.8);
+				float3 waveNormal2 = WaveNormal(wavePoint2, _Amplitude, _WaveLength, _Speed, direction2, 0.8);
 
-				float3 waveNormal = WaveNormal(wavePoint1, _Amplitude, _WaveLength, _Speed, direction1, 0.8);
+				float3 totalNormal = waveNormal1 + waveNormal2;
+				totalNormal.x = -totalNormal.x;
+				totalNormal.y = -totalNormal.y;
+				totalNormal.z = 1 - totalNormal.z;
 
-				IN.position = totalWave;
+				totalNormal = normalize(totalNormal);
 
-				o.vertex = UnityObjectToClipPos(IN.position);
+				o.vertex = UnityObjectToClipPos(totalWave);
 				o.uv = TRANSFORM_TEX(IN.uv, _MainTex);
-				o.normal = waveNormal;
+				o.normal = totalNormal;
 				return o;
 			}
 			
 			fixed4 frag (v2f i) : SV_Target
 			{
 				fixed4 col = tex2D(_MainTex, i.uv);
-				
-				col.x = i.normal.x * 0.5 + 0.5;
-				col.y = i.normal.y * 0.5 + 0.5;
-				col.z = i.normal.z * 0.5 + 0.5;
+				col = fixed4(0, 0, 0, 1);
+
+
+				col.x = i.normal.x; // *0.5 + 0.5;
+				col.y = i.normal.y; // *0.5 + 0.5;
+				col.z = i.normal.z; // *0.5 + 0.5;
 				
 				return col;
 			}

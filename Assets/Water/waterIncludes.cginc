@@ -27,9 +27,9 @@ float3 WaveNormal(float3 position, float amplitude, float wavelength, float spee
 	float C = cos(frequency * dirDotPos + fi);
 
 	float3 normal = float3 (
-		-direction.x * WA * C,
-		-direction.y * WA * C,
-		1 - steepness * WA * S
+		direction.x * WA * C,
+		direction.y * WA * C,
+		steepness * WA * S
 	);
 
 	return normal;
