@@ -46,23 +46,31 @@
 				v2f o;
 
 				float frequency = 2 / _L;
-				float2 direction = normalize(float2(0.1,0.1));
-
 				float phaseConstantSpeed = _Speed * (2 / _L);
 
-				float waveX = _Amplitude * sin(direction.x * IN.position.x * frequency + _Time.x * phaseConstantSpeed);
-				float waveZ = _Amplitude * sin(direction.y * IN.position.y * frequency + _Time.x * phaseConstantSpeed);
+				// Wave 1
 
-				float normalX = frequency * direction.x * _Amplitude * cos(dot(direction, float2(IN.position.x, IN.position.y)) * frequency + _Time.x * phaseConstantSpeed);
-				float normalY = frequency * direction.y * _Amplitude * cos(dot(direction, float2(IN.position.x, IN.position.y)) * frequency + _Time.x * phaseConstantSpeed);
+				float2 direction1 = normalize(float2(1,1));
+				float wave1 = _Amplitude * sin(dot(direction1, float2(IN.position.x, IN.position.y)) * frequency + _Time.x * phaseConstantSpeed);
 
-				float3 normal = normalize(float3(-normalX, -normalY, 1));
+				float normal1X = frequency * direction1.x * _Amplitude * cos(dot(direction1, float2(IN.position.x, IN.position.y)) * frequency + _Time.x * phaseConstantSpeed);
+				float normal1Y = frequency * direction1.y * _Amplitude * cos(dot(direction1, float2(IN.position.x, IN.position.y)) * frequency + _Time.x * phaseConstantSpeed);
+				float3 normal1 = float3(-normal1X, -normal1Y, 1);
 
-				float totalWave = waveX + waveZ;
 
-				IN.position.z += totalWave;
+				// Wave 2
 
-				o.normal = normal;
+				float2 direction2 = normalize(float2(-1, 1));
+				float wave2 = _Amplitude * sin(dot(direction2, float2(IN.position.x, IN.position.y)) * frequency + _Time.x * phaseConstantSpeed);
+
+				float normal2X = frequency * direction2.x * _Amplitude * cos(dot(direction2, float2(IN.position.x, IN.position.y)) * frequency + _Time.x * phaseConstantSpeed);
+				float normal2Y = frequency * direction2.y * _Amplitude * cos(dot(direction2, float2(IN.position.x, IN.position.y)) * frequency + _Time.x * phaseConstantSpeed);
+				float3 normal2 = float3(-normal2X, -normal2Y, 1);
+
+				
+				IN.position.z += wave1 + wave2;
+
+				o.normal = normal1 + normal2;
 				o.vertex = UnityObjectToClipPos(IN.position);
 				o.uv = TRANSFORM_TEX(IN.uv, _MainTex);
 				return o;
