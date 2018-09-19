@@ -46,12 +46,19 @@
 			{
 				v2f o;
 
-				float2 direction = normalize(float2(1,1));
+				float2 direction1 = normalize(float2(1,1));
+				float2 direction2 = normalize(float2(-1,1));
 
-				float3 wavePoint = WavePoint(IN.position.xy, _Amplitude, _WaveLength, _Speed, direction, 0.8);
-				float3 waveNormal = WaveNormal(wavePoint, _Amplitude, _WaveLength, _Speed, direction, 0.8);
+				float3 wavePoint1 = WavePoint(IN.position.xy, _Amplitude, _WaveLength, _Speed, direction1, 0.8);
+				float3 wavePoint2 = WavePoint(IN.position.xy, _Amplitude, _WaveLength, _Speed, direction2, 0.8);
 
-				IN.position = wavePoint;
+				float3 totalWave = float3(IN.position.x, IN.position.y, 0) + wavePoint1 + wavePoint2;
+
+				
+
+				float3 waveNormal = WaveNormal(wavePoint1, _Amplitude, _WaveLength, _Speed, direction1, 0.8);
+
+				IN.position = totalWave;
 
 				o.vertex = UnityObjectToClipPos(IN.position);
 				o.uv = TRANSFORM_TEX(IN.uv, _MainTex);
