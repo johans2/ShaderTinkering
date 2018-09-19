@@ -51,13 +51,23 @@
 				// Wave 1
 
 				float2 direction1 = normalize(float2(1,1));
+				/*
 				float wave1 = _Amplitude * sin(dot(direction1, float2(IN.position.x, IN.position.y)) * frequency + _Time.x * phaseConstantSpeed);
 
 				float normal1X = frequency * direction1.x * _Amplitude * cos(dot(direction1, float2(IN.position.x, IN.position.y)) * frequency + _Time.x * phaseConstantSpeed);
 				float normal1Y = frequency * direction1.y * _Amplitude * cos(dot(direction1, float2(IN.position.x, IN.position.y)) * frequency + _Time.x * phaseConstantSpeed);
 				float3 normal1 = float3(-normal1X, -normal1Y, 1);
+				*/
+				float Q = 1;
 
+				float fi = _Time.x  * phaseConstantSpeed;
+				float dirDotPos = dot(direction1, float2(IN.position.x, IN.position.y));
 
+				float waveGretzX = IN.position.x + Q * _Amplitude * direction1.x * cos(frequency * dirDotPos + fi);
+				float waveGretzY = IN.position.y + Q * _Amplitude * direction1.y * cos(frequency * dirDotPos + fi);
+				float waveGretzZ = _Amplitude * sin(frequency * dirDotPos + fi);
+
+				/*
 				// Wave 2
 
 				float2 direction2 = normalize(float2(-1, 1));
@@ -66,11 +76,12 @@
 				float normal2X = frequency * direction2.x * _Amplitude * cos(dot(direction2, float2(IN.position.x, IN.position.y)) * frequency + _Time.x * phaseConstantSpeed);
 				float normal2Y = frequency * direction2.y * _Amplitude * cos(dot(direction2, float2(IN.position.x, IN.position.y)) * frequency + _Time.x * phaseConstantSpeed);
 				float3 normal2 = float3(-normal2X, -normal2Y, 1);
+				*/
+				IN.position = float3(waveGretzX, waveGretzY, waveGretzZ);
 
-				
-				IN.position.z += wave1 + wave2;
+				//IN.position.z += wave1; // +wave2;
 
-				o.normal = normal1 + normal2;
+				//o.normal = normal1; // +normal2;
 				o.vertex = UnityObjectToClipPos(IN.position);
 				o.uv = TRANSFORM_TEX(IN.uv, _MainTex);
 				return o;
