@@ -56,8 +56,8 @@
 				float3 totalWave = float3(IN.position.x, IN.position.y, 0) + wavePoint1 + wavePoint2;
 
 				// Wave normals
-				float3 waveNormal1 = WaveNormal(wavePoint1, _Amplitude, _WaveLength, _Speed, direction1, 0.8);
-				float3 waveNormal2 = WaveNormal(wavePoint2, _Amplitude, _WaveLength, _Speed, direction2, 0.8);
+				float3 waveNormal1 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed, direction1, 0.8);
+				float3 waveNormal2 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed, direction2, 0.8);
 
 				float3 totalNormal = waveNormal1 + waveNormal2;
 				totalNormal.x = -totalNormal.x;
@@ -78,9 +78,9 @@
 				col = fixed4(0, 0, 0, 1);
 
 
-				col.x = i.normal.x; // *0.5 + 0.5;
-				col.y = i.normal.y; // *0.5 + 0.5;
-				col.z = i.normal.z; // *0.5 + 0.5;
+				col.r = i.normal.x * 0.5 + 0.5;
+				col.g = i.normal.y * 0.5 + 0.5;
+				col.b = i.normal.z * 0.5 + 0.5;
 				
 				return col;
 			}

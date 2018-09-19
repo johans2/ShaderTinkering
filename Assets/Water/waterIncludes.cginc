@@ -20,7 +20,7 @@ float3 WaveNormal(float3 position, float amplitude, float wavelength, float spee
 	float phaseConstantSpeed = speed * (2 / wavelength);
 
 	float fi = _Time.x  * phaseConstantSpeed;
-	float dirDotPos = dot(direction, position);
+	float dirDotPos = dot(float3(direction.x,  direction.y, 0), position);
 
 	float WA = frequency * amplitude;
 	float S = sin(frequency * dirDotPos + fi);

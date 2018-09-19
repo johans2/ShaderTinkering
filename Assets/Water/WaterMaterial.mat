@@ -70,10 +70,10 @@ Material:
     - _Parallax: 0.02
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _Speed: 0.02
+    - _Speed: 0.04
     - _SrcBlend: 1
     - _UVSec: 0
-    - _WaveLength: 0.001
+    - _WaveLength: 0.0015
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
