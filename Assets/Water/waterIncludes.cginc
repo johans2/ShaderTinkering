@@ -8,8 +8,8 @@ float3 WavePoint(float2 position, float amplitude, float wavelength, float speed
     float dirDotPos = dot(direction, position);
 
     float waveGretsX = steepness * amplitude * direction.x * cos(frequency * dirDotPos + fi);
-    float waveGretsY = steepness * amplitude * direction.y * cos(frequency * dirDotPos + fi);
-    float waveGretsZ = amplitude * sin(frequency * dirDotPos + fi);
+    float waveGretsY = amplitude * sin(frequency * dirDotPos + fi);
+    float waveGretsZ = steepness * amplitude * direction.y * cos(frequency * dirDotPos + fi);
 
     return float3(waveGretsX, waveGretsY, waveGretsZ);
 }
@@ -20,7 +20,7 @@ float3 WaveNormal(float3 position, float amplitude, float wavelength, float spee
 	float phaseConstantSpeed = speed * (2 / wavelength);
 
 	float fi = _Time.x  * phaseConstantSpeed;
-	float dirDotPos = dot(float3(direction.x,  direction.y, 0), position);
+	float dirDotPos = dot(float3(direction.x, 0, direction.y), position);
 
 	float WA = frequency * amplitude;
 	float S = sin(frequency * dirDotPos + fi);
@@ -28,8 +28,8 @@ float3 WaveNormal(float3 position, float amplitude, float wavelength, float spee
 
 	float3 normal = float3 (
 		direction.x * WA * C,
-		direction.y * WA * C,
-		steepness * WA * S
+		steepness * WA * S,
+		direction.y * WA * C
 	);
 
 	return normal;

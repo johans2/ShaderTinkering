@@ -1,4 +1,6 @@
-﻿Shader "Custom/Water"
+﻿// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
+
+Shader "Custom/Water"
 {
 	Properties
 	{
@@ -12,7 +14,7 @@
 		Tags{ "Queue" = "Transparent" "RenderType" = "Transparent" }
 		LOD 100
 		Cull back
-		Blend SrcAlpha OneMinusSrcAlpha
+		//Blend SrcAlpha OneMinusSrcAlpha
 
 		Pass
 		{
@@ -45,7 +47,7 @@
 			fixed4 _LightColor0;
 			
 			// https://developer.nvidia.com/gpugems/GPUGems/gpugems_ch01.html
-			v2f vert (vertData IN)
+			v2f vert (appdata_full v)
 			{
 				v2f o;
 				// Wave directions
@@ -53,29 +55,37 @@
 				float2 direction2 = normalize(float2(0,1));
 				float2 direction3 = normalize(float2(0.3, 0.4));
 
+				float3 worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
+
+				float Q = 0.1;
+
 				// Wave points
-				float3 wavePoint1 = WavePoint(IN.position.xy, _Amplitude *1.2, _WaveLength *2, _Speed, direction1, 0.2);
-				float3 wavePoint2 = WavePoint(IN.position.xy, _Amplitude, _WaveLength, _Speed * 0.2, direction2, 0.6);
+				float3 wavePoint1 = WavePoint(worldPos.xz, _Amplitude, _WaveLength, _Speed, direction1, Q);
+				float3 wavePoint2 = WavePoint(worldPos.xz, _Amplitude, _WaveLength, _Speed, direction2, Q);
+				float3 wavePoint3 = WavePoint(worldPos.xz, _Amplitude, _WaveLength, _Speed, direction3, Q);
 
-				float3 wavePoint3 = WavePoint(IN.position.xy, _Amplitude * 0.5, _WaveLength * 0.5, _Speed * 2, direction3, 0.6);
-
-				float3 totalWave = float3(IN.position.x, IN.position.y, 0) + wavePoint1 + wavePoint2 + wavePoint3;
+				float3 totalWave = worldPos + wavePoint1 + wavePoint2 + wavePoint3;
 
 				// Wave normals
-				float3 waveNormal1 = WaveNormal(totalWave, _Amplitude*1.2, _WaveLength *2, _Speed, direction1, 0.2);
-				float3 waveNormal2 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed* 0.2, direction2, 0.6);
-				float3 waveNormal3 = WaveNormal(totalWave, _Amplitude* 0.5, _WaveLength* 0.5, _Speed* 2, direction3, 0.6);
+				float3 waveNormal1 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed, direction1, Q);
+				float3 waveNormal2 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed, direction2, Q);
+				float3 waveNormal3 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed, direction3, Q);
 
 				float3 totalNormal = waveNormal1 + waveNormal2 + waveNormal3;
+				/*
 				totalNormal.x = -totalNormal.x;
 				totalNormal.y = -totalNormal.y;
 				totalNormal.z = 1 - totalNormal.z;
+				*/
+				totalNormal.x = totalNormal.x;
+				totalNormal.y = (1 - totalNormal.y) * -1;
+				totalNormal.z = totalNormal.z;
 
 				totalNormal = normalize(totalNormal);
 
-				o.vertex = UnityObjectToClipPos(totalWave);
-				o.uv = TRANSFORM_TEX(IN.uv, _MainTex);
-				o.normal = totalNormal;
+				o.vertex = mul(UNITY_MATRIX_VP, float4(totalWave, 1.));
+				o.uv = TRANSFORM_TEX(v.texcoord, _MainTex);
+				o.normal = normalize(mul(totalNormal, (float3x3)unity_WorldToObject));
 				return o;
 			}
 			
@@ -105,7 +115,14 @@
 
 				col.a = 0.5;
 				col.rgb *= diffuse;
-
+				
+				/*
+				col = fixed4(1, 1, 1, 1);
+				col.r *= i.normal.x * 0.5;
+				col.g *= i.normal.y * 0.5;
+				col.b *= i.normal.z * 0.5;
+				*/
+				
 				return col;
 			}
 
