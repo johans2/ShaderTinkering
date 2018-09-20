@@ -9,9 +9,10 @@
 	}
 	SubShader
 	{
-		Tags { "RenderType"="Opaque" }
+		Tags{ "Queue" = "Transparent" "RenderType" = "Transparent" }
 		LOD 100
-		Cull off
+		Cull back
+		Blend SrcAlpha OneMinusSrcAlpha
 
 		Pass
 		{
@@ -40,6 +41,8 @@
 			float _WaveLength;
 			float _Amplitude;
 			float _Speed;
+
+			fixed4 _LightColor0;
 			
 			// https://developer.nvidia.com/gpugems/GPUGems/gpugems_ch01.html
 			v2f vert (vertData IN)
@@ -51,17 +54,17 @@
 				float2 direction3 = normalize(float2(0.3, 0.4));
 
 				// Wave points
-				float3 wavePoint1 = WavePoint(IN.position.xy, _Amplitude *1.2, _WaveLength, _Speed, direction1, 1);
-				float3 wavePoint2 = WavePoint(IN.position.xy, _Amplitude, _WaveLength, _Speed * 0.2, direction2, 0.8);
+				float3 wavePoint1 = WavePoint(IN.position.xy, _Amplitude *1.2, _WaveLength *2, _Speed, direction1, 0.2);
+				float3 wavePoint2 = WavePoint(IN.position.xy, _Amplitude, _WaveLength, _Speed * 0.2, direction2, 0.6);
 
-				float3 wavePoint3 = WavePoint(IN.position.xy, _Amplitude * 0.5, _WaveLength * 0.5, _Speed * 2, direction3, 0.8);
+				float3 wavePoint3 = WavePoint(IN.position.xy, _Amplitude * 0.5, _WaveLength * 0.5, _Speed * 2, direction3, 0.6);
 
 				float3 totalWave = float3(IN.position.x, IN.position.y, 0) + wavePoint1 + wavePoint2 + wavePoint3;
 
 				// Wave normals
-				float3 waveNormal1 = WaveNormal(totalWave, _Amplitude*1.2, _WaveLength, _Speed, direction1, 1);
-				float3 waveNormal2 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed* 0.2, direction2, 0.8);
-				float3 waveNormal3 = WaveNormal(totalWave, _Amplitude* 0.5, _WaveLength* 0.5, _Speed* 2, direction3, 0.8);
+				float3 waveNormal1 = WaveNormal(totalWave, _Amplitude*1.2, _WaveLength *2, _Speed, direction1, 0.2);
+				float3 waveNormal2 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed* 0.2, direction2, 0.6);
+				float3 waveNormal3 = WaveNormal(totalWave, _Amplitude* 0.5, _WaveLength* 0.5, _Speed* 2, direction3, 0.6);
 
 				float3 totalNormal = waveNormal1 + waveNormal2 + waveNormal3;
 				totalNormal.x = -totalNormal.x;
@@ -79,13 +82,30 @@
 			fixed4 frag (v2f i) : SV_Target
 			{
 				fixed4 col = tex2D(_MainTex, i.uv);
-				col = fixed4(0, 0, 0, 1);
-
-
-				col.r = i.normal.x * 0.5 + 0.5;
-				col.g = i.normal.y * 0.5 + 0.5;
-				col.b = i.normal.z * 0.5 + 0.5;
 				
+				// Light direction
+				half3 lightDir = normalize(_WorldSpaceLightPos0.xyz);
+
+				// Camera direction
+				half3 viewDir = normalize(_WorldSpaceCameraPos.xyz - i.vertex.xyz);
+
+				// -------------------- DIFFUSE LIGHT ----------------------
+
+				// This will be light added to all parts of the obejct, including dark ones.
+				half3 indirectDiffuse = unity_AmbientSky;
+
+				// Compute the diffuse lighting
+				half NdotL = max(0., dot(i.normal, lightDir));
+
+				// Diffuse based on light source
+				half3 directDiffuse = _LightColor0;
+
+				// Light = direct + indirect;
+				half3 diffuse = lerp(directDiffuse, indirectDiffuse, NdotL);
+
+				col.a = 0.5;
+				col.rgb *= diffuse;
+
 				return col;
 			}
 
