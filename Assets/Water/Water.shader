@@ -46,18 +46,18 @@
 			{
 				v2f o;
 				// Wave directions
-				float2 direction1 = normalize(float2(1,1));
-				float2 direction2 = normalize(float2(-1,1));
+				float2 direction1 = normalize(float2(1,0));
+				float2 direction2 = normalize(float2(0,1));
 
 				// Wave points
-				float3 wavePoint1 = WavePoint(IN.position.xy, _Amplitude, _WaveLength, _Speed, direction1, 0.8);
-				float3 wavePoint2 = WavePoint(IN.position.xy, _Amplitude, _WaveLength, _Speed, direction2, 0.8);
+				float3 wavePoint1 = WavePoint(IN.position.xy, _Amplitude *1.2, _WaveLength, _Speed, direction1, 1);
+				float3 wavePoint2 = WavePoint(IN.position.xy, _Amplitude, _WaveLength, _Speed * 0.2, direction2, 0.8);
 
 				float3 totalWave = float3(IN.position.x, IN.position.y, 0) + wavePoint1 + wavePoint2;
 
 				// Wave normals
-				float3 waveNormal1 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed, direction1, 0.8);
-				float3 waveNormal2 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed, direction2, 0.8);
+				float3 waveNormal1 = WaveNormal(totalWave, _Amplitude*1.2, _WaveLength, _Speed, direction1, 1);
+				float3 waveNormal2 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed* 0.2, direction2, 0.8);
 
 				float3 totalNormal = waveNormal1 + waveNormal2;
 				totalNormal.x = -totalNormal.x;
