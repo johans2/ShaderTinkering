@@ -48,18 +48,22 @@
 				// Wave directions
 				float2 direction1 = normalize(float2(1,0));
 				float2 direction2 = normalize(float2(0,1));
+				float2 direction3 = normalize(float2(0.3, 0.4));
 
 				// Wave points
 				float3 wavePoint1 = WavePoint(IN.position.xy, _Amplitude *1.2, _WaveLength, _Speed, direction1, 1);
 				float3 wavePoint2 = WavePoint(IN.position.xy, _Amplitude, _WaveLength, _Speed * 0.2, direction2, 0.8);
 
-				float3 totalWave = float3(IN.position.x, IN.position.y, 0) + wavePoint1 + wavePoint2;
+				float3 wavePoint3 = WavePoint(IN.position.xy, _Amplitude * 0.5, _WaveLength * 0.5, _Speed * 2, direction3, 0.8);
+
+				float3 totalWave = float3(IN.position.x, IN.position.y, 0) + wavePoint1 + wavePoint2 + wavePoint3;
 
 				// Wave normals
 				float3 waveNormal1 = WaveNormal(totalWave, _Amplitude*1.2, _WaveLength, _Speed, direction1, 1);
 				float3 waveNormal2 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed* 0.2, direction2, 0.8);
+				float3 waveNormal3 = WaveNormal(totalWave, _Amplitude* 0.5, _WaveLength* 0.5, _Speed* 2, direction3, 0.8);
 
-				float3 totalNormal = waveNormal1 + waveNormal2;
+				float3 totalNormal = waveNormal1 + waveNormal2 + waveNormal3;
 				totalNormal.x = -totalNormal.x;
 				totalNormal.y = -totalNormal.y;
 				totalNormal.z = 1 - totalNormal.z;
