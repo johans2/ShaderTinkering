@@ -2,7 +2,7 @@
 
 float3 WavePoint(float2 position, float amplitude, float wavelength, float speed, float2 direction, float steepness) {
     float frequency = 2 / wavelength;
-    float phaseConstantSpeed = speed * (2 / wavelength);
+    float phaseConstantSpeed = speed * 2 / wavelength;
 
     float fi = _Time.x  * phaseConstantSpeed;
     float dirDotPos = dot(direction, position);
@@ -17,10 +17,10 @@ float3 WavePoint(float2 position, float amplitude, float wavelength, float speed
 float3 WaveNormal(float3 position, float amplitude, float wavelength, float speed, float2 direction, float steepness) {
 
 	float frequency = 2 / wavelength;
-	float phaseConstantSpeed = speed * (2 / wavelength);
+	float phaseConstantSpeed = speed * 2 / wavelength;
 
 	float fi = _Time.x  * phaseConstantSpeed;
-	float dirDotPos = dot(float3(direction.x, 0, direction.y), position);
+	float dirDotPos = dot(direction, position.xz);
 
 	float WA = frequency * amplitude;
 	float S = sin(frequency * dirDotPos + fi);

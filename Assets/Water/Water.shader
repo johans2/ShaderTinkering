@@ -57,14 +57,14 @@ Shader "Custom/Water"
 
 				float3 worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
 
-				float Q = 0.4;
+				float Q = 0.2;
 
 				// Wave points
 				float3 wavePoint1 = WavePoint(worldPos.xz, _Amplitude, _WaveLength, _Speed, direction1, Q);
 				float3 wavePoint2 = WavePoint(worldPos.xz, _Amplitude, _WaveLength, _Speed, direction2, Q);
 				float3 wavePoint3 = WavePoint(worldPos.xz, _Amplitude, _WaveLength, _Speed, direction3, Q);
 
-				float3 totalWave = float3(worldPos.x, 0, worldPos.z) + wavePoint1 +wavePoint2;// + wavePoint3;
+				float3 totalWave = worldPos + wavePoint1 +wavePoint2;// + wavePoint3;
 
 				// Wave normals
 				float3 waveNormal1 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed, direction1, Q);
@@ -91,38 +91,42 @@ Shader "Custom/Water"
 			
 			fixed4 frag (v2f i) : SV_Target
 			{
+				/*
 				fixed4 col = tex2D(_MainTex, i.uv);
 				
+				col = fixed4(1,1,1,1);
+
 				// Light direction
-				half3 lightDir = normalize(_WorldSpaceLightPos0.xyz);
+				float3 lightDir = normalize(_WorldSpaceLightPos0.xyz);
 
 				// Camera direction
-				half3 viewDir = normalize(_WorldSpaceCameraPos.xyz - i.vertex.xyz);
+				float3 viewDir = normalize(_WorldSpaceCameraPos.xyz - i.vertex.xyz);
 
 				// -------------------- DIFFUSE LIGHT ----------------------
 
 				// This will be light added to all parts of the obejct, including dark ones.
-				half3 indirectDiffuse = unity_AmbientSky;
+				float3 indirectDiffuse = unity_AmbientSky;
 
 				// Compute the diffuse lighting
-				half NdotL = max(0., dot(i.normal, lightDir));
+				float NdotL = max(0., dot(i.normal, lightDir));
 
 				// Diffuse based on light source
-				half3 directDiffuse = _LightColor0;
+				float3 directDiffuse = _LightColor0;
 
 				// Light = direct + indirect;
-				half3 diffuse = lerp(directDiffuse, indirectDiffuse, NdotL);
+				float3 diffuse = saturate( lerp(directDiffuse, indirectDiffuse, NdotL));
 
 				col.a = 0.5;
-				col.rgb *= diffuse;
-				
-				/*
-				col = fixed4(1, 1, 1, 1);
-				col.r *= i.normal.x * 0.5;
-				col.g *= i.normal.y * 0.5;
-				col.b *= i.normal.z * 0.5;
+				col.rgb *= NdotL;//indirectDiffuse;
 				*/
 				
+				fixed4 col = fixed4(0, 1, 0, 1);
+				//col.r *= i.normal.x; // *0.5;
+				col.g = i.normal.y * 0.5 + 0.5;
+				//col.b *= i.normal.z; // * 0.5;
+				
+				clip(-0.5 + i.normal.y);
+
 				return col;
 			}
 
