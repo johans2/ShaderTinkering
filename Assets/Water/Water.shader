@@ -34,7 +34,7 @@ Shader "Custom/Water"
 			struct v2f
 			{
 				float2 uv : TEXCOORD0;
-				float4 vertex : SV_POSITION;
+				float4 vertex : POSITION;
 				float3 normal : TEXCOORD1;
 			};
 
@@ -57,29 +57,29 @@ Shader "Custom/Water"
 
 				float3 worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
 
-				float Q = 0.1;
+				float Q = 0.4;
 
 				// Wave points
 				float3 wavePoint1 = WavePoint(worldPos.xz, _Amplitude, _WaveLength, _Speed, direction1, Q);
 				float3 wavePoint2 = WavePoint(worldPos.xz, _Amplitude, _WaveLength, _Speed, direction2, Q);
 				float3 wavePoint3 = WavePoint(worldPos.xz, _Amplitude, _WaveLength, _Speed, direction3, Q);
 
-				float3 totalWave = worldPos + wavePoint1 + wavePoint2 + wavePoint3;
+				float3 totalWave = float3(worldPos.x, 0, worldPos.z) + wavePoint1 +wavePoint2;// + wavePoint3;
 
 				// Wave normals
 				float3 waveNormal1 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed, direction1, Q);
 				float3 waveNormal2 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed, direction2, Q);
 				float3 waveNormal3 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed, direction3, Q);
 
-				float3 totalNormal = waveNormal1 + waveNormal2 + waveNormal3;
+				float3 totalNormal = waveNormal1 + waveNormal2;// + waveNormal3;
 				/*
 				totalNormal.x = -totalNormal.x;
 				totalNormal.y = -totalNormal.y;
 				totalNormal.z = 1 - totalNormal.z;
 				*/
-				totalNormal.x = totalNormal.x;
-				totalNormal.y = (1 - totalNormal.y) * -1;
-				totalNormal.z = totalNormal.z;
+				totalNormal.x = -totalNormal.x;
+				totalNormal.y = 1-totalNormal.y;
+				totalNormal.z = -totalNormal.z;
 
 				totalNormal = normalize(totalNormal);
 
