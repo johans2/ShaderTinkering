@@ -9,11 +9,13 @@
 		
 		
 		Tags{ "Queue" = "Transparent" "RenderType" = "Transparent" }
-		ZWrite off
-
+		ZWrite off		
+		Cull back
+		Blend One One
+		BlendOp Add
 		CGPROGRAM
 
-		#pragma surface surf Lambert vertex:vert
+		#pragma surface surf Standard fullforwardshadows vertex:vert addshadow
 		#include "UnityCG.cginc"
 		#include "WaterIncludes.cginc"
 		#include "UnityLightingCommon.cginc"
@@ -73,7 +75,7 @@
 			//v.vertex.xyz += v.normal * _Amount;
 		}
 		
-		void surf(Input IN, inout SurfaceOutput o) {
+		void surf(Input IN, inout SurfaceOutputStandard o) {
 			o.Albedo = _Color.rgb;
 			o.Alpha = 0.5f;
 		}

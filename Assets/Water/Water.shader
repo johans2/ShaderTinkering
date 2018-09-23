@@ -12,11 +12,12 @@ Shader "Custom/Water"
 	}
 	SubShader
 	{
-		Tags{ "Queue" = "Transparent" "RenderType" = "Transparent" }
-		//LOD 100
+		Tags{ "Queue" = "Transparent" "IgnoreProjector" = "True" "RenderType" = "Transparent" }
+		LOD 200
 		Cull back
-		//ZWrite off
-		//Blend SrcAlpha OneMinusSrcAlpha
+		ZWrite off
+		Blend One One
+		BlendOp Add
 
 		Pass
 		{
@@ -117,17 +118,15 @@ Shader "Custom/Water"
 				// Light = direct + indirect;
 				float3 diffuse = lerp(indirectDiffuse, directDiffuse, NdotL);
 
-				col.a = 0.2;
+				col.a = 0.5;
 				col.rgb *= diffuse;
-				
 				/*
 				fixed4 col = fixed4(1, 1, 1, 1);
 				col.r *= i.normal.x * 0.5 + 0.5;
 				col.g *= i.normal.y * 0.5 + 0.5;
 				col.b *= i.normal.z * 0.5 + 0.5;
 				*/
-				//clip(-0.5 + i.normal.y);
-
+				
 				return col;
 			}
 
