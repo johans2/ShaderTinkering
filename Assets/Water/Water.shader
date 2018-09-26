@@ -34,7 +34,6 @@ Shader "Custom/Water"
 			{
 				float4 vertex : SV_POSITION;
 				float3 normal : TEXCOORD1;
-				float2 uv : TEXCOORD0;
 			};
 
 			sampler2D _MainTex;
@@ -58,14 +57,14 @@ Shader "Custom/Water"
 				float Q = 0.1;
 
 				// Wave points
-				float3 wavePoint1 = WavePoint(worldPos.xz, _Amplitude, _WaveLength, _Speed, direction1, Q);
+				float3 wavePoint1 = WavePoint(worldPos.xz, _Amplitude* 1.2, _WaveLength, _Speed, direction1, Q);
 				float3 wavePoint2 = WavePoint(worldPos.xz, _Amplitude, _WaveLength, _Speed, direction2, Q);
 				float3 wavePoint3 = WavePoint(worldPos.xz, _Amplitude, _WaveLength, _Speed, direction3, Q);
 
 				float3 totalWave = worldPos + wavePoint1 + wavePoint2 + wavePoint3;
 
 				// Wave normals
-				float3 waveNormal1 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed, direction1, Q);
+				float3 waveNormal1 = WaveNormal(totalWave, _Amplitude* 1.2, _WaveLength, _Speed, direction1, Q);
 				float3 waveNormal2 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed, direction2, Q);
 				float3 waveNormal3 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed, direction3, Q);
 
@@ -78,13 +77,11 @@ Shader "Custom/Water"
 				// Final vertex output
 				o.vertex = mul(UNITY_MATRIX_VP, float4(totalWave, 1.));
 				o.normal = normalize(totalNormal);
-				o.uv = TRANSFORM_TEX(v.texcoord, _MainTex);
-
 
 				return o;
 			}
 
-			fixed4 frag(v2f i) : SV_Target
+			fixed4 frag(v2f i) : COLOR
 			{
 				return fixed4(0,0,0,0);
 			}
@@ -96,6 +93,7 @@ Shader "Custom/Water"
 		{
 			ZWrite off
 			Blend SrcAlpha OneMinusSrcAlpha
+			
 			Cull back
 			LOD 200
 
@@ -116,7 +114,6 @@ Shader "Custom/Water"
 			{
 				float4 vertex : SV_POSITION;
 				float3 normal : TEXCOORD1;
-				float2 uv : TEXCOORD0;
 			};
 
 			sampler2D _MainTex;
@@ -130,11 +127,6 @@ Shader "Custom/Water"
 			v2f vert (appdata_full v)
 			{
 				v2f o;
-				/*	
-				o.vertex = mul(UNITY_MATRIX_VP,v.vertex);
-				o.normal = v.normal;
-				o.uv = float2(1, 1);
-				*/
 				
 				// Wave directions
 				float2 direction1 = normalize(float2(1,0));
@@ -146,14 +138,14 @@ Shader "Custom/Water"
 				float Q = 0.1;
 
 				// Wave points
-				float3 wavePoint1 = WavePoint(worldPos.xz, _Amplitude, _WaveLength, _Speed, direction1, Q);
+				float3 wavePoint1 = WavePoint(worldPos.xz, _Amplitude * 1.2, _WaveLength, _Speed, direction1, Q);
 				float3 wavePoint2 = WavePoint(worldPos.xz, _Amplitude, _WaveLength, _Speed, direction2, Q);
 				float3 wavePoint3 = WavePoint(worldPos.xz, _Amplitude, _WaveLength, _Speed, direction3, Q);
 
 				float3 totalWave = worldPos + wavePoint1 +wavePoint2 + wavePoint3;
 
 				// Wave normals
-				float3 waveNormal1 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed, direction1, Q);
+				float3 waveNormal1 = WaveNormal(totalWave, _Amplitude* 1.2, _WaveLength, _Speed, direction1, Q);
 				float3 waveNormal2 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed, direction2, Q);
 				float3 waveNormal3 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed, direction3, Q);
 
@@ -164,11 +156,9 @@ Shader "Custom/Water"
 				totalNormal.z = -totalNormal.z;
 
 				// Final vertex output
-				o.vertex = mul(UNITY_MATRIX_VP, float4(totalWave, 1.));
-				o.normal = normalize(totalNormal);
-				o.uv = TRANSFORM_TEX(v.texcoord, _MainTex);
+				o.vertex = v.vertex;// mul(UNITY_MATRIX_VP, /*float4(totalWave, 1.)*/ v.vertex);
+				o.normal = v.normal;//   normalize(/*totalNormal*/ v.normal);
 				
-
 				return o;
 			}
 			
@@ -206,6 +196,9 @@ Shader "Custom/Water"
 				colN.b *= i.normal.z * 0.5 + 0.5;
 				return colN;
 				*/
+
+				//return float4(1, 0, 0, 1);
+
 				return col;
 				
 			}
