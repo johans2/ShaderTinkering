@@ -14,6 +14,7 @@ Shader "Custom/Water"
 	{
 		Tags{ "Queue" = "Transparent" "RenderType" = "Transparent" }
 		
+		// -------------- Z WRITE AND VERTEX ANIMATION --------------
 		Pass { 
 			ZWrite on
 			Colormask 0
@@ -25,15 +26,10 @@ Shader "Custom/Water"
 			#include "WaterIncludes.cginc"
 			#include "UnityLightingCommon.cginc"
 
-			struct vertData {
-				float3 position : POSITION;
-				float2 uv : TEXCOORD0;
-			};
-
 			struct v2f
 			{
 				float4 vertex : SV_POSITION;
-				float3 normal : TEXCOORD1;
+				float3 normal : NORMAL;
 			};
 
 			sampler2D _MainTex;
@@ -83,12 +79,13 @@ Shader "Custom/Water"
 
 			fixed4 frag(v2f i) : COLOR
 			{
-				return fixed4(0,0,0,0);
+				return fixed4(0,0,0,1);
 			}
 
 			ENDCG
 		}
 
+		// -------------- COLOR, LIGHT AND BLENDING --------------
 		Pass
 		{
 			ZWrite off
@@ -104,16 +101,10 @@ Shader "Custom/Water"
 			#include "WaterIncludes.cginc"
 			#include "UnityLightingCommon.cginc"
 
-			struct vertData {
-				float3 position : POSITION;
-				float2 uv : TEXCOORD0;
-
-			};
-
 			struct v2f
 			{
 				float4 vertex : SV_POSITION;
-				float3 normal : TEXCOORD1;
+				float3 normal : NORMAL;
 			};
 
 			sampler2D _MainTex;
@@ -154,10 +145,10 @@ Shader "Custom/Water"
 				totalNormal.x = -totalNormal.x;
 				totalNormal.y = 1-totalNormal.y;
 				totalNormal.z = -totalNormal.z;
-
+				
 				// Final vertex output
-				o.vertex = v.vertex;// mul(UNITY_MATRIX_VP, /*float4(totalWave, 1.)*/ v.vertex);
-				o.normal = v.normal;//   normalize(/*totalNormal*/ v.normal);
+				o.vertex = mul(UNITY_MATRIX_VP,  float4(totalWave, 1.));
+				o.normal = normalize(totalNormal);
 				
 				return o;
 			}
