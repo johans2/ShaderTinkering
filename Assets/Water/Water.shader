@@ -4,11 +4,15 @@ Shader "Custom/Water"
 {
 	Properties
 	{
-		_MainTex ("Texture", 2D) = "white" {}
+		_Color("Color", Color) = (0,0,1,1)
+
+		[Header(Wave 1)]
 		_WaveLength("Wavelength",  Float) = 0.1
 		_Amplitude("Amplitude", Float) = 0.001
 		_Speed("Speed", Float) = 1
-		_Color("Color", Color) = (0,0,1,1)
+		_DirectionX("Direction X", Range(-1,1)) = 1
+		_DirectionY("Direction Y", Range(-1,1)) = 1
+		_Steepness("Steepness", Range(0,1)) = 0.1
 	}
 	SubShader
 	{
@@ -32,25 +36,26 @@ Shader "Custom/Water"
 				float3 normal : NORMAL;
 			};
 
-			sampler2D _MainTex;
-			float4 _MainTex_ST;
 			float4 _Color;
 			float _WaveLength;
 			float _Amplitude;
 			float _Speed;
+			float _DirectionX;
+			float _DirectionY;
+			float _Steepness;
 
 			// https://developer.nvidia.com/gpugems/GPUGems/gpugems_ch01.html
 			v2f vert(appdata_full v)
 			{
 				v2f o;
 				// Wave directions
-				float2 direction1 = normalize(float2(1,0));
+				float2 direction1 = normalize(float2(_DirectionX, _DirectionY));
 				float2 direction2 = normalize(float2(0,1));
 				float2 direction3 = normalize(float2(0.3, 0.4));
 
 				float3 worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
 
-				float Q = 0.1;
+				float Q = _Steepness;
 
 				// Wave points
 				float3 wavePoint1 = WavePoint(worldPos.xz, _Amplitude* 1.2, _WaveLength, _Speed, direction1, Q);
@@ -107,12 +112,13 @@ Shader "Custom/Water"
 				float3 normal : NORMAL;
 			};
 
-			sampler2D _MainTex;
-			float4 _MainTex_ST;
 			float4 _Color;
 			float _WaveLength;
 			float _Amplitude;
 			float _Speed;
+			float _DirectionX;
+			float _DirectionY;
+			float _Steepness;
 
 			// https://developer.nvidia.com/gpugems/GPUGems/gpugems_ch01.html
 			v2f vert (appdata_full v)
@@ -120,13 +126,13 @@ Shader "Custom/Water"
 				v2f o;
 				
 				// Wave directions
-				float2 direction1 = normalize(float2(1,0));
+				float2 direction1 = normalize(float2(_DirectionX, _DirectionY));
 				float2 direction2 = normalize(float2(0,1));
 				float2 direction3 = normalize(float2(0.3, 0.4));
 
 				float3 worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
 
-				float Q = 0.1;
+				float Q = _Steepness;
 
 				// Wave points
 				float3 wavePoint1 = WavePoint(worldPos.xz, _Amplitude * 1.2, _WaveLength, _Speed, direction1, Q);
