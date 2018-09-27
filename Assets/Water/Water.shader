@@ -5,6 +5,7 @@ Shader "Custom/Water"
 	Properties
 	{
 		_Color("Color", Color) = (0,0,1,1)
+		_Shininess ("Shininess", Range(0,10)) = 0
 
 		[Header(Wave 1)]
 		_WaveLength("Wavelength",  Float) = 0.1
@@ -16,7 +17,7 @@ Shader "Custom/Water"
 	}
 	SubShader
 	{
-		Tags{ "Queue" = "Transparent" "RenderType" = "Transparent" }
+		Tags{ "Queue" = "Transparent" "LightMode" = "ForwardBase" "RenderType" = "Transparent" }
 		
 		// -------------- Z WRITE AND VERTEX ANIMATION --------------
 		Pass { 
@@ -102,6 +103,7 @@ Shader "Custom/Water"
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
+			#pragma multi_compile_fwdbase
 			#include "UnityCG.cginc"
 			#include "WaterIncludes.cginc"
 			#include "UnityLightingCommon.cginc"
@@ -119,6 +121,7 @@ Shader "Custom/Water"
 			float _DirectionX;
 			float _DirectionY;
 			float _Steepness;
+			float _Shininess;
 
 			// https://developer.nvidia.com/gpugems/GPUGems/gpugems_ch01.html
 			v2f vert (appdata_full v)
@@ -184,7 +187,30 @@ Shader "Custom/Water"
 				// Light = direct + indirect;
 				float3 diffuse = lerp(indirectDiffuse, directDiffuse, NdotL);
 
-				col.rgb *= diffuse;
+				// -------------------- SPECULAR LIGHT ----------------------
+				
+				// Get the light reflection across the normal.
+				half3 refl = normalize(reflect(-lightDir, i.normal));
+
+				// Calculate dot product between the reflection diretion and the view direction [0...1]
+				half RdotV = max(0., dot(refl, viewDir));
+
+				// Make large values really large and small values really small.
+				half specPow = clamp(0,1, pow(RdotV, _Shininess));
+
+				// Sample the ramp texture for a smooth falloff.
+				half3 specRamp = lerp(float3(0,0,0), float3(1,1,1), specPow);
+				specRamp *= _LightColor0;
+
+				// Multiply by NdotL to make non lit areas not  get spec (kinda works).
+				//half3 spec = specRamp * _LightColor0 * _SpecColor * pow(_SpecIntensity, 2);
+
+				// Multiply by NdotL to make non lit areas not  get spec (kinda works).
+				//half3 spec = specPow * _LightColor0 * float3(1,,1);
+				
+				float3 light = diffuse + specRamp;
+
+				col.rgb *= light;
 				col.a = _Color.a;
 				/*
 				fixed4 colN = fixed4(1, 1, 1, 1);
