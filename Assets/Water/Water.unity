@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44839925, g: 0.49843413, b: 0.57562274, a: 1}
+  m_IndirectSpecularColor: {r: 0.44840175, g: 0.4984367, b: 0.5756224, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -188,7 +188,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 431868065}
   m_LocalRotation: {x: 0.13261725, y: -0, z: -0, w: 0.99116737}
-  m_LocalPosition: {x: 0, y: 0.906, z: -2.072}
+  m_LocalPosition: {x: -3.66, y: 0.906, z: -2.072}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -252,13 +252,13 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1206052113}
-  m_LocalRotation: {x: -0.012289677, y: 0.9249849, z: -0.37861663, w: -0.030024488}
-  m_LocalPosition: {x: 0.2, y: 2.05, z: 1.17}
+  m_LocalRotation: {x: 0.27735704, y: -0.6303652, z: 0.2580238, w: 0.6775962}
+  m_LocalPosition: {x: 0.2, y: 2.05, z: -0.695}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 44.521004, y: 183.71799, z: 0}
+  m_LocalEulerAnglesHint: {x: 44.521004, y: -85.864006, z: 0}
 --- !u!1 &1231284687
 GameObject:
   m_ObjectHideFlags: 0
@@ -417,6 +417,10 @@ Prefab:
     - target: {fileID: 400000, guid: 05c1e91aa291b0c438151f1c7ba4a1cd, type: 3}
       propertyPath: m_LocalScale.z
       value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 05c1e91aa291b0c438151f1c7ba4a1cd, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 05c1e91aa291b0c438151f1c7ba4a1cd, type: 3}
@@ -703,7 +707,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1966758873}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.37, y: -0.82, z: -0.13}
+  m_LocalPosition: {x: -3.37, y: 0.405, z: -0.13}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

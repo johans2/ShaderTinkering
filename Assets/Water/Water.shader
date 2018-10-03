@@ -110,8 +110,8 @@ Shader "Custom/Water"
 
 			struct v2f
 			{
-				float4 vertex : SV_POSITION;
-				float3 normal : NORMAL;
+				float4 worldPos : SV_POSITION;
+				float3 worldNormal : NORMAL;
 			};
 
 			float4 _Color;
@@ -156,8 +156,8 @@ Shader "Custom/Water"
 				totalNormal.z = -totalNormal.z;
 				
 				// Final vertex output
-				o.vertex = mul(UNITY_MATRIX_VP,  float4(totalWave, 1.));
-				o.normal = normalize(totalNormal);
+				o.worldPos = mul(UNITY_MATRIX_VP,  float4(totalWave, 1.));
+				o.worldNormal = normalize(mul(totalNormal, (float3x3)unity_WorldToObject)); //normalize(totalNormal);
 				
 				return o;
 			}
@@ -168,10 +168,10 @@ Shader "Custom/Water"
 				fixed4 col = _Color;
 				
 				// Light direction
-				float3 lightDir = normalize(_WorldSpaceLightPos0.xyz);
+				float3 lightDir = _WorldSpaceLightPos0.xyz;
 
 				// Camera direction
-				float3 viewDir = normalize(_WorldSpaceCameraPos.xyz - i.vertex.xyz);
+				float3 viewDir = normalize(_WorldSpaceCameraPos.xyz - i.worldPos.xyz);
 
 				// -------------------- DIFFUSE LIGHT ----------------------
 
@@ -179,7 +179,7 @@ Shader "Custom/Water"
 				float3 indirectDiffuse = unity_AmbientSky;
 
 				// Compute the diffuse lighting
-				float NdotL = max(0., dot(i.normal, lightDir));
+				float NdotL = max(0., dot(i.worldNormal, lightDir));
 
 				// Diffuse based on light source
 				float3 directDiffuse = _LightColor0;
@@ -190,7 +190,7 @@ Shader "Custom/Water"
 				// -------------------- SPECULAR LIGHT ----------------------
 				
 				// Get the light reflection across the normal.
-				half3 refl = normalize(reflect(-lightDir, i.normal));
+				half3 refl = normalize(reflect(-lightDir, i.worldNormal));
 
 				// Calculate dot product between the reflection diretion and the view direction [0...1]
 				half RdotV = max(0., dot(refl, viewDir));
