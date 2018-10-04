@@ -7,6 +7,8 @@ Shader "Custom/Water"
 		_Color("Color", Color) = (0,0,1,1)
 		_Shininess ("Shininess", Range(0,10)) = 0
 
+		_Normals("Shininess", 2D) = "black" {}
+
 		[Header(Wave 1)]
 		_WaveLength("Wavelength",  Float) = 0.1
 		_Amplitude("Amplitude", Float) = 0.001
@@ -112,9 +114,12 @@ Shader "Custom/Water"
 			{
 				float4 worldPos : SV_POSITION;
 				float3 worldNormal : NORMAL;
+				float2 uv_NormalMap : TEXCOORD0;
 			};
 
 			float4 _Color;
+			sampler2D _Normals;
+			sampler2D _Normals_ST;
 			float _WaveLength;
 			float _Amplitude;
 			float _Speed;
@@ -155,10 +160,13 @@ Shader "Custom/Water"
 				totalNormal.y = 1-totalNormal.y;
 				totalNormal.z = -totalNormal.z;
 				
+				//float3 addedNormal = tex2Dlod(_Normals, float4(v.texcoord.xy * _Time.x, 0, 0)) / 10;
+
 				// Final vertex output
 				o.worldPos = mul(UNITY_MATRIX_VP,  float4(totalWave, 1.));
-				o.worldNormal = normalize(mul(totalNormal, (float3x3)unity_WorldToObject)); //normalize(totalNormal);
-				
+				o.worldNormal = normalize(mul(totalNormal, (float3x3)unity_WorldToObject));
+				o.uv_NormalMap = v.texcoord;
+
 				return o;
 			}
 			
@@ -167,6 +175,9 @@ Shader "Custom/Water"
 				
 				fixed4 col = _Color;
 				
+				float3 addedNormal = tex2D(_Normals, i.uv_NormalMap.yx);
+				i.worldNormal *= addedNormal;
+
 				// Light direction
 				float3 lightDir = _WorldSpaceLightPos0.xyz;
 
@@ -189,6 +200,7 @@ Shader "Custom/Water"
 
 				// -------------------- SPECULAR LIGHT ----------------------
 				
+
 				// Get the light reflection across the normal.
 				half3 refl = normalize(reflect(-lightDir, i.worldNormal));
 
@@ -213,7 +225,7 @@ Shader "Custom/Water"
 				col.rgb *= light;
 				col.rgb += specRamp;
 
-				//col.rgb = viewDir;
+				//col.rgb = tex2D(_Normals, i.uv_NormalMap);
 
 				col.a = _Color.a;
 				/*
