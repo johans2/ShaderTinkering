@@ -171,7 +171,7 @@ Shader "Custom/Water"
 				float3 lightDir = _WorldSpaceLightPos0.xyz;
 
 				// Camera direction
-				float3 viewDir = normalize(_WorldSpaceCameraPos.xyz - i.worldPos.xyz);
+				float3 viewDir = normalize(i.worldPos.xyz - _WorldSpaceCameraPos.xyz);
 
 				// -------------------- DIFFUSE LIGHT ----------------------
 
@@ -196,7 +196,7 @@ Shader "Custom/Water"
 				half RdotV = max(0., dot(refl, viewDir));
 
 				// Make large values really large and small values really small.
-				half specPow = clamp(0,1, pow(RdotV, _Shininess));
+				half specPow = pow(RdotV, _Shininess);
 
 				// Sample the ramp texture for a smooth falloff.
 				half3 specRamp = lerp(float3(0,0,0), float3(1,1,1), specPow);
@@ -208,9 +208,13 @@ Shader "Custom/Water"
 				// Multiply by NdotL to make non lit areas not  get spec (kinda works).
 				//half3 spec = specPow * _LightColor0 * float3(1,,1);
 				
-				float3 light = diffuse + specRamp;
+				float3 light = diffuse;// +specRamp;
 
 				col.rgb *= light;
+				col.rgb += specRamp;
+
+				//col.rgb = viewDir;
+
 				col.a = _Color.a;
 				/*
 				fixed4 colN = fixed4(1, 1, 1, 1);

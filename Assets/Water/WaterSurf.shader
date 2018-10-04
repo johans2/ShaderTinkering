@@ -40,21 +40,21 @@
 
 			float3 worldPos = v.vertex.xyz; //mul(unity_ObjectToWorld, v.vertex).xyz;
 
-			float Q = 0.1;
+			float Q = 1;
 
 			// Wave points
 			float3 wavePoint1 = WavePoint(worldPos.xz, _Amplitude, _WaveLength, _Speed, direction1, Q);
 			float3 wavePoint2 = WavePoint(worldPos.xz, _Amplitude, _WaveLength, _Speed, direction2, Q);
 			float3 wavePoint3 = WavePoint(worldPos.xz, _Amplitude, _WaveLength, _Speed, direction3, Q);
 
-			float3 totalWave = worldPos + wavePoint1 + wavePoint2 + wavePoint3;
+			float3 totalWave = worldPos + wavePoint1;// +wavePoint2 + wavePoint3;
 
 			// Wave normals
 			float3 waveNormal1 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed, direction1, Q);
 			float3 waveNormal2 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed, direction2, Q);
 			float3 waveNormal3 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed, direction3, Q);
 
-			float3 totalNormal = waveNormal1 + waveNormal2 + waveNormal3;
+			float3 totalNormal = waveNormal1;// + waveNormal2 + waveNormal3;
 
 			totalNormal.x = -totalNormal.x;
 			totalNormal.y = 1 - totalNormal.y;
@@ -106,25 +106,25 @@
 
 			float3 worldPos = v.vertex.xyz; //mul(unity_ObjectToWorld, v.vertex).xyz;
 
-			float Q = 0.1;
+			float Q = 1;
 
 			// Wave points
 			float3 wavePoint1 = WavePoint(worldPos.xz, _Amplitude, _WaveLength, _Speed, direction1, Q);
 			float3 wavePoint2 = WavePoint(worldPos.xz, _Amplitude, _WaveLength, _Speed, direction2, Q);
 			float3 wavePoint3 = WavePoint(worldPos.xz, _Amplitude, _WaveLength, _Speed, direction3, Q);
 
-			float3 totalWave = worldPos + wavePoint1 + wavePoint2 + wavePoint3;
+			float3 totalWave = worldPos + wavePoint1;// + wavePoint2 + wavePoint3;
 
 			// Wave normals
 			float3 waveNormal1 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed, direction1, Q);
 			float3 waveNormal2 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed, direction2, Q);
 			float3 waveNormal3 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed, direction3, Q);
 
-			float3 totalNormal = waveNormal1 + waveNormal2 + waveNormal3;
+			float3 totalNormal = waveNormal1;// + waveNormal2 + waveNormal3;
 
-			totalNormal.x = -totalNormal.x;
+			totalNormal.x = totalNormal.x;
 			totalNormal.y = 1 - totalNormal.y;
-			totalNormal.z = -totalNormal.z;
+			totalNormal.z = totalNormal.z;
 
 			// Final vertex output
 			v.vertex.xyz += totalWave;
@@ -133,7 +133,7 @@
 
 		void surf(Input IN, inout SurfaceOutputStandardSpecular o) {
 			o.Albedo = _Color.rgb;
-			o.Smoothness = .5;
+			o.Smoothness = 0.5;
 			o.Alpha = _Color.a;
 		}
 
