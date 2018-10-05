@@ -7,7 +7,7 @@ Shader "Custom/Water"
 		_Color("Color", Color) = (0,0,1,1)
 		_Shininess ("Shininess", Range(0,10)) = 0
 
-		_Normals("Shininess", 2D) = "black" {}
+		_Normals("Bumpmap", 2D) = "black" {}
 
 		[Header(Wave 1)]
 		_WaveLength("Wavelength",  Float) = 0.1
@@ -119,7 +119,7 @@ Shader "Custom/Water"
 
 			float4 _Color;
 			sampler2D _Normals;
-			sampler2D _Normals_ST;
+			float4 _Normals_ST;
 			float _WaveLength;
 			float _Amplitude;
 			float _Speed;
@@ -160,12 +160,10 @@ Shader "Custom/Water"
 				totalNormal.y = 1-totalNormal.y;
 				totalNormal.z = -totalNormal.z;
 				
-				//float3 addedNormal = tex2Dlod(_Normals, float4(v.texcoord.xy * _Time.x, 0, 0)) / 10;
-
 				// Final vertex output
 				o.worldPos = mul(UNITY_MATRIX_VP,  float4(totalWave, 1.));
 				o.worldNormal = normalize(mul(totalNormal, (float3x3)unity_WorldToObject));
-				o.uv_NormalMap = v.texcoord;
+				o.uv_NormalMap = TRANSFORM_TEX(v.texcoord, _Normals);
 
 				return o;
 			}
@@ -214,30 +212,12 @@ Shader "Custom/Water"
 				half3 specRamp = lerp(float3(0,0,0), float3(1,1,1), specPow);
 				specRamp *= _LightColor0;
 
-				// Multiply by NdotL to make non lit areas not  get spec (kinda works).
-				//half3 spec = specRamp * _LightColor0 * _SpecColor * pow(_SpecIntensity, 2);
-
-				// Multiply by NdotL to make non lit areas not  get spec (kinda works).
-				//half3 spec = specPow * _LightColor0 * float3(1,,1);
-				
 				float3 light = diffuse;// +specRamp;
 
 				col.rgb *= light;
 				col.rgb += specRamp;
 
-				//col.rgb = tex2D(_Normals, i.uv_NormalMap);
-
 				col.a = _Color.a;
-				/*
-				fixed4 colN = fixed4(1, 1, 1, 1);
-				colN.r *= i.normal.x * 0.5 + 0.5;
-				colN.g *= i.normal.y * 0.5 + 0.5;
-				colN.b *= i.normal.z * 0.5 + 0.5;
-				return colN;
-				*/
-
-				//return float4(1, 0, 0, 1);
-
 				return col;
 				
 			}
