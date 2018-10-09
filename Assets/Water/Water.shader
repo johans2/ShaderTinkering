@@ -5,9 +5,9 @@ Shader "Custom/Water"
 	Properties
 	{
 		_Color("Color", Color) = (0,0,1,1)
-		_Shininess ("Shininess", Range(0,10)) = 0
+		_Shininess ("Shininess", Range(0.2,10)) = 0
 
-		_Normals("Bumpmap", 2D) = "black" {}
+		_Normals("Bumpmap", 2D) = "white" {}
 
 		[Header(Wave 1)]
 		_WaveLength("Wavelength",  Float) = 0.1
@@ -206,14 +206,12 @@ Shader "Custom/Water"
 				// Make large values really large and small values really small.
 				half specPow = pow(RdotV, _Shininess);
 
-				// Sample the ramp texture for a smooth falloff.
-				half3 specRamp = lerp(float3(0,0,0), float3(1,1,1), specPow);
-				specRamp *= _LightColor0;
+				specPow *= _LightColor0;
 
-				float3 light = diffuse;// +specRamp;
+				float3 light = diffuse + specPow;
 
 				col.rgb *= light;
-				col.rgb += specRamp;
+				//col.rgb += specRamp;
 
 				col.a = _Color.a;
 				return col;
