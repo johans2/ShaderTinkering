@@ -206,9 +206,7 @@ Shader "Custom/Water"
 				// Make large values really large and small values really small.
 				half specPow = pow(RdotV, _Shininess);
 
-				specPow *= _LightColor0;
-
-				float3 light = diffuse + specPow;
+				float3 light = diffuse + (_LightColor0 * specPow);
 
 				col.rgb *= light;
 				//col.rgb += specRamp;
