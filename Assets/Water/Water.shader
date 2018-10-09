@@ -16,6 +16,7 @@ Shader "Custom/Water"
 		_DirectionX("Direction X", Range(-1,1)) = 1
 		_DirectionY("Direction Y", Range(-1,1)) = 1
 		_Steepness("Steepness", Range(0,1)) = 0.1
+		_FadeSpeed("FadeSpeed", Float) = 1.0
 	}
 	SubShader
 	{
@@ -46,6 +47,7 @@ Shader "Custom/Water"
 			float _DirectionX;
 			float _DirectionY;
 			float _Steepness;
+			float _FadeSpeed;
 
 			// https://developer.nvidia.com/gpugems/GPUGems/gpugems_ch01.html
 			v2f vert(appdata_full v)
@@ -60,27 +62,19 @@ Shader "Custom/Water"
 
 				float Q = _Steepness;
 
-				// Wave points
+				float sinCurve = sin(_Time.x * _FadeSpeed) * 0.5 + 0.5;
+				float amp1 = clamp(_Amplitude * sinCurve, 0, 1);
+
+				// Wave points, needed for Z-writing
 				float3 wavePoint1 = WavePoint(worldPos.xz, _Amplitude* 1.2, _WaveLength, _Speed, direction1, Q);
 				float3 wavePoint2 = WavePoint(worldPos.xz, _Amplitude, _WaveLength, _Speed, direction2, Q);
-				float3 wavePoint3 = WavePoint(worldPos.xz, _Amplitude, _WaveLength, _Speed, direction3, Q);
+				float3 wavePoint3 = WavePoint(worldPos.xz, amp1, _WaveLength, _Speed, direction3, Q);
 
 				float3 totalWave = worldPos + wavePoint1 + wavePoint2 + wavePoint3;
 
-				// Wave normals
-				float3 waveNormal1 = WaveNormal(totalWave, _Amplitude* 1.2, _WaveLength, _Speed, direction1, Q);
-				float3 waveNormal2 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed, direction2, Q);
-				float3 waveNormal3 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed, direction3, Q);
-
-				float3 totalNormal = waveNormal1 + waveNormal2 + waveNormal3;
-
-				totalNormal.x = -totalNormal.x;
-				totalNormal.y = 1 - totalNormal.y;
-				totalNormal.z = -totalNormal.z;
-
 				// Final vertex output
 				o.vertex = mul(UNITY_MATRIX_VP, float4(totalWave, 1.));
-				o.normal = normalize(totalNormal);
+				o.normal = v.normal; //normalize(totalNormal);
 
 				return o;
 			}
@@ -127,6 +121,7 @@ Shader "Custom/Water"
 			float _DirectionY;
 			float _Steepness;
 			float _Shininess;
+			float _FadeSpeed;
 
 			// https://developer.nvidia.com/gpugems/GPUGems/gpugems_ch01.html
 			v2f vert (appdata_full v)
@@ -142,17 +137,20 @@ Shader "Custom/Water"
 
 				float Q = _Steepness;
 
+				float sinCurve = sin(_Time.x * _FadeSpeed) * 0.5 + 0.5;
+				float amp1 = clamp(_Amplitude * sinCurve, 0, 1);
+
 				// Wave points
 				float3 wavePoint1 = WavePoint(worldPos.xz, _Amplitude * 1.2, _WaveLength, _Speed, direction1, Q);
 				float3 wavePoint2 = WavePoint(worldPos.xz, _Amplitude, _WaveLength, _Speed, direction2, Q);
-				float3 wavePoint3 = WavePoint(worldPos.xz, _Amplitude, _WaveLength, _Speed, direction3, Q);
+				float3 wavePoint3 = WavePoint(worldPos.xz, amp1, _WaveLength, _Speed, direction3, Q);
 
 				float3 totalWave = worldPos + wavePoint1 +wavePoint2 + wavePoint3;
 
 				// Wave normals
 				float3 waveNormal1 = WaveNormal(totalWave, _Amplitude* 1.2, _WaveLength, _Speed, direction1, Q);
 				float3 waveNormal2 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed, direction2, Q);
-				float3 waveNormal3 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed, direction3, Q);
+				float3 waveNormal3 = WaveNormal(totalWave, amp1, _WaveLength, _Speed, direction3, Q);
 
 				float3 totalNormal = waveNormal1 + waveNormal2 + waveNormal3;
 				
