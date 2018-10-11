@@ -41,13 +41,6 @@ Shader "Custom/Water"
 			};
 
 			float4 _Color;
-			float _WaveLength1;
-			float _Amplitude1;
-			float _Speed1;
-			float _DirectionX1;
-			float _DirectionY1;
-			float _Steepness1;
-			float _FadeSpeed1;
 
 			// https://developer.nvidia.com/gpugems/GPUGems/gpugems_ch01.html
 			v2f vert(appdata_full v)
@@ -117,13 +110,6 @@ Shader "Custom/Water"
 			float4 _Normals_ST;
 			float _Shininess;
 
-			float _WaveLength1;
-			float _Amplitude1;
-			float _Speed1;
-			float _DirectionX1;
-			float _DirectionY1;
-			float _Steepness1;
-			float _FadeSpeed1;
 
 			// https://developer.nvidia.com/gpugems/GPUGems/gpugems_ch01.html
 			v2f vert (appdata_full v)
