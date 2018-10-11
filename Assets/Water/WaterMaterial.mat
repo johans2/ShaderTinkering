@@ -51,9 +51,9 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Normals:
-        m_Texture: {fileID: 2800000, guid: 78c0af73e1444b6469dabe337d3568e2, type: 3}
-        m_Scale: {x: 5, y: 5}
-        m_Offset: {x: 0, y: 0}
+        m_Texture: {fileID: 2800000, guid: c0cdb135b842ff44992e84e133cd8fe6, type: 3}
+        m_Scale: {x: 3, y: 3}
+        m_Offset: {x: 1.45, y: 1.74}
     - _OcclusionMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -63,15 +63,19 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _Amplitude: 0.03
+    - _Amplitude: 0.015
+    - _Amplitude1: 0.02
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _Direction: -1
     - _DirectionX: -0.341
+    - _DirectionX1: 1
     - _DirectionY: 0.442
+    - _DirectionY1: 1
     - _DstBlend: 0
-    - _FadeSpeed: 27.34
+    - _FadeSpeed: 50
+    - _FadeSpeed1: 1
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
@@ -80,14 +84,17 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _Shininess: 1.36
+    - _Shininess: 1.68
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _Speed: 5
+    - _Speed1: 5
     - _SrcBlend: 1
-    - _Steepness: 0.436
+    - _Steepness: 1.16
+    - _Steepness1: 0.85
     - _UVSec: 0
-    - _WaveLength: 0.1
+    - _WaveLength: 0.11
+    - _WaveLength1: 0.1
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 0, g: 0.95862055, b: 1, a: 0.659}
