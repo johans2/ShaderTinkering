@@ -103,6 +103,7 @@ Shader "Custom/Water"
 				float4 worldPos : SV_POSITION;
 				float3 worldNormal : NORMAL;
 				float2 uv_NormalMap : TEXCOORD0;
+				float2 current : TEXCOORD1;
 			};
 
 			float4 _Color;
@@ -151,6 +152,8 @@ Shader "Custom/Water"
 				o.worldNormal = normalize(mul(totalNormal, (float3x3)unity_WorldToObject));
 				o.uv_NormalMap = TRANSFORM_TEX(v.texcoord, _Normals);
 
+				o.current = normalize(direction1 + direction2 + direction3);
+
 				return o;
 			}
 			
@@ -158,7 +161,13 @@ Shader "Custom/Water"
 			{
 				
 				fixed4 col = _Color;
+
+				float nDotUp = clamp(dot(i.worldNormal, float3(0, 1, 0)) , 0, 1);
+				float3 currentXYZ = float3(i.current.x, 0, i.current.y);
+				float nDotCurrent = clamp(dot(i.worldNormal, currentXYZ), 0, 1);
 				
+				//nDotUp = 
+
 				float3 addedNormal = tex2D(_Normals, i.uv_NormalMap.yx);
 				i.worldNormal *= addedNormal;
 
@@ -197,10 +206,14 @@ Shader "Custom/Water"
 				float3 light = diffuse + (_LightColor0 * specPow);
 
 				col.rgb *= light;
-				//col.rgb += specRamp;
-
+				
 				col.a = _Color.a;
-				return col;
+				
+				fixed4 foam = fixed4(1, 0, 0, 1);
+
+				fixed4 mix = lerp (foam , col, nDotUp);
+				
+				return mix;
 				
 			}
 
