@@ -196,7 +196,7 @@ Shader "Custom/Water"
 				totalNormal.z = -totalNormal.z;
 				*/
 				// Final vertex output
-				o.worldPos = mul(UNITY_MATRIX_VP,  float4(wavePointSum - float3(0,0.001,0), 1.));
+				o.worldPos = mul(UNITY_MATRIX_VP,  float4(wavePointSum + float3(0,0.0001,0), 1.));
 				o.worldNormal = normalize(mul(waveNormalSum, (float3x3)unity_WorldToObject));
 				o.uv_NormalMap = TRANSFORM_TEX(v.texcoord, _Normals);
 
