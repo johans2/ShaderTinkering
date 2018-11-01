@@ -72,7 +72,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _Amplitude: 0.015
-    - _Amplitude1: 0.04
+    - _Amplitude1: 0.05
     - _Amplitude2: 0.02
     - _Amplitude3: 0.015
     - _Amplitude4: 0.005
@@ -108,7 +108,7 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _Shininess: 1.68
+    - _Shininess: 1.25
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _Speed: 5
@@ -130,7 +130,7 @@ Material:
     - _Wave4Enabled: 1
     - _Wave5Enabled: 1
     - _WaveLength: 0.11
-    - _WaveLength1: 0.3
+    - _WaveLength1: 0.4
     - _WaveLength2: 0.1
     - _WaveLength3: 0.08
     - _WaveLength4: 0.1
