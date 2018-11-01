@@ -173,7 +173,7 @@ Shader "Custom/Water"
 				float nDotUp = clamp(dot(float3(0, 1, 0), i.worldNormal) , 0, 1);
 				
 				float3 addedNormal = tex2D(_Normals, i.uv_NormalMap.yx);
-				i.worldNormal *= addedNormal;
+				i.worldNormal *= (addedNormal * 1.2);
 
 				// Light direction
 				float3 lightDir = _WorldSpaceLightPos0.xyz;
@@ -205,13 +205,13 @@ Shader "Custom/Water"
 				half RdotV = max(0., dot(refl, viewDir));
 
 				// Make large values really large and small values really small.
-				half specPow = pow(RdotV, _Shininess);
+				half specular = pow(RdotV, _Shininess) * _LightColor0;
 
-				float3 light = diffuse + (_LightColor0 * specPow);
+				float3 light = diffuse + specular;
 
 				col.rgb *= light;
 				
-				col.a = _Color.a;
+				col.a = _Color.a + specular;
 				
 				fixed4 red = fixed4(1, 0, 0, 1);
 				fixed4 trans = fixed4(0, 0, 0, 0);
