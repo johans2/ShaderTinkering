@@ -87,7 +87,7 @@ float3 WaveNormal(float3 position, float amplitude, float wavelength, float spee
 
 float3 WavePointSum(float3 worldPos) {
 	float3 wavePointSum = WavePoint(worldPos.xz, 
-									_Amplitude1 * 1.2, 
+									_Amplitude1, 
 									_WaveLength1, 
 									_Speed1, 
 									float2(_DirectionX1, _DirectionY1), 
@@ -107,7 +107,7 @@ float3 WavePointSum(float3 worldPos) {
 									_Amplitude3,
 									_WaveLength3,
 									_Speed3,
-									float2(_DirectionX2, _DirectionY2),
+									float2(_DirectionX3, _DirectionY3),
 									_Steepness2);
 	#endif
 

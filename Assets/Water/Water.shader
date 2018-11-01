@@ -81,7 +81,7 @@ Shader "Custom/Water"
 
 			struct v2f
 			{
-				float4 vertex : SV_POSITION;
+				float4 worldPos : SV_POSITION;
 				float3 normal : NORMAL;
 			};
 
@@ -105,10 +105,10 @@ Shader "Custom/Water"
 				float3 wavePoint3 = WavePoint(worldPos.xz, amp1, _WaveLength1, _Speed1, direction3, Q);
 				*/
 				
-				float3 totalWave = worldPos + WavePointSum(worldPos);
+				float3 wavePointSum = worldPos + WavePointSum(worldPos);
 
 				// Final vertex output
-				o.vertex = mul(UNITY_MATRIX_VP, float4(totalWave, 1.));
+				o.worldPos = mul(UNITY_MATRIX_VP, float4(wavePointSum, 1.));
 				o.normal = v.normal;
 
 				return o;
@@ -116,7 +116,7 @@ Shader "Custom/Water"
 
 			fixed4 frag(v2f i) : COLOR
 			{
-				return fixed4(0,0,0,1);
+				return fixed4(0,0,0,0);
 			}
 
 			ENDCG
@@ -138,6 +138,10 @@ Shader "Custom/Water"
 			#include "UnityCG.cginc"
 			#include "WaterIncludes.cginc"
 			#include "UnityLightingCommon.cginc"
+			#pragma shader_feature WAVE2
+			#pragma shader_feature WAVE3
+			#pragma shader_feature WAVE4
+			#pragma shader_feature WAVE5
 
 			struct v2f
 			{
@@ -165,6 +169,7 @@ Shader "Custom/Water"
 				float2 direction3 = normalize(float2(0.3, 0.4));
 				*/
 				float3 worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
+
 				/*
 				float Q = _Steepness1;
 
@@ -191,7 +196,7 @@ Shader "Custom/Water"
 				totalNormal.z = -totalNormal.z;
 				*/
 				// Final vertex output
-				o.worldPos = mul(UNITY_MATRIX_VP,  float4(wavePointSum, 1.));
+				o.worldPos = mul(UNITY_MATRIX_VP,  float4(wavePointSum - float3(0,0.001,0), 1.));
 				o.worldNormal = normalize(mul(waveNormalSum, (float3x3)unity_WorldToObject));
 				o.uv_NormalMap = TRANSFORM_TEX(v.texcoord, _Normals);
 
@@ -261,6 +266,7 @@ Shader "Custom/Water"
 
 				//col.rgb += foam;
 				fixed4 red = fixed4(1, 0, 0, 1);
+				fixed4 trans = fixed4(0, 0, 0, 0);
 				//fixed4 mix = lerp (col, foam, foamFactor);
 				//col = red * foamMask.r;
 				//col.rgb = foamMask.rgb;
