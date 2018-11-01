@@ -38,6 +38,14 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Foam:
+        m_Texture: {fileID: 2800000, guid: 028e5356189a3ba42972bca8f2731bd4, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FoamNoise:
+        m_Texture: {fileID: 2800000, guid: c1ce319c347d3a04c82a15107083d656, type: 3}
+        m_Scale: {x: 10, y: 10}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 2800000, guid: 4e02df907356e0848a5d76021b80192a, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -75,7 +83,7 @@ Material:
     - _DirectionY1: 1
     - _DstBlend: 0
     - _FadeSpeed: 50
-    - _FadeSpeed1: 1
+    - _FadeSpeed1: 0
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
@@ -91,7 +99,7 @@ Material:
     - _Speed1: 5
     - _SrcBlend: 1
     - _Steepness: 1.16
-    - _Steepness1: 0.47
+    - _Steepness1: 0.21
     - _UVSec: 0
     - _WaveLength: 0.11
     - _WaveLength1: 0.1
