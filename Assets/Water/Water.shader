@@ -9,9 +9,6 @@ Shader "Custom/Water"
 
 		_Normals("Bumpmap", 2D) = "white" {}
 
-		_Foam("Foam", 2D) = "white" {}
-		_FoamNoise("FoamNoise", 2D) = "white" {}
-
 		[Header(Base Wave)]
 		_WaveLength1("Wavelength",  Float) = 0.1
 		_Amplitude1("Amplitude", Float) = 0.001
@@ -95,31 +92,24 @@ Shader "Custom/Water"
 			{
 				v2f o;
 				// Wave directions
+				/*
 				float2 direction1 = normalize(float2(_DirectionX1, _DirectionY1));
 				float2 direction2 = normalize(float2(0,1));
 				float2 direction3 = normalize(float2(0.3, 0.4));
-
+				*/
 				float3 worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
-
-				float Q = _Steepness1;
-
-				// Fade wave in and out
-				float sinCurve = sin(_Time.x * _FadeSpeed1) * 0.5 + 0.5;
-				float amp1 = clamp(_Amplitude1 * sinCurve, 0, 1);
-
+				/*
 				// Wave points, needed for Z-writing
-				float3 wavePoint1 = WavePoint(worldPos.xz, _Amplitude1 * 1.2, _WaveLength1, _Speed1, direction1, Q);
+				float3 wavePoint1 = WavePoint(worldPos.xz, _Amplitude1 * 1.2, _WaveLength1, _Speed1, normalize(float2(_DirectionX1, _DirectionY1)), _Steepness1);
 				float3 wavePoint2 = WavePoint(worldPos.xz, _Amplitude1, _WaveLength1*10, _Speed1, direction2, Q);
 				float3 wavePoint3 = WavePoint(worldPos.xz, amp1, _WaveLength1, _Speed1, direction3, Q);
-
-
-
-
-				float3 totalWave = worldPos + wavePoint1 + wavePoint2 + wavePoint3;
+				*/
+				
+				float3 totalWave = worldPos + WavePointSum(worldPos);
 
 				// Final vertex output
 				o.vertex = mul(UNITY_MATRIX_VP, float4(totalWave, 1.));
-				o.normal = v.normal; //normalize(totalNormal);
+				o.normal = v.normal;
 
 				return o;
 			}
@@ -154,18 +144,11 @@ Shader "Custom/Water"
 				float4 worldPos : SV_POSITION;
 				float3 worldNormal : NORMAL;
 				float2 uv_NormalMap : TEXCOORD0;
-				float2 current : TEXCOORD1;
-				float2 uv_FoamTex : TEXCOORD2;
-				float2 uv_FoamNoise : TEXCOORD3;
 			};
 
 			float4 _Color;
 			sampler2D _Normals;
-			sampler2D _Foam;
-			sampler2D _FoamNoise;
 
-			float4 _Foam_ST;
-			float4 _FoamNoise_ST;
 			float4 _Normals_ST;
 			float _Shininess;
 
@@ -176,12 +159,13 @@ Shader "Custom/Water"
 				v2f o;
 				
 				// Wave directions
+				/*
 				float2 direction1 = normalize(float2(_DirectionX1, _DirectionY1));
 				float2 direction2 = normalize(float2(0,1));
 				float2 direction3 = normalize(float2(0.3, 0.4));
-
+				*/
 				float3 worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
-
+				/*
 				float Q = _Steepness1;
 
 				float sinCurve = sin(_Time.x * _FadeSpeed1) * 0.5 + 0.5;
@@ -191,27 +175,25 @@ Shader "Custom/Water"
 				float3 wavePoint1 = WavePoint(worldPos.xz, _Amplitude1 * 1.2, _WaveLength1, _Speed1, direction1, Q);
 				float3 wavePoint2 = WavePoint(worldPos.xz, _Amplitude1, _WaveLength1 * 10, _Speed1, direction2, Q);
 				float3 wavePoint3 = WavePoint(worldPos.xz, amp1, _WaveLength1, _Speed1, direction3, Q);
-
-				float3 totalWave = worldPos + wavePoint1 +wavePoint2 + wavePoint3;
+				*/
+				float3 wavePointSum = worldPos + WavePointSum(worldPos);
 
 				// Wave normals
+				/*
 				float3 waveNormal1 = WaveNormal(totalWave, _Amplitude1* 1.2, _WaveLength1, _Speed1, direction1, Q);
 				float3 waveNormal2 = WaveNormal(totalWave, _Amplitude1, _WaveLength1 * 10, _Speed1, direction2, Q);
 				float3 waveNormal3 = WaveNormal(totalWave, amp1, _WaveLength1, _Speed1, direction3, Q);
-
-				float3 totalNormal = waveNormal1 + waveNormal2 + waveNormal3;
-				
+				*/
+				float3 waveNormalSum = WaveNormalSum(wavePointSum); //waveNormal1 + waveNormal2 + waveNormal3;
+				/*
 				totalNormal.x = -totalNormal.x;
 				totalNormal.y = 1-totalNormal.y;
 				totalNormal.z = -totalNormal.z;
-				
+				*/
 				// Final vertex output
-				o.worldPos = mul(UNITY_MATRIX_VP,  float4(totalWave, 1.));
-				o.worldNormal = normalize(mul(totalNormal, (float3x3)unity_WorldToObject));
+				o.worldPos = mul(UNITY_MATRIX_VP,  float4(wavePointSum, 1.));
+				o.worldNormal = normalize(mul(waveNormalSum, (float3x3)unity_WorldToObject));
 				o.uv_NormalMap = TRANSFORM_TEX(v.texcoord, _Normals);
-				o.uv_FoamTex = TRANSFORM_TEX(v.texcoord, _Foam);
-				o.uv_FoamNoise = TRANSFORM_TEX(v.texcoord, _FoamNoise);
-				o.current = normalize(direction1 + direction2 + direction3);
 
 				return o;
 			}
@@ -223,13 +205,13 @@ Shader "Custom/Water"
 
 				float nDotUp = clamp(dot(float3(0, 1, 0), i.worldNormal) , 0, 1);
 				
-				float3 currentXYZ = float3(i.current.x, 0, i.current.y);
+				//float3 currentXYZ = float3(i.current.x, 0, i.current.y);
 				
-				float nDotCurrent = clamp(dot(i.worldNormal, -currentXYZ), 0, 1);
+				//float nDotCurrent = clamp(dot(i.worldNormal, -currentXYZ), 0, 1);
 				
 				///nDotUp *= nDotCurrent;
 
-				float foamFactor = nDotUp; // nDotCurrent;// lerp(nDotUp, nDotCurrent, 0);
+				//float foamFactor = nDotUp; // nDotCurrent;// lerp(nDotUp, nDotCurrent, 0);
 
 				float3 addedNormal = tex2D(_Normals, i.uv_NormalMap.yx);
 				i.worldNormal *= addedNormal;
@@ -272,10 +254,10 @@ Shader "Custom/Water"
 				
 				col.a = _Color.a;
 				
-				float3 foamMask = tex2D(_FoamNoise, i.uv_FoamNoise.yx);
-				float3 foam = tex2D(_Foam, i.uv_FoamTex.yx);
+				//float3 foamMask = tex2D(_FoamNoise, i.uv_FoamNoise.yx);
+				//float3 foam = tex2D(_Foam, i.uv_FoamTex.yx);
 
-				foam *= foamFactor;
+				//foam *= foamFactor;
 
 				//col.rgb += foam;
 				fixed4 red = fixed4(1, 0, 0, 1);

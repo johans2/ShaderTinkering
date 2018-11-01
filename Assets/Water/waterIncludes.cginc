@@ -52,12 +52,13 @@ float3 WavePoint(float2 position, float amplitude, float wavelength, float speed
     float frequency = 2 / wavelength;
     float phaseConstantSpeed = speed * 2 / wavelength;
 
+	float2 normalizedDir = normalize(direction);
     float fi = _Time.x  * phaseConstantSpeed;
-    float dirDotPos = dot(direction, position);
+    float dirDotPos = dot(normalizedDir, position);
 
-    float waveGretsX = steepness * amplitude * direction.x * cos(frequency * dirDotPos + fi);
+    float waveGretsX = steepness * amplitude * normalizedDir.x * cos(frequency * dirDotPos + fi);
     float waveGretsY = amplitude * sin(frequency * dirDotPos + fi);
-    float waveGretsZ = steepness * amplitude * direction.y * cos(frequency * dirDotPos + fi);
+    float waveGretsZ = steepness * amplitude * normalizedDir.y * cos(frequency * dirDotPos + fi);
 
     return float3(waveGretsX, waveGretsY, waveGretsZ);
 }
@@ -67,18 +68,113 @@ float3 WaveNormal(float3 position, float amplitude, float wavelength, float spee
 	float frequency = 2 / wavelength;
 	float phaseConstantSpeed = speed * 2 / wavelength;
 
+	float2 normalizedDir = normalize(direction);
 	float fi = _Time.x  * phaseConstantSpeed;
-	float dirDotPos = dot(direction, position.xz);
+	float dirDotPos = dot(normalizedDir, position.xz);
 
 	float WA = frequency * amplitude;
 	float S = sin(frequency * dirDotPos + fi);
 	float C = cos(frequency * dirDotPos + fi);
 
 	float3 normal = float3 (
-		direction.x * WA * C,
+		normalizedDir.x * WA * C,
 		steepness * WA * S,
-		direction.y * WA * C
+		normalizedDir.y * WA * C
 	);
 
 	return normal;
+}
+
+float3 WavePointSum(float3 worldPos) {
+	float3 wavePointSum = WavePoint(worldPos.xz, 
+									_Amplitude1 * 1.2, 
+									_WaveLength1, 
+									_Speed1, 
+									float2(_DirectionX1, _DirectionY1), 
+									_Steepness1);
+
+	#if WAVE2
+	wavePointSum += WavePoint(	worldPos.xz,
+									_Amplitude2, 
+									_WaveLength2, 
+									_Speed2, 
+									float2(_DirectionX2, _DirectionY2), 
+									_Steepness2);
+	#endif
+
+	#if WAVE3
+	wavePointSum += WavePoint(	worldPos.xz,
+									_Amplitude3,
+									_WaveLength3,
+									_Speed3,
+									float2(_DirectionX2, _DirectionY2),
+									_Steepness2);
+	#endif
+
+	#if WAVE4
+	wavePointSum += WavePoint(	worldPos.xz,
+									_Amplitude4,
+									_WaveLength4,
+									_Speed4,
+									float2(_DirectionX4, _DirectionY4),
+									_Steepness4);
+	#endif
+
+	#if WAVE5
+	wavePointSum += WavePoint(	worldPos.xz,
+									_Amplitude5,
+									_WaveLength5,
+									_Speed5,
+									float2(_DirectionX5, _DirectionY5),
+									_Steepness5);
+	#endif
+
+	return wavePointSum;
+}
+
+float3 WaveNormalSum(float3 wavePointSum) {
+	float3 normalSum = WaveNormal(	wavePointSum,
+									_Amplitude1, 
+									_WaveLength1, 
+									_Speed1, 
+									float2(_DirectionX1, _DirectionY1),
+									_Steepness1);
+
+	#if WAVE2
+		normalSum += WaveNormal(wavePointSum,
+								_Amplitude2,
+								_WaveLength2,
+								_Speed2,
+								float2(_DirectionX2, _DirectionY2),
+								_Steepness2);
+	#endif
+
+	#if WAVE3
+		normalSum += WaveNormal(wavePointSum,
+								_Amplitude3,
+								_WaveLength3,
+								_Speed3,
+								float2(_DirectionX3, _DirectionY3),
+								_Steepness3);
+	#endif
+		
+	#if WAVE4
+		normalSum += WaveNormal(wavePointSum,
+								_Amplitude4,
+								_WaveLength4,
+								_Speed4,
+								float2(_DirectionX4, _DirectionY4),
+								_Steepness4);
+	#endif
+
+	#if WAVE5
+		normalSum += WaveNormal(wavePointSum,
+								_Amplitude5,
+								_WaveLength5,
+								_Speed5,
+								float2(_DirectionX5, _DirectionY5),
+								_Steepness5);
+	#endif
+
+	return float3(-normalSum.x, 1 - normalSum.y, -normalSum.z);
 }
