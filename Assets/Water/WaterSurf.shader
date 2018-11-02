@@ -58,7 +58,7 @@
 	SubShader{
 		
 		
-		Tags{ "Queue" = "Transparent" "RenderType" = "Transparent" }
+		Tags{ /*"Lightmode" = "ForwardBase"*/ "Queue" = "Transparent" "RenderType" = "Transparent" }
 		ZWrite on
 		Cull back
 		Colormask 0
@@ -88,7 +88,7 @@
 			float3 worldPos = mul(unity_ObjectToWorld, v.vertex);
 
 			float3 wavePointSum = worldPos + WavePointSum(worldPos.xyz);
-
+			
 			// Final vertex output
 			v.vertex.xyz = mul(unity_WorldToObject, float4(wavePointSum, 1));
 		}
@@ -127,6 +127,9 @@
 			float3 worldPos = mul(unity_ObjectToWorld, v.vertex);
 
 			float3 wavePointSum = worldPos + WavePointSum(worldPos);
+
+			// This is to avoid z fighting between the two passes. Can probably be done in a better way.
+			wavePointSum.y += 0.0001;
 
 			float3 waveNormalSum = WaveNormalSum(wavePointSum);
 			// Final vertex output

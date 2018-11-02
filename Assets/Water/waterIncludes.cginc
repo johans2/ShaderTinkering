@@ -108,7 +108,7 @@ float3 WavePointSum(float3 worldPos) {
 									_WaveLength3,
 									_Speed3,
 									float2(_DirectionX3, _DirectionY3),
-									_Steepness2);
+									_Steepness3);
 	#endif
 
 	#if WAVE4

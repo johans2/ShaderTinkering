@@ -8,7 +8,7 @@ Material:
   m_PrefabInternal: {fileID: 0}
   m_Name: WaterSurf
   m_Shader: {fileID: 4800000, guid: dfe00a955f590494e89617f1f9315134, type: 3}
-  m_ShaderKeywords: 
+  m_ShaderKeywords: WAVE2 WAVE3 WAVE4 WAVE5
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -60,19 +60,19 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _Amplitude: 0.0007
-    - _Amplitude1: 0.02
-    - _Amplitude2: 0.0002
-    - _Amplitude3: 0.0001
-    - _Amplitude4: 0.001
-    - _Amplitude5: 0.001
+    - _Amplitude1: 0.06
+    - _Amplitude2: 0.03
+    - _Amplitude3: 0.04
+    - _Amplitude4: 0.015
+    - _Amplitude5: 0.017
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
-    - _DirectionX1: 0.43
-    - _DirectionX2: 0.204
-    - _DirectionX3: 0.056
-    - _DirectionX4: 1
-    - _DirectionX5: 1
+    - _DirectionX1: 0.067
+    - _DirectionX2: 0.194
+    - _DirectionX3: -0.239
+    - _DirectionX4: -0.091
+    - _DirectionX5: 0.096
     - _DirectionY1: 1
     - _DirectionY2: 1
     - _DirectionY3: 1
@@ -96,28 +96,28 @@ Material:
     - _SpecularHighlights: 1
     - _Speed: 0.05
     - _Speed1: 3
-    - _Speed2: 0.04
-    - _Speed3: 0.03
+    - _Speed2: 11
+    - _Speed3: 13
     - _Speed4: 1
     - _Speed5: 1
     - _SrcBlend: 1
     - _Steepness1: 0.1
-    - _Steepness2: 1.47
-    - _Steepness3: 0.96
-    - _Steepness4: 0.1
-    - _Steepness5: 0.1
+    - _Steepness2: 0.27
+    - _Steepness3: 0.28
+    - _Steepness4: 1.21
+    - _Steepness5: 1.17
     - _UVSec: 0
-    - _Wave2Enabled: 0
-    - _Wave3Enabled: 0
-    - _Wave4Enabled: 0
-    - _Wave5Enabled: 0
+    - _Wave2Enabled: 1
+    - _Wave3Enabled: 1
+    - _Wave4Enabled: 1
+    - _Wave5Enabled: 1
     - _WaveLength: 0.001
-    - _WaveLength1: 0.2
-    - _WaveLength2: 0.001
-    - _WaveLength3: 0.0007
+    - _WaveLength1: 0.75
+    - _WaveLength2: 0.2
+    - _WaveLength3: 0.25
     - _WaveLength4: 0.1
-    - _WaveLength5: 0.1
+    - _WaveLength5: 0.13
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.0045955926, g: 0.52231264, b: 0.625, a: 0.803}
+    - _Color: {r: 0, g: 0.257708, b: 0.30882353, a: 0.803}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
