@@ -1,9 +1,59 @@
 ﻿Shader "Custom/WaterSurf" {
 	Properties{
-		_WaveLength("Wavelength",  Float) = 0.1
-		_Amplitude("Amplitude", Float) = 0.001
-		_Speed("Speed", Float) = 1
 		_Color("Color", Color) = (0,0,1,1)
+		_Shininess("Shininess", Range(0.2,10)) = 0
+
+		_Normals("Bumpmap", 2D) = "white" {}
+
+		[Header(Base Wave)]
+		_WaveLength1("Wavelength",  Float) = 0.1
+		_Amplitude1("Amplitude", Float) = 0.001
+		_Speed1("Speed", Float) = 1
+		_DirectionX1("Direction X", Range(-1,1)) = 1
+		_DirectionY1("Direction Y", Range(-1,1)) = 1
+		_Steepness1("Steepness", Range(0,3)) = 0.1
+		_FadeSpeed1("FadeSpeed", Float) = 1.0
+
+		[Header(Additional Waves)]
+		[Header(Wave 2)]
+		[Toggle(WAVE2)] _Wave2Enabled("Enabled", Float) = 0
+		_WaveLength2("Wavelength",  Float) = 0.1
+		_Amplitude2("Amplitude", Float) = 0.001
+		_Speed2("Speed", Float) = 1
+		_DirectionX2("Direction X", Range(-1,1)) = 1
+		_DirectionY2("Direction Y", Range(-1,1)) = 1
+		_Steepness2("Steepness", Range(0,3)) = 0.1
+		_FadeSpeed2("FadeSpeed", Float) = 1.0
+
+		[Header(Wave 3)]
+		[Toggle(WAVE3)] _Wave3Enabled("Enabled", Float) = 0
+		_WaveLength3("Wavelength",  Float) = 0.1
+		_Amplitude3("Amplitude", Float) = 0.001
+		_Speed3("Speed", Float) = 1
+		_DirectionX3("Direction X", Range(-1,1)) = 1
+		_DirectionY3("Direction Y", Range(-1,1)) = 1
+		_Steepness3("Steepness", Range(0,3)) = 0.1
+		_FadeSpeed3("FadeSpeed", Float) = 1.0
+
+		[Header(Wave 4)]
+		[Toggle(WAVE4)] _Wave4Enabled("Enabled", Float) = 0
+		_WaveLength4("Wavelength",  Float) = 0.1
+		_Amplitude4("Amplitude", Float) = 0.001
+		_Speed4("Speed", Float) = 1
+		_DirectionX4("Direction X", Range(-1,1)) = 1
+		_DirectionY4("Direction Y", Range(-1,1)) = 1
+		_Steepness4("Steepness", Range(0,3)) = 0.1
+		_FadeSpeed4("FadeSpeed", Float) = 1.0
+
+		[Header(Wave 5)]
+		[Toggle(WAVE5)] _Wave5Enabled("Enabled", Float) = 0
+		_WaveLength5("Wavelength",  Float) = 0.1
+		_Amplitude5("Amplitude", Float) = 0.001
+		_Speed5("Speed", Float) = 1
+		_DirectionX5("Direction X", Range(-1,1)) = 1
+		_DirectionY5("Direction Y", Range(-1,1)) = 1
+		_Steepness5("Steepness", Range(0,3)) = 0.1
+		_FadeSpeed5("FadeSpeed", Float) = 1.0
 	}
 	SubShader{
 		
@@ -19,7 +69,10 @@
 		#pragma surface surf StandardSpecular vertex:vert
 		#include "UnityCG.cginc"
 		#include "WaterIncludes.cginc"
-		
+		#pragma shader_feature WAVE2
+		#pragma shader_feature WAVE3
+		#pragma shader_feature WAVE4
+		#pragma shader_feature WAVE5
 
 		struct Input {
 			float2 uv_MainTex;
@@ -32,46 +85,15 @@
 		float _Speed;
 
 		void vert(inout appdata_full v) {
+			float3 worldPos = v.vertex.xyz;
 
-			// Wave directions
-			float2 direction1 = normalize(float2(1, 0));
-			float2 direction2 = normalize(float2(0, 1));
-			float2 direction3 = normalize(float2(0.3, 0.4));
-
-			float3 worldPos = v.vertex.xyz; //mul(unity_ObjectToWorld, v.vertex).xyz;
-
-			float Q = 1;
-
-			// Wave points
-			float3 wavePoint1 = WavePoint(worldPos.xz, _Amplitude, _WaveLength, _Speed, direction1, Q);
-			float3 wavePoint2 = WavePoint(worldPos.xz, _Amplitude, _WaveLength, _Speed, direction2, Q);
-			float3 wavePoint3 = WavePoint(worldPos.xz, _Amplitude, _WaveLength, _Speed, direction3, Q);
-
-			float3 totalWave = worldPos + wavePoint1;// +wavePoint2 + wavePoint3;
-
-			// Wave normals
-			float3 waveNormal1 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed, direction1, Q);
-			float3 waveNormal2 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed, direction2, Q);
-			float3 waveNormal3 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed, direction3, Q);
-
-			float3 totalNormal = waveNormal1;// + waveNormal2 + waveNormal3;
-
-			totalNormal.x = -totalNormal.x;
-			totalNormal.y = 1 - totalNormal.y;
-			totalNormal.z = -totalNormal.z;
+			float3 wavePointSum = worldPos + WavePointSum(worldPos);
 
 			// Final vertex output
-			v.vertex.xyz += totalWave;
-			v.normal = normalize(totalNormal);
+			v.vertex.xyz = wavePointSum;
 		}
 		
-		void surf(Input IN, inout SurfaceOutputStandardSpecular o) {
-			/*
-			o.Albedo = _Color.rgb;
-			o.Smoothness = .5;
-			o.Alpha = 0.5f;
-			*/
-		}
+		void surf(Input IN, inout SurfaceOutputStandardSpecular o) { }
 
 		ENDCG
 
@@ -86,6 +108,10 @@
 		#pragma surface surf StandardSpecular vertex:vert alpha:fade
 		#include "UnityCG.cginc"
 		#include "WaterIncludes.cginc"
+		#pragma shader_feature WAVE2
+		#pragma shader_feature WAVE3
+		#pragma shader_feature WAVE4
+		#pragma shader_feature WAVE5
 
 		struct Input {
 			float2 uv_MainTex;
@@ -98,37 +124,14 @@
 		float _Speed;
 
 		void vert(inout appdata_full v) {
+			float3 worldPos = v.vertex.xyz;
 
-			// Wave directions
-			float2 direction1 = normalize(float2(1, 0));
-			float2 direction2 = normalize(float2(0, 1));
-			float2 direction3 = normalize(float2(0.3, 0.4));
+			float3 wavePointSum = worldPos + WavePointSum(worldPos);
 
-			float3 worldPos = v.vertex.xyz; //mul(unity_ObjectToWorld, v.vertex).xyz;
-
-			float Q = 1;
-
-			// Wave points
-			float3 wavePoint1 = WavePoint(worldPos.xz, _Amplitude, _WaveLength, _Speed, direction1, Q);
-			float3 wavePoint2 = WavePoint(worldPos.xz, _Amplitude, _WaveLength, _Speed, direction2, Q);
-			float3 wavePoint3 = WavePoint(worldPos.xz, _Amplitude, _WaveLength, _Speed, direction3, Q);
-
-			float3 totalWave = worldPos + wavePoint1;// + wavePoint2 + wavePoint3;
-
-			// Wave normals
-			float3 waveNormal1 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed, direction1, Q);
-			float3 waveNormal2 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed, direction2, Q);
-			float3 waveNormal3 = WaveNormal(totalWave, _Amplitude, _WaveLength, _Speed, direction3, Q);
-
-			float3 totalNormal = waveNormal1;// + waveNormal2 + waveNormal3;
-
-			totalNormal.x = totalNormal.x;
-			totalNormal.y = 1 - totalNormal.y;
-			totalNormal.z = totalNormal.z;
-
+			float3 waveNormalSum = WaveNormalSum(wavePointSum);
 			// Final vertex output
-			v.vertex.xyz += totalWave;
-			v.normal = normalize(totalNormal);
+			v.vertex.xyz = wavePointSum;
+			v.normal = normalize(waveNormalSum);
 		}
 
 		void surf(Input IN, inout SurfaceOutputStandardSpecular o) {

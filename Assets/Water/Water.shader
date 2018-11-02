@@ -155,7 +155,7 @@ Shader "Custom/Water"
 
 				float3 wavePointSum = worldPos + WavePointSum(worldPos);
 
-				float3 waveNormalSum = WaveNormalSum(wavePointSum); //waveNormal1 + waveNormal2 + waveNormal3;
+				float3 waveNormalSum = WaveNormalSum(wavePointSum);
 				
 				// Final vertex output
 				o.worldPos = mul(UNITY_MATRIX_VP,  float4(wavePointSum + float3(0,0.0001,0), 1.));
