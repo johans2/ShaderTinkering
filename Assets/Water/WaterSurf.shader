@@ -4,6 +4,8 @@
 		_SmoothNess("SmoothNess", Range(0.0,1.0)) = 0
 
 		_BumpMap("Bumpmap", 2D) = "white" {}
+		_BumpMapMoveDir("Bumpmap move dir", Vector) = (0,0,0,0)
+		_BumpMapMoveSpeed("Bumpmap move speed", Float) = 0
 
 		[Header(Base Wave)]
 		_WaveLength1("Wavelength",  Float) = 0.1
@@ -120,6 +122,8 @@
 
 		sampler2D _MainTex;
 		sampler2D _BumpMap;
+		half4 _PumpMapMoveDir;
+		half _BumpMapMoveSpeed;
 		float4 _Color;
 		float _SmoothNess;
 
@@ -141,7 +145,8 @@
 			o.Albedo = _Color.rgb;
 			o.Smoothness = _SmoothNess;
 			o.Alpha = _Color.a;
-			o.Normal = UnpackNormal(tex2D(_BumpMap, IN.uv_BumpMap));
+			//IN.uv_BumpMap += ();
+			o.Normal += UnpackNormal(tex2D(_BumpMap, IN.uv_BumpMap));
 		}
 
 		ENDCG
