@@ -85,12 +85,12 @@
 		float _Speed;
 
 		void vert(inout appdata_full v) {
-			float3 worldPos = v.vertex.xyz;
+			float3 worldPos = mul(unity_ObjectToWorld, v.vertex);
 
-			float3 wavePointSum = worldPos + WavePointSum(worldPos);
+			float3 wavePointSum = worldPos + WavePointSum(worldPos.xyz);
 
 			// Final vertex output
-			v.vertex.xyz = wavePointSum;
+			v.vertex.xyz = mul(unity_WorldToObject, float4(wavePointSum, 1));
 		}
 		
 		void surf(Input IN, inout SurfaceOutputStandardSpecular o) { }
@@ -124,13 +124,13 @@
 		float _Speed;
 
 		void vert(inout appdata_full v) {
-			float3 worldPos = v.vertex.xyz;
+			float3 worldPos = mul(unity_ObjectToWorld, v.vertex);
 
 			float3 wavePointSum = worldPos + WavePointSum(worldPos);
 
 			float3 waveNormalSum = WaveNormalSum(wavePointSum);
 			// Final vertex output
-			v.vertex.xyz = wavePointSum;
+			v.vertex = mul(unity_WorldToObject, float4(wavePointSum,1));
 			v.normal = normalize(waveNormalSum);
 		}
 
