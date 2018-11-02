@@ -60,9 +60,9 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _Amplitude: 0.0007
-    - _Amplitude1: 0.06
-    - _Amplitude2: 0.03
-    - _Amplitude3: 0.04
+    - _Amplitude1: 0.08
+    - _Amplitude2: 0.055
+    - _Amplitude3: 0.05
     - _Amplitude4: 0.015
     - _Amplitude5: 0.017
     - _BumpScale: 1
@@ -98,14 +98,14 @@ Material:
     - _Speed1: 3
     - _Speed2: 11
     - _Speed3: 13
-    - _Speed4: 1
-    - _Speed5: 1
+    - _Speed4: 5
+    - _Speed5: 7
     - _SrcBlend: 1
     - _Steepness1: 0.1
-    - _Steepness2: 0.27
-    - _Steepness3: 0.28
-    - _Steepness4: 1.21
-    - _Steepness5: 1.17
+    - _Steepness2: 0.64
+    - _Steepness3: 0.55
+    - _Steepness4: 0.31
+    - _Steepness5: 0.45
     - _UVSec: 0
     - _Wave2Enabled: 1
     - _Wave3Enabled: 1
@@ -113,11 +113,11 @@ Material:
     - _Wave5Enabled: 1
     - _WaveLength: 0.001
     - _WaveLength1: 0.75
-    - _WaveLength2: 0.2
+    - _WaveLength2: 0.23
     - _WaveLength3: 0.25
     - _WaveLength4: 0.1
     - _WaveLength5: 0.13
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0, g: 0.257708, b: 0.30882353, a: 0.803}
+    - _Color: {r: 0, g: 0.14112581, b: 0.16911763, a: 0.803}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}

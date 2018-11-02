@@ -58,7 +58,7 @@
 	SubShader{
 		
 		
-		Tags{ /*"Lightmode" = "ForwardBase"*/ "Queue" = "Transparent" "RenderType" = "Transparent" }
+		Tags{ "Lightmode" = "ForwardBase" "Queue" = "Transparent" "RenderType" = "Transparent" }
 		ZWrite on
 		Cull back
 		Colormask 0
