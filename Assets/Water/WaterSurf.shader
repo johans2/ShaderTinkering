@@ -1,9 +1,9 @@
 ﻿Shader "Custom/WaterSurf" {
 	Properties{
 		_Color("Color", Color) = (0,0,1,1)
-		_Shininess("Shininess", Range(0.2,10)) = 0
+		_SmoothNess("SmoothNess", Range(0.0,1.0)) = 0
 
-		_Normals("Bumpmap", 2D) = "white" {}
+		_BumpMap("Bumpmap", 2D) = "white" {}
 
 		[Header(Base Wave)]
 		_WaveLength1("Wavelength",  Float) = 0.1
@@ -115,13 +115,13 @@
 
 		struct Input {
 			float2 uv_MainTex;
+			float2 uv_BumpMap;
 		};
 
 		sampler2D _MainTex;
+		sampler2D _BumpMap;
 		float4 _Color;
-		float _WaveLength;
-		float _Amplitude;
-		float _Speed;
+		float _SmoothNess;
 
 		void vert(inout appdata_full v) {
 			float3 worldPos = mul(unity_ObjectToWorld, v.vertex);
@@ -139,8 +139,9 @@
 
 		void surf(Input IN, inout SurfaceOutputStandardSpecular o) {
 			o.Albedo = _Color.rgb;
-			o.Smoothness = 0.5;
+			o.Smoothness = _SmoothNess;
 			o.Alpha = _Color.a;
+			o.Normal = UnpackNormal(tex2D(_BumpMap, IN.uv_BumpMap));
 		}
 
 		ENDCG
