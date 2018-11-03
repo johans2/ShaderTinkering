@@ -180,7 +180,7 @@
 			float SSS = NdotL * VdotN * VdotL;
 
 			// Final add
-			pbr.rgb = pbr.rgb + SSS * gi.light.color;
+			pbr.rgb = pbr.rgb + SSS * _Color;
 			return pbr;
 		}
 
