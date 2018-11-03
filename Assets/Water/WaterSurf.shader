@@ -122,7 +122,7 @@
 
 		sampler2D _MainTex;
 		sampler2D _BumpMap;
-		half4 _PumpMapMoveDir;
+		half4 _BumpMapMoveDir;
 		half _BumpMapMoveSpeed;
 		float4 _Color;
 		float _SmoothNess;
@@ -145,8 +145,7 @@
 			o.Albedo = _Color.rgb;
 			o.Smoothness = _SmoothNess;
 			o.Alpha = _Color.a;
-			//IN.uv_BumpMap += ();
-			o.Normal += UnpackNormal(tex2D(_BumpMap, IN.uv_BumpMap));
+			o.Normal += UnpackNormal(tex2D(_BumpMap, IN.uv_BumpMap + _BumpMapMoveDir.xy * _BumpMapMoveSpeed * _Time.x));
 		}
 
 		ENDCG
