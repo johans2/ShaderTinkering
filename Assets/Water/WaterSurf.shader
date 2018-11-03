@@ -177,7 +177,7 @@
 			float3 H = normalize(L + N * _Distortion);
 			float I = pow(saturate(dot(V, -H)), _Power) * _Scale;
 
-			float SSS = NdotL * VdotN * VdotL;
+			float SSS = NdotL * VdotN * VdotL *2;
 
 			// Final add
 			pbr.rgb = pbr.rgb + SSS * _Color;
