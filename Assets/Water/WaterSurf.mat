@@ -8,7 +8,7 @@ Material:
   m_PrefabInternal: {fileID: 0}
   m_Name: WaterSurf
   m_Shader: {fileID: 4800000, guid: dfe00a955f590494e89617f1f9315134, type: 3}
-  m_ShaderKeywords: WAVE2 WAVE3
+  m_ShaderKeywords: WAVE2 WAVE3 WAVE4
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -63,7 +63,7 @@ Material:
     - _Amplitude1: 0.08
     - _Amplitude2: 0.055
     - _Amplitude3: 0.05
-    - _Amplitude4: 0
+    - _Amplitude4: 0.04
     - _Amplitude5: 0.017
     - _BumpMapMoveSpeed: 4
     - _BumpScale: 1
@@ -71,15 +71,15 @@ Material:
     - _DetailNormalMapScale: 1
     - _DirectionX1: 0.067
     - _DirectionX2: 0.194
-    - _DirectionX3: -0.239
-    - _DirectionX4: -0.091
+    - _DirectionX3: -0.29
+    - _DirectionX4: 0.05
     - _DirectionX5: 0.38
     - _DirectionY1: 1
     - _DirectionY2: 1
     - _DirectionY3: 1
-    - _DirectionY4: 1
+    - _DirectionY4: -1
     - _DirectionY5: 1
-    - _Distortion: 0.1
+    - _Distortion: 10.11
     - _DstBlend: 0
     - _FadeSpeed1: 1
     - _FadeSpeed2: 1
@@ -93,7 +93,7 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _Power: 3
+    - _Power: 1.17
     - _Scale: 1.18
     - _Shininess: 0
     - _SmoothNess: 0.905
@@ -107,20 +107,20 @@ Material:
     - _Speed5: 7
     - _SrcBlend: 1
     - _Steepness1: 0.1
-    - _Steepness2: 1.05
+    - _Steepness2: 1.27
     - _Steepness3: 1.42
-    - _Steepness4: 0.31
+    - _Steepness4: 0
     - _Steepness5: 0.45
     - _UVSec: 0
     - _Wave2Enabled: 1
     - _Wave3Enabled: 1
-    - _Wave4Enabled: 0
+    - _Wave4Enabled: 1
     - _Wave5Enabled: 0
     - _WaveLength: 0.001
     - _WaveLength1: 0.75
     - _WaveLength2: 0.31
     - _WaveLength3: 0.37
-    - _WaveLength4: 0.1
+    - _WaveLength4: 0.7
     - _WaveLength5: 0.13
     - _ZWrite: 1
     m_Colors:

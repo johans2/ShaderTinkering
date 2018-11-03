@@ -8,10 +8,7 @@
 		_BumpMapMoveSpeed("Bumpmap move speed", Float) = 0
 		
 		[Header(Subsurface scattering)]
-		_Distortion("Distortion", Float) = 0
 		_Power("Power", Float) = 0
-		_Scale("Scale", Float) = 0
-		_SSSColor("Color", Color) = (1,1,1,1)
 
 		[Header(Base Wave)]
 		_WaveLength1("Wavelength",  Float) = 0.1
@@ -164,23 +161,15 @@
 			float NdotL = 1 - max(0, dot(gi.light.dir, s.Normal));
 
 			// ViewDir dot Normal
-			float VdotN = pow( max(0, dot(viewDir, s.Normal)), _Power);
+			float VdotN = max(0, dot(viewDir, s.Normal));
 
 			// ViewDir dot LightDir
 			float VdotL = max(0, dot(normalize(-_WorldSpaceCameraPos.xyz), gi.light.dir));
 
-			// --- Translucency ---
-			float3 L = gi.light.dir;
-			float3 V = viewDir;
-			float3 N = unmodifiedNormal;// s.Normal;
-
-			float3 H = normalize(L + N * _Distortion);
-			float I = pow(saturate(dot(V, -H)), _Power) * _Scale;
-
-			float SSS = NdotL * VdotN * VdotL;
+			float SSS = NdotL * VdotN * VdotL * _Power;
 
 			// Final add
-			pbr.rgb = pbr.rgb +SSS * _Color;
+			pbr.rgb = pbr.rgb + SSS * _Color;
 			return pbr;
 		}
 
