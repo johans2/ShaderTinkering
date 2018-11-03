@@ -109,6 +109,7 @@
 
 		#pragma surface surf StandardSpecular vertex:vert alpha:fade
 		#include "UnityCG.cginc"
+		#include "UnityPBSLighting.cginc"
 		#include "WaterIncludes.cginc"
 		#pragma shader_feature WAVE2
 		#pragma shader_feature WAVE3
