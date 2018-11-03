@@ -6,6 +6,12 @@
 		_BumpMap("Bumpmap", 2D) = "white" {}
 		_BumpMapMoveDir("Bumpmap move dir", Vector) = (0,0,0,0)
 		_BumpMapMoveSpeed("Bumpmap move speed", Float) = 0
+		
+		[Header(Subsurface scattering)]
+		_Distortion("Distortion", Float) = 0
+		_Power("Power", Float) = 0
+		_Scale("Scale", Float) = 0
+		_SSSColor("Color", Color) = (1,1,1,1)
 
 		[Header(Base Wave)]
 		_WaveLength1("Wavelength",  Float) = 0.1
@@ -68,7 +74,7 @@
 		// ------- PASS 1 ---------------
 		CGPROGRAM
 
-		#pragma surface surf StandardSpecular vertex:vert
+		#pragma surface surf StandardSpecular fullforwardshadows vertex:vert
 		#include "UnityCG.cginc"
 		#include "WaterIncludes.cginc"
 		#pragma shader_feature WAVE2
@@ -107,7 +113,7 @@
 
 		CGPROGRAM
 
-		#pragma surface surf StandardSpecular vertex:vert alpha:fade
+		#pragma surface surf StandardTranslucent vertex:vert alpha:fade
 		#include "UnityCG.cginc"
 		#include "UnityPBSLighting.cginc"
 		#include "WaterIncludes.cginc"
@@ -126,7 +132,14 @@
 		half4 _BumpMapMoveDir;
 		half _BumpMapMoveSpeed;
 		float4 _Color;
+		float4 _SSSColor;
 		float _SmoothNess;
+
+		float _Distortion;
+		float _Power;
+		float _Scale;
+
+		float3 unmodifiedNormal;
 
 		void vert(inout appdata_full v) {
 			float3 worldPos = mul(unity_ObjectToWorld, v.vertex);
@@ -142,10 +155,47 @@
 			v.normal = normalize(waveNormalSum);
 		}
 
-		void surf(Input IN, inout SurfaceOutputStandardSpecular o) {
+		inline fixed4 LightingStandardTranslucent(SurfaceOutputStandard s, fixed3 viewDir, UnityGI gi)
+		{
+			// Original colour
+			fixed4 pbr = LightingStandard(s, viewDir, gi);
+			
+			// Inverse Normal dot Light
+			float NdotL = 1 - max(0, dot(gi.light.dir, s.Normal));
+
+			// ViewDir dot Normal
+			float VdotN = pow( max(0, dot(viewDir, s.Normal)), _Power);
+
+			// ViewDir dot LightDir
+			float VdotL = max(0, dot(normalize(-_WorldSpaceCameraPos.xyz), gi.light.dir));
+
+			// --- Translucency ---
+			float3 L = gi.light.dir;
+			float3 V = viewDir;
+			float3 N = unmodifiedNormal;// s.Normal;
+
+			float3 H = normalize(L + N * _Distortion);
+			float I = pow(saturate(dot(V, -H)), _Power) * _Scale;
+
+			float SSS = NdotL * VdotN * VdotL;
+
+			// Final add
+			pbr.rgb = pbr.rgb + SSS * gi.light.color;
+			return pbr;
+		}
+
+		void LightingStandardTranslucent_GI(SurfaceOutputStandard s, UnityGIInput data, inout UnityGI gi)
+		{
+			LightingStandard_GI(s, data, gi);
+		}
+
+		
+		void surf(Input IN, inout SurfaceOutputStandard o) {
 			o.Albedo = _Color.rgb;
 			o.Smoothness = _SmoothNess;
+			o.Metallic = 0.0;
 			o.Alpha = _Color.a;
+			unmodifiedNormal = o.Normal;
 			o.Normal += UnpackNormal(tex2D(_BumpMap, IN.uv_BumpMap + _BumpMapMoveDir.xy * _BumpMapMoveSpeed * _Time.x));
 		}
 
