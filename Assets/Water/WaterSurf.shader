@@ -12,6 +12,9 @@ Shader "Custom/WaterSurf" {
 		[Header(Subsurface scattering)]
 		_Power("Power", Float) = 0
 
+		[Header(Wave crest foam)]
+		_FoamTex("Foam texture", 2D) = "white" {}
+
 		[Header(Base Wave)]
 		_WaveLength1("Wavelength",  Float) = 0.1
 		_Amplitude1("Amplitude", Float) = 0.001
@@ -85,12 +88,6 @@ Shader "Custom/WaterSurf" {
 			float2 uv_MainTex;
 		};
 		
-		sampler2D _MainTex;
-		float4 _Color;
-		float _WaveLength;
-		float _Amplitude;
-		float _Speed;
-
 		void vert(inout appdata_full v) {
 			float3 worldPos = mul(unity_ObjectToWorld, v.vertex);
 
@@ -122,13 +119,12 @@ Shader "Custom/WaterSurf" {
 		#pragma shader_feature WAVE5
 
 		struct Input {
-			float2 uv_MainTex;
 			float2 uv_BumpMap;
 			float crestFactor;
 		};
 
-		sampler2D _MainTex;
 		sampler2D _BumpMap;
+		sampler2D _FoamTex;
 		half4 _BumpMapMoveDir;
 		half _BumpMapMoveSpeed;
 		float4 _Color;
