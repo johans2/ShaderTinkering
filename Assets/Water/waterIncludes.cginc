@@ -64,7 +64,7 @@ float4 WavePoint(float2 position, float amplitude, float wavelength, float speed
 	//								-1 < x < 1
 	//								max: amplitude * 1
     float waveGretsZ = steepness * amplitude * normalizedDir.y * cos(frequency * dirDotPos + fi);
-	float crestFactor = (crest / amplitude) * steepness;
+	float crestFactor = (crest / amplitude) * saturate(steepness);
 
     return float4(waveGretsX, waveGretsY, waveGretsZ, crestFactor);
 }
@@ -98,49 +98,58 @@ float4 WavePointSum(float3 worldPos) {
 									_Speed1, 
 									float2(_DirectionX1, _DirectionY1), 
 									_Steepness1);
-	float numWaves = 1;
+
 
 	#if WAVE2
-	wavePointSum += WavePoint(	worldPos.xz,
-									_Amplitude2, 
-									_WaveLength2, 
-									_Speed2, 
-									float2(_DirectionX2, _DirectionY2), 
-									_Steepness2);
-	numWaves++;
+	float4 wave2 = WavePoint(	worldPos.xz,
+								_Amplitude2,
+								_WaveLength2,
+								_Speed2,
+								float2(_DirectionX2, _DirectionY2),
+								_Steepness2);
+	
+	wavePointSum.xyz += wave2.xyz;
+	wavePointSum.w += wave2.w;
 	#endif
+
 
 	#if WAVE3
-	wavePointSum += WavePoint(	worldPos.xz,
-									_Amplitude3,
-									_WaveLength3,
-									_Speed3,
-									float2(_DirectionX3, _DirectionY3),
-									_Steepness3);
-	numWaves++;
+	float4 wave3 = WavePoint	(worldPos.xz,
+								_Amplitude3,
+								_WaveLength3,
+								_Speed3,
+								float2(_DirectionX3, _DirectionY3),
+								_Steepness3);
+	wavePointSum.xyz += wave3.xyz;
+	wavePointSum.w += wave3.w;
 	#endif
+
 
 	#if WAVE4
-	wavePointSum += WavePoint(	worldPos.xz,
-									_Amplitude4,
-									_WaveLength4,
-									_Speed4,
-									float2(_DirectionX4, _DirectionY4),
-									_Steepness4);
-	numWaves++;
+	float4 wave4 = WavePoint(	worldPos.xz,
+								_Amplitude4,
+								_WaveLength4,
+								_Speed4,
+								float2(_DirectionX4, _DirectionY4),
+								_Steepness4);
+
+	wavePointSum.xyz += wave4.xyz;
+	wavePointSum.w += wave4.w;
 	#endif
+
 
 	#if WAVE5
-	wavePointSum += WavePoint(	worldPos.xz,
-									_Amplitude5,
-									_WaveLength5,
-									_Speed5,
-									float2(_DirectionX5, _DirectionY5),
-									_Steepness5);
-	numWaves++;
+	float4 wave5 = WavePoint(	worldPos.xz,
+								_Amplitude5,
+								_WaveLength5,
+								_Speed5,
+								float2(_DirectionX5, _DirectionY5),
+								_Steepness5);
+
+	wavePointSum.xyz += wave5.xyz;
+	wavePointSum.w += wave5.w;
 	#endif
 
-	wavePointSum.w /= numWaves;
 	return wavePointSum;
 }
 

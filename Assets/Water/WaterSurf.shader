@@ -120,6 +120,7 @@ Shader "Custom/WaterSurf" {
 
 		struct Input {
 			float2 uv_BumpMap;
+			float2 uv_FoamTex;
 			float crestFactor;
 		};
 
@@ -181,8 +182,8 @@ Shader "Custom/WaterSurf" {
 		
 		void surf(Input IN, inout SurfaceOutputStandard o) {
 			float3 worldNormal = mul(unity_ObjectToWorld, float4(o.Normal, 0.0)).xyz;
-
-			o.Albedo = _Color;// *IN.crestFactor;
+			float4 foamColor = tex2D(_FoamTex, IN.uv_FoamTex);
+			o.Albedo = lerp(_Color, foamColor, saturate(IN.crestFactor));
 			o.Smoothness = _SmoothNess;
 			o.Metallic = 0.0;
 			o.Alpha = _Color.a;
