@@ -1,4 +1,5 @@
-// Water functions for position and normal at given point
+// Water functions for position, normal and crest at given point
+// Gerstner wave function: https://developer.nvidia.com/gpugems/GPUGems/gpugems_ch01.html
 
 float _WaveLength1;
 float _Amplitude1;
@@ -48,7 +49,8 @@ float _Steepness5;
 float _FadeSpeed5;
 #endif
 
-float3 WavePoint(float2 position, float amplitude, float wavelength, float speed, float2 direction, float steepness) {
+// Returns x,y,z position and w crestFactor (used for foam)
+float4 WavePoint(float2 position, float amplitude, float wavelength, float speed, float2 direction, float steepness) {
     float frequency = 2 / wavelength;
     float phaseConstantSpeed = speed * 2 / wavelength;
 
@@ -57,10 +59,14 @@ float3 WavePoint(float2 position, float amplitude, float wavelength, float speed
     float dirDotPos = dot(normalizedDir, position);
 
     float waveGretsX = steepness * amplitude * normalizedDir.x * cos(frequency * dirDotPos + fi);
-    float waveGretsY = amplitude * sin(frequency * dirDotPos + fi);
+	float crest = sin(frequency * dirDotPos + fi);
+    float waveGretsY = amplitude * crest;
+	//								-1 < x < 1
+	//								max: amplitude * 1
     float waveGretsZ = steepness * amplitude * normalizedDir.y * cos(frequency * dirDotPos + fi);
+	float crestFactor = (crest / amplitude) * steepness;
 
-    return float3(waveGretsX, waveGretsY, waveGretsZ);
+    return float4(waveGretsX, waveGretsY, waveGretsZ, crestFactor);
 }
 
 float3 WaveNormal(float3 position, float amplitude, float wavelength, float speed, float2 direction, float steepness) {
@@ -85,13 +91,14 @@ float3 WaveNormal(float3 position, float amplitude, float wavelength, float spee
 	return normal;
 }
 
-float3 WavePointSum(float3 worldPos) {
-	float3 wavePointSum = WavePoint(worldPos.xz, 
+float4 WavePointSum(float3 worldPos) {
+	float4 wavePointSum = WavePoint(worldPos.xz, 
 									_Amplitude1, 
 									_WaveLength1, 
 									_Speed1, 
 									float2(_DirectionX1, _DirectionY1), 
 									_Steepness1);
+	float numWaves = 1;
 
 	#if WAVE2
 	wavePointSum += WavePoint(	worldPos.xz,
@@ -100,6 +107,7 @@ float3 WavePointSum(float3 worldPos) {
 									_Speed2, 
 									float2(_DirectionX2, _DirectionY2), 
 									_Steepness2);
+	numWaves++;
 	#endif
 
 	#if WAVE3
@@ -109,6 +117,7 @@ float3 WavePointSum(float3 worldPos) {
 									_Speed3,
 									float2(_DirectionX3, _DirectionY3),
 									_Steepness3);
+	numWaves++;
 	#endif
 
 	#if WAVE4
@@ -118,6 +127,7 @@ float3 WavePointSum(float3 worldPos) {
 									_Speed4,
 									float2(_DirectionX4, _DirectionY4),
 									_Steepness4);
+	numWaves++;
 	#endif
 
 	#if WAVE5
@@ -127,8 +137,10 @@ float3 WavePointSum(float3 worldPos) {
 									_Speed5,
 									float2(_DirectionX5, _DirectionY5),
 									_Steepness5);
+	numWaves++;
 	#endif
 
+	wavePointSum.w /= numWaves;
 	return wavePointSum;
 }
 

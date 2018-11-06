@@ -1,4 +1,6 @@
-﻿Shader "Custom/WaterSurf" {
+﻿// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
+
+Shader "Custom/WaterSurf" {
 	Properties{
 		_Color("Color", Color) = (0,0,1,1)
 		_SmoothNess("SmoothNess", Range(0.0,1.0)) = 0
@@ -92,7 +94,7 @@
 		void vert(inout appdata_full v) {
 			float3 worldPos = mul(unity_ObjectToWorld, v.vertex);
 
-			float3 wavePointSum = worldPos + WavePointSum(worldPos.xyz);
+			float3 wavePointSum = worldPos + WavePointSum(worldPos).xyz;
 			
 			// Final vertex output
 			v.vertex.xyz = mul(unity_WorldToObject, float4(wavePointSum, 1));
@@ -122,6 +124,7 @@
 		struct Input {
 			float2 uv_MainTex;
 			float2 uv_BumpMap;
+			float crestFactor;
 		};
 
 		sampler2D _MainTex;
@@ -132,23 +135,24 @@
 		float4 _SSSColor;
 		float _SmoothNess;
 
-		float _Distortion;
 		float _Power;
-		float _Scale;
 
-		float3 unmodifiedNormal;
-
-		void vert(inout appdata_full v) {
+		void vert(inout appdata_full v, out Input o) {
+			UNITY_INITIALIZE_OUTPUT(Input, o);
 			float3 worldPos = mul(unity_ObjectToWorld, v.vertex);
 
-			float3 wavePointSum = worldPos + WavePointSum(worldPos);
+			float4 wavePointSum = WavePointSum(worldPos);
+			float3 pos = worldPos + wavePointSum.xyz;
 
 			// This is to avoid z fighting between the two passes. Can probably be done in a better way.
-			wavePointSum.y += 0.0001;
+			pos.y += 0.0001;
 
-			float3 waveNormalSum = WaveNormalSum(wavePointSum);
+			float3 waveNormalSum = WaveNormalSum(pos);
+
+			o.crestFactor = wavePointSum.w;
+
 			// Final vertex output
-			v.vertex = mul(unity_WorldToObject, float4(wavePointSum,1));
+			v.vertex = mul(unity_WorldToObject, float4(pos,1));
 			v.normal = normalize(waveNormalSum);
 		}
 
@@ -180,12 +184,13 @@
 
 		
 		void surf(Input IN, inout SurfaceOutputStandard o) {
-			o.Albedo = _Color.rgb;
+			float3 worldNormal = mul(unity_ObjectToWorld, float4(o.Normal, 0.0)).xyz;
+
+			o.Albedo = _Color;// *IN.crestFactor;
 			o.Smoothness = _SmoothNess;
 			o.Metallic = 0.0;
 			o.Alpha = _Color.a;
-			unmodifiedNormal = o.Normal;
-			o.Normal += UnpackNormal(tex2D(_BumpMap, IN.uv_BumpMap + _BumpMapMoveDir.xy * _BumpMapMoveSpeed * _Time.x));
+			o.Normal = normalize(o.Normal + UnpackNormal(tex2D(_BumpMap, IN.uv_BumpMap + _BumpMapMoveDir.xy * _BumpMapMoveSpeed * _Time.x)));
 		}
 
 		ENDCG
