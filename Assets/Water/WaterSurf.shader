@@ -5,15 +5,16 @@ Shader "Custom/WaterSurf" {
 		_Color("Color", Color) = (0,0,1,1)
 		_SmoothNess("SmoothNess", Range(0.0,1.0)) = 0
 
-		_BumpMap("Bumpmap", 2D) = "white" {}
-		_BumpMapMoveDir("Bumpmap move dir", Vector) = (0,0,0,0)
-		_BumpMapMoveSpeed("Bumpmap move speed", Float) = 0
+		_NormalMap("Normalmap", 2D) = "white" {}
+		_NormalMapMoveDir("Normalmap move dir", Vector) = (0,0,0,0)
+		_NormalMapMoveSpeed("Normalmap move speed", Float) = 0
 		
 		[Header(Subsurface scattering)]
 		_Power("Power", Float) = 0
 
 		[Header(Wave crest foam)]
 		_FoamTex("Foam texture", 2D) = "white" {}
+		_FoamNormals("Foam normals", 2D) = "white" {}
 		_FoamScale("Foam Scale", Float) = 1
 		_FoamSharpness("Foam Sharpness", Float) = 1
 
@@ -121,15 +122,16 @@ Shader "Custom/WaterSurf" {
 		#pragma shader_feature WAVE5
 
 		struct Input {
-			float2 uv_BumpMap;
+			float2 uv_NormalMap;
 			float2 uv_FoamTex;
 			float crestFactor;
 		};
 
-		sampler2D _BumpMap;
+		sampler2D _NormalMap;
 		sampler2D _FoamTex;
-		half4 _BumpMapMoveDir;
-		half _BumpMapMoveSpeed;
+		sampler2D _FoamNormals;
+		half4 _NormalMapMoveDir;
+		half _NormalMapMoveSpeed;
 		float4 _Color;
 		float4 _SSSColor;
 		float _SmoothNess;
@@ -184,13 +186,17 @@ Shader "Custom/WaterSurf" {
 
 		
 		void surf(Input IN, inout SurfaceOutputStandard o) {
-			float3 worldNormal = mul(unity_ObjectToWorld, float4(o.Normal, 0.0)).xyz;
-			float4 foamColor = tex2D(_FoamTex, IN.uv_FoamTex + _BumpMapMoveDir.xy * _BumpMapMoveSpeed * _Time.x);
-			o.Albedo = lerp(_Color, foamColor, pow(saturate(IN.crestFactor), _FoamSharpness));
-			o.Smoothness = _SmoothNess;
+			float4 foamColor = tex2D(_FoamTex, IN.uv_FoamTex + _NormalMapMoveDir.xy * _NormalMapMoveSpeed * _Time.x);
+			float foamFactor = pow(saturate(IN.crestFactor), _FoamSharpness);
+
+			float3 waterNormal = normalize(o.Normal + UnpackNormal(tex2D(_NormalMap, IN.uv_NormalMap + _NormalMapMoveDir.xy * _NormalMapMoveSpeed * _Time.x)));
+			float3 foamNormal = normalize(o.Normal + UnpackNormal(tex2D(_FoamNormals, IN.uv_NormalMap + _NormalMapMoveDir.xy * _NormalMapMoveSpeed * _Time.x)));
+
+			o.Albedo = lerp(_Color, foamColor, foamFactor);
+			o.Smoothness = saturate(_SmoothNess - (foamFactor*2));
 			o.Metallic = 0.0;
 			o.Alpha = _Color.a;
-			o.Normal = normalize(o.Normal + UnpackNormal(tex2D(_BumpMap, IN.uv_BumpMap + _BumpMapMoveDir.xy * _BumpMapMoveSpeed * _Time.x)));
+			o.Normal = lerp(waterNormal, foamNormal, foamFactor);
 		}
 
 		ENDCG

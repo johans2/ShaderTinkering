@@ -38,6 +38,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _FoamNormals:
+        m_Texture: {fileID: 2800000, guid: 36f10010ce768464587061dff0582d9b, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _FoamTex:
         m_Texture: {fileID: 2800000, guid: 6db914f06cbc33f45845d00e9de07bcb, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -49,6 +53,10 @@ Material:
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalMap:
+        m_Texture: {fileID: 2800000, guid: c8c0816bc4a29c640972a97db7cb61db, type: 3}
+        m_Scale: {x: 2, y: 2}
         m_Offset: {x: 0, y: 0}
     - _Normals:
         m_Texture: {fileID: 0}
@@ -98,6 +106,7 @@ Material:
     - _GlossyReflections: 1
     - _Metallic: 0
     - _Mode: 0
+    - _NormalMapMoveSpeed: 4
     - _Occlusion: 1
     - _OcclusionStrength: 1
     - _Parallax: 0.02
@@ -135,5 +144,6 @@ Material:
     - _BumpMapMoveDir: {r: -1, g: 0, b: 1, a: 1}
     - _Color: {r: 0, g: 0.122718126, b: 0.14705884, a: 0.884}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _NormalMapMoveDir: {r: -1, g: 0, b: 0, a: 0}
     - _PumpMapMoveDir: {r: 0, g: 0, b: 0, a: 0}
     - _SSSColor: {r: 1, g: 0, b: 0, a: 1}
