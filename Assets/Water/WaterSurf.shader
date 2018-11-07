@@ -14,6 +14,8 @@ Shader "Custom/WaterSurf" {
 
 		[Header(Wave crest foam)]
 		_FoamTex("Foam texture", 2D) = "white" {}
+		_FoamScale("Foam Scale", Float) = 1
+		_FoamSharpness("Foam Sharpness", Float) = 1
 
 		[Header(Base Wave)]
 		_WaveLength1("Wavelength",  Float) = 0.1
@@ -133,6 +135,7 @@ Shader "Custom/WaterSurf" {
 		float _SmoothNess;
 
 		float _Power;
+		float _FoamSharpness;
 
 		void vert(inout appdata_full v, out Input o) {
 			UNITY_INITIALIZE_OUTPUT(Input, o);
@@ -182,8 +185,8 @@ Shader "Custom/WaterSurf" {
 		
 		void surf(Input IN, inout SurfaceOutputStandard o) {
 			float3 worldNormal = mul(unity_ObjectToWorld, float4(o.Normal, 0.0)).xyz;
-			float4 foamColor = tex2D(_FoamTex, IN.uv_FoamTex);
-			o.Albedo = lerp(_Color, foamColor, saturate(IN.crestFactor));
+			float4 foamColor = tex2D(_FoamTex, IN.uv_FoamTex + _BumpMapMoveDir.xy * _BumpMapMoveSpeed * _Time.x);
+			o.Albedo = lerp(_Color, foamColor, pow(saturate(IN.crestFactor), _FoamSharpness));
 			o.Smoothness = _SmoothNess;
 			o.Metallic = 0.0;
 			o.Alpha = _Color.a;

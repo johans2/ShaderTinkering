@@ -8,6 +8,7 @@ float _DirectionX1;
 float _DirectionY1;
 float _Steepness1;
 float _FadeSpeed1;
+float _FoamScale;
 
 #if WAVE2
 float _WaveLength2;
@@ -64,7 +65,7 @@ float4 WavePoint(float2 position, float amplitude, float wavelength, float speed
 	//								-1 < x < 1
 	//								max: amplitude * 1
     float waveGretsZ = steepness * amplitude * normalizedDir.y * cos(frequency * dirDotPos + fi);
-	float crestFactor = (crest / amplitude) * saturate(steepness);
+	float crestFactor = ((crest/ _FoamScale + amplitude/2) / (amplitude * 2)) * saturate(steepness);
 
     return float4(waveGretsX, waveGretsY, waveGretsZ, crestFactor);
 }
@@ -150,6 +151,7 @@ float4 WavePointSum(float3 worldPos) {
 	wavePointSum.w += wave5.w;
 	#endif
 
+	wavePointSum.w /= 5;
 	return wavePointSum;
 }
 
