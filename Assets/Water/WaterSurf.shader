@@ -204,5 +204,4 @@ Shader "Custom/WaterSurf" {
 
 
 	}
-	Fallback "Diffuse"
 }
