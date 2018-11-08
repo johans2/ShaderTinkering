@@ -79,7 +79,7 @@ Shader "Custom/WaterSurf" {
 		// ------- PASS 1 ---------------
 		CGPROGRAM
 
-		#pragma surface surf StandardSpecular fullforwardshadows vertex:vert
+		#pragma surface surf Standard vertex:vert
 		#include "UnityCG.cginc"
 		#include "WaterIncludes.cginc"
 		#pragma shader_feature WAVE2
@@ -100,7 +100,7 @@ Shader "Custom/WaterSurf" {
 			v.vertex.xyz = mul(unity_WorldToObject, float4(wavePointSum, 1));
 		}
 		
-		void surf(Input IN, inout SurfaceOutputStandardSpecular o) { }
+		void surf(Input IN, inout SurfaceOutputStandard o) { }
 
 		ENDCG
 
@@ -195,7 +195,7 @@ Shader "Custom/WaterSurf" {
 			o.Albedo = lerp(_Color, foamColor, foamFactor);
 			o.Smoothness = saturate(_SmoothNess - (foamFactor*2));
 			o.Metallic = 0.0;
-			o.Alpha = _Color.a;
+			o.Alpha = saturate(_Color.a + foamFactor);
 			o.Normal = lerp(waterNormal, foamNormal, foamFactor);
 		}
 
