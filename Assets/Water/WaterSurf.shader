@@ -188,7 +188,7 @@ Shader "Custom/WaterSurf" {
 		
 		void surf(Input IN, inout SurfaceOutputStandard o) {
 			float4 foamColor = tex2D(_FoamTex, IN.uv_FoamTex + _NormalMapMoveDir.xy * _NormalMapMoveSpeed * _Time.x);
-			float foamFactor = pow(IN.crestFactor, _FoamSharpness);
+			float foamFactor = pow(IN.crestFactor, _FoamSharpness) + _FoamScale;
 
 			float3 waterNormal = normalize(o.Normal + UnpackNormal(tex2D(_NormalMap, IN.uv_NormalMap + _NormalMapMoveDir.xy * _NormalMapMoveSpeed * _Time.x)));
 			float3 foamNormal = normalize(o.Normal + UnpackNormal(tex2D(_FoamNormals, IN.uv_FoamNormals + _NormalMapMoveDir.xy * _NormalMapMoveSpeed * _Time.x)));

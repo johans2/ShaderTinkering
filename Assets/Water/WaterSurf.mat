@@ -99,7 +99,7 @@ Material:
     - _FadeSpeed4: 0
     - _FadeSpeed5: 0
     - _FoamPower: 40
-    - _FoamScale: 1
+    - _FoamScale: 0.01
     - _FoamSharpness: 1.3
     - _GlossMapScale: 1
     - _Glossiness: 0.5
