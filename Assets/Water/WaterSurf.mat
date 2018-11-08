@@ -129,6 +129,7 @@ Material:
     - _Steepness4: 0
     - _Steepness5: 0.45
     - _UVSec: 0
+    - _WaterFogDensity: 6.15
     - _Wave2Enabled: 1
     - _Wave3Enabled: 1
     - _Wave4Enabled: 0
@@ -142,8 +143,9 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BumpMapMoveDir: {r: -1, g: 0, b: 1, a: 1}
-    - _Color: {r: 0, g: 0.122718126, b: 0.14705884, a: 0.828}
+    - _Color: {r: 0, g: 0.122718126, b: 0.14705884, a: 0.678}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _NormalMapMoveDir: {r: -1, g: 0, b: 0, a: 0}
     - _PumpMapMoveDir: {r: 0, g: 0, b: 0, a: 0}
     - _SSSColor: {r: 1, g: 0, b: 0, a: 1}
+    - _WaterFogColor: {r: 0, g: 0.12596752, b: 0.1544118, a: 1}
