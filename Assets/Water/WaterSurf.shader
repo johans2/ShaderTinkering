@@ -124,6 +124,7 @@ Shader "Custom/WaterSurf" {
 		struct Input {
 			float2 uv_NormalMap;
 			float2 uv_FoamTex;
+			float2 uv_FoamNormals;
 			float crestFactor;
 		};
 
@@ -190,7 +191,7 @@ Shader "Custom/WaterSurf" {
 			float foamFactor = pow(saturate(IN.crestFactor), _FoamSharpness);
 
 			float3 waterNormal = normalize(o.Normal + UnpackNormal(tex2D(_NormalMap, IN.uv_NormalMap + _NormalMapMoveDir.xy * _NormalMapMoveSpeed * _Time.x)));
-			float3 foamNormal = normalize(o.Normal + UnpackNormal(tex2D(_FoamNormals, IN.uv_NormalMap + _NormalMapMoveDir.xy * _NormalMapMoveSpeed * _Time.x)));
+			float3 foamNormal = normalize(o.Normal + UnpackNormal(tex2D(_FoamNormals, IN.uv_FoamNormals + _NormalMapMoveDir.xy * _NormalMapMoveSpeed * _Time.x)));
 
 			o.Albedo = lerp(_Color, foamColor, foamFactor);
 			o.Smoothness = saturate(_SmoothNess - (foamFactor*2));
