@@ -10,6 +10,13 @@ float _Steepness1;
 float _FadeSpeed1;
 float _FoamScale;
 
+
+sampler2D _CameraDepthTexture;
+sampler2D _WaterBackground;
+float4 _CameraDepthTexture_TexelSize;
+float4 _WaterFogColor;
+float _WaterFogDensity;
+
 #if WAVE2
 float _WaveLength2;
 float _Amplitude2;
@@ -201,4 +208,22 @@ float3 WaveNormalSum(float3 wavePointSum) {
 	#endif
 
 	return float3(-normalSum.x, 1 - normalSum.y, -normalSum.z);
+}
+
+float3 ColorBelowWater(float4 screenPos) {
+	float2 uv = screenPos.xy / screenPos.w;
+
+#if UNITY_UV_STARTS_AT_TOP
+	if (_CameraDepthTexture_TexelSize.y < 0) {
+		uv.y = 1 - uv.y;
+	}
+#endif
+
+	float backgroundDepth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, uv));
+	float surfaceDepth = UNITY_Z_0_FAR_FROM_CLIPSPACE(screenPos.z);
+	float depthDifference = backgroundDepth - surfaceDepth;
+
+	float3 backgroundColor = tex2D(_WaterBackground, uv).rgb;
+	float fogFactor = exp2(-_WaterFogDensity * depthDifference);
+	return lerp(_WaterFogColor, backgroundColor, fogFactor);
 }
