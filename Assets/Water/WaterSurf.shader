@@ -188,7 +188,7 @@ Shader "Custom/WaterSurf" {
 		
 		void surf(Input IN, inout SurfaceOutputStandard o) {
 			float4 foamColor = tex2D(_FoamTex, IN.uv_FoamTex + _NormalMapMoveDir.xy * _NormalMapMoveSpeed * _Time.x);
-			float foamFactor = pow(IN.crestFactor, _FoamSharpness) + _FoamScale;
+			float foamFactor = saturate( pow(IN.crestFactor, _FoamSharpness) + _FoamScale);
 
 			float3 waterNormal = normalize(o.Normal + UnpackNormal(tex2D(_NormalMap, IN.uv_NormalMap + _NormalMapMoveDir.xy * _NormalMapMoveSpeed * _Time.x)));
 			float3 foamNormal = normalize(o.Normal + UnpackNormal(tex2D(_FoamNormals, IN.uv_FoamNormals + _NormalMapMoveDir.xy * _NormalMapMoveSpeed * _Time.x)));
@@ -197,7 +197,7 @@ Shader "Custom/WaterSurf" {
 			o.Smoothness = saturate(_SmoothNess - (foamFactor*2));
 			o.Metallic = 0.0;
 			o.Alpha = saturate(_Color.a + foamFactor);
-			o.Normal = lerp(waterNormal, foamNormal, foamFactor);
+			o.Normal = lerp(waterNormal, foamNormal, foamFactor*2);
 		}
 
 		ENDCG
