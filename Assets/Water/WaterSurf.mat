@@ -83,7 +83,7 @@ Material:
     - _DetailNormalMapScale: 1
     - _DirectionX1: 0.067
     - _DirectionX2: 0.194
-    - _DirectionX3: -0.29
+    - _DirectionX3: -0.568
     - _DirectionX4: 0.05
     - _DirectionX5: 0.38
     - _DirectionY1: 1
@@ -100,7 +100,7 @@ Material:
     - _FadeSpeed5: 0
     - _FoamPower: 40
     - _FoamScale: 0.01
-    - _FoamSharpness: 1.3
+    - _FoamSharpness: 1.65
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
@@ -110,7 +110,7 @@ Material:
     - _Occlusion: 1
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _Power: 1.17
+    - _Power: 1.3
     - _Scale: 1.18
     - _Shininess: 0
     - _SmoothNess: 0.9
@@ -137,15 +137,15 @@ Material:
     - _WaveLength: 0.001
     - _WaveLength1: 0.75
     - _WaveLength2: 0.31
-    - _WaveLength3: 0.37
+    - _WaveLength3: 0.54
     - _WaveLength4: 0.2
     - _WaveLength5: 0.13
     - _ZWrite: 1
     m_Colors:
     - _BumpMapMoveDir: {r: -1, g: 0, b: 1, a: 1}
-    - _Color: {r: 0, g: 0.122718126, b: 0.14705884, a: 0.678}
+    - _Color: {r: 0, g: 0.116582215, b: 0.1397059, a: 0.691}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _NormalMapMoveDir: {r: -1, g: 0, b: 0, a: 0}
     - _PumpMapMoveDir: {r: 0, g: 0, b: 0, a: 0}
     - _SSSColor: {r: 1, g: 0, b: 0, a: 1}
-    - _WaterFogColor: {r: 0, g: 0.12596752, b: 0.1544118, a: 1}
+    - _WaterFogColor: {r: 0, g: 0.119969055, b: 0.14705884, a: 1}

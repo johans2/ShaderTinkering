@@ -83,7 +83,7 @@ Shader "Custom/WaterSurf" {
 		// ------- PASS 1 ---------------
 		CGPROGRAM
 
-		#pragma surface surf Standard vertex:vert nometa noambient noforwardadd novertexlights
+		#pragma surface surf Standard vertex:vert nometa novertexlights noforwardadd
 		#include "UnityCG.cginc"
 		#include "WaterIncludes.cginc"
 		#pragma shader_feature WAVE2
@@ -118,7 +118,7 @@ Shader "Custom/WaterSurf" {
 
 		CGPROGRAM
 
-		#pragma surface surf StandardTranslucent vertex:vert alpha:fade finalcolor:ResetAlpha nometa
+		#pragma surface surf StandardTranslucent vertex:vert alpha:fade finalcolor:ResetAlpha nometa novertexlights
 		#include "UnityCG.cginc"
 		#include "UnityPBSLighting.cginc"
 		#include "WaterIncludes.cginc"
