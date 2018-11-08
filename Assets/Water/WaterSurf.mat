@@ -8,7 +8,7 @@ Material:
   m_PrefabInternal: {fileID: 0}
   m_Name: WaterSurf
   m_Shader: {fileID: 4800000, guid: dfe00a955f590494e89617f1f9315134, type: 3}
-  m_ShaderKeywords: WAVE2 WAVE3 WAVE4
+  m_ShaderKeywords: WAVE2 WAVE3
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -89,18 +89,18 @@ Material:
     - _DirectionY1: 1
     - _DirectionY2: 1
     - _DirectionY3: 1
-    - _DirectionY4: -1
+    - _DirectionY4: 0.469
     - _DirectionY5: 1
     - _Distortion: 10.11
     - _DstBlend: 0
-    - _FadeSpeed1: 1
-    - _FadeSpeed2: 1
-    - _FadeSpeed3: 1
-    - _FadeSpeed4: 1
-    - _FadeSpeed5: 1
+    - _FadeSpeed1: 0
+    - _FadeSpeed2: 0
+    - _FadeSpeed3: 50
+    - _FadeSpeed4: 0
+    - _FadeSpeed5: 0
     - _FoamPower: 40
-    - _FoamScale: 6.94
-    - _FoamSharpness: 1.58
+    - _FoamScale: 1
+    - _FoamSharpness: 1.3
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
@@ -131,18 +131,18 @@ Material:
     - _UVSec: 0
     - _Wave2Enabled: 1
     - _Wave3Enabled: 1
-    - _Wave4Enabled: 1
+    - _Wave4Enabled: 0
     - _Wave5Enabled: 0
     - _WaveLength: 0.001
     - _WaveLength1: 0.75
     - _WaveLength2: 0.31
     - _WaveLength3: 0.37
-    - _WaveLength4: 0.7
+    - _WaveLength4: 0.2
     - _WaveLength5: 0.13
     - _ZWrite: 1
     m_Colors:
     - _BumpMapMoveDir: {r: -1, g: 0, b: 1, a: 1}
-    - _Color: {r: 0, g: 0.122718126, b: 0.14705884, a: 0.884}
+    - _Color: {r: 0, g: 0.122718126, b: 0.14705884, a: 0.828}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _NormalMapMoveDir: {r: -1, g: 0, b: 0, a: 0}
     - _PumpMapMoveDir: {r: 0, g: 0, b: 0, a: 0}
