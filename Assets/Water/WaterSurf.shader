@@ -206,11 +206,11 @@ Shader "Custom/WaterSurf" {
 			float3 foamNormal = normalize(o.Normal + UnpackNormal(tex2D(_FoamNormals, IN.uv_FoamNormals + _NormalMapMoveDir.xy * _NormalMapMoveSpeed * _Time.x)));
 			float alpha = saturate(_Color.a + foamFactor);
 
-			o.Albedo = lerp(_Color, foamColor, foamFactor);
+			o.Albedo = _Color;
 			o.Smoothness = saturate(_SmoothNess - (foamFactor*2));
 			o.Metallic = 0.0;
 			o.Alpha = alpha;
-			o.Emission = ColorBelowWater(IN.screenPos) * (1 - alpha);
+			o.Emission = ColorBelowWater(IN.screenPos) * (1 - alpha) + foamColor * foamFactor;
 			o.Normal = lerp(waterNormal, foamNormal, foamFactor*2);
 		}
 
