@@ -8,7 +8,7 @@ Material:
   m_PrefabInternal: {fileID: 0}
   m_Name: WaterSurf
   m_Shader: {fileID: 4800000, guid: dfe00a955f590494e89617f1f9315134, type: 3}
-  m_ShaderKeywords: WAVE2 WAVE3
+  m_ShaderKeywords: WAVE2 WAVE3 WAVE4
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -75,7 +75,7 @@ Material:
     - _Amplitude1: 0.08
     - _Amplitude2: 0.055
     - _Amplitude3: 0.05
-    - _Amplitude4: 0.04
+    - _Amplitude4: 0.03
     - _Amplitude5: 0.017
     - _BumpMapMoveSpeed: 4
     - _BumpScale: 1
@@ -95,8 +95,8 @@ Material:
     - _DstBlend: 0
     - _FadeSpeed1: 0
     - _FadeSpeed2: 0
-    - _FadeSpeed3: 50
-    - _FadeSpeed4: 0
+    - _FadeSpeed3: 0
+    - _FadeSpeed4: 100
     - _FadeSpeed5: 0
     - _FoamPower: 40
     - _FoamScale: 0.01
@@ -132,7 +132,7 @@ Material:
     - _WaterFogDensity: 6.15
     - _Wave2Enabled: 1
     - _Wave3Enabled: 1
-    - _Wave4Enabled: 0
+    - _Wave4Enabled: 1
     - _Wave5Enabled: 0
     - _WaveLength: 0.001
     - _WaveLength1: 0.75

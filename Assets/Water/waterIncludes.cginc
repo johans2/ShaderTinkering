@@ -58,13 +58,17 @@ float _FadeSpeed5;
 #endif
 
 // Returns x,y,z position and w crestFactor (used for foam)
-float4 WavePoint(float2 position, float amplitude, float wavelength, float speed, float2 direction, float steepness) {
+float4 WavePoint(float2 position, float amplitude, float wavelength, float speed, float2 direction, float steepness, float fadeSpeed) {
     float frequency = 2 / wavelength;
     float phaseConstantSpeed = speed * 2 / wavelength;
+	
 
 	float2 normalizedDir = normalize(direction);
     float fi = _Time.x  * phaseConstantSpeed;
     float dirDotPos = dot(normalizedDir, position);
+
+	float fade = cos(fadeSpeed * _Time.x) / 2 + 0.5;
+	amplitude *= fade;
 
     float waveGretsX = steepness * amplitude * normalizedDir.x * cos(frequency * dirDotPos + fi);
 	float crest = sin(frequency * dirDotPos + fi);
@@ -72,7 +76,7 @@ float4 WavePoint(float2 position, float amplitude, float wavelength, float speed
 	//								-1 < x < 1
 	//								max: amplitude * 1
     float waveGretsZ = steepness * amplitude * normalizedDir.y * cos(frequency * dirDotPos + fi);
-	float crestFactor = crest * saturate(steepness);
+	float crestFactor = crest * saturate(steepness) * fade;
 
     return float4(waveGretsX, waveGretsY, waveGretsZ, crestFactor);
 }
@@ -105,7 +109,8 @@ float4 WavePointSum(float3 worldPos) {
 									_WaveLength1, 
 									_Speed1, 
 									float2(_DirectionX1, _DirectionY1), 
-									_Steepness1);
+									_Steepness1,
+									_FadeSpeed1);
 
 
 	#if WAVE2
@@ -114,7 +119,8 @@ float4 WavePointSum(float3 worldPos) {
 								_WaveLength2,
 								_Speed2,
 								float2(_DirectionX2, _DirectionY2),
-								_Steepness2);
+								_Steepness2,
+								_FadeSpeed2);
 	
 	wavePointSum.xyz += wave2.xyz;
 	wavePointSum.w += wave2.w;
@@ -127,7 +133,8 @@ float4 WavePointSum(float3 worldPos) {
 								_WaveLength3,
 								_Speed3,
 								float2(_DirectionX3, _DirectionY3),
-								_Steepness3);
+								_Steepness3,
+								_FadeSpeed3);
 	wavePointSum.xyz += wave3.xyz;
 	wavePointSum.w += wave3.w;
 	#endif
@@ -139,7 +146,8 @@ float4 WavePointSum(float3 worldPos) {
 								_WaveLength4,
 								_Speed4,
 								float2(_DirectionX4, _DirectionY4),
-								_Steepness4);
+								_Steepness4,
+								_FadeSpeed4);
 
 	wavePointSum.xyz += wave4.xyz;
 	wavePointSum.w += wave4.w;
@@ -152,7 +160,8 @@ float4 WavePointSum(float3 worldPos) {
 								_WaveLength5,
 								_Speed5,
 								float2(_DirectionX5, _DirectionY5),
-								_Steepness5);
+								_Steepness5,
+								_FadeSpeed5);
 
 	wavePointSum.xyz += wave5.xyz;
 	wavePointSum.w += wave5.w;
