@@ -13,6 +13,9 @@ Shader "Custom/WaterSurf" {
 		_WaterFogColor("Water Fog Color", Color) = (0, 0, 0, 0)
 		_WaterFogDensity("Water Fog Density", Range(0, 10)) = 0.15
 
+		[Header(Refraction)]
+		_RefractionStrength("Refraction Strength", Range(0, 1)) = 0.25
+
 		[Header(Subsurface scattering)]
 		_Power("Power", Float) = 0
 
@@ -210,8 +213,8 @@ Shader "Custom/WaterSurf" {
 			o.Smoothness = saturate(_SmoothNess - (foamFactor*2));
 			o.Metallic = 0.0;
 			o.Alpha = alpha;
-			o.Emission = ColorBelowWater(IN.screenPos) * (1 - alpha) + foamColor * foamFactor;
 			o.Normal = lerp(waterNormal, foamNormal, foamFactor*2);
+			o.Emission = ColorBelowWater(IN.screenPos, o.Normal) * (1 - alpha) + foamColor * foamFactor;
 		}
 
 		ENDCG
