@@ -112,7 +112,8 @@ float4 WavePointSum(float3 worldPos) {
 									float2(_DirectionX1, _DirectionY1), 
 									_Steepness1,
 									_FadeSpeed1);
-
+	
+	float totSteepness = _Steepness1;
 
 	#if WAVE2
 	float4 wave2 = WavePoint(	worldPos.xz,
@@ -123,8 +124,8 @@ float4 WavePointSum(float3 worldPos) {
 								_Steepness2,
 								_FadeSpeed2);
 	
-	wavePointSum.xyz += wave2.xyz;
-	wavePointSum.w += wave2.w;
+	wavePointSum += wave2;
+	totSteepness += _Steepness2;
 	#endif
 
 
@@ -136,8 +137,9 @@ float4 WavePointSum(float3 worldPos) {
 								float2(_DirectionX3, _DirectionY3),
 								_Steepness3,
 								_FadeSpeed3);
-	wavePointSum.xyz += wave3.xyz;
-	wavePointSum.w += wave3.w;
+
+	wavePointSum += wave3;
+	totSteepness += _Steepness3;
 	#endif
 
 
@@ -150,8 +152,8 @@ float4 WavePointSum(float3 worldPos) {
 								_Steepness4,
 								_FadeSpeed4);
 
-	wavePointSum.xyz += wave4.xyz;
-	wavePointSum.w += wave4.w;
+	wavePointSum += wave4;
+	totSteepness += _Steepness4;
 	#endif
 
 
@@ -164,11 +166,11 @@ float4 WavePointSum(float3 worldPos) {
 								_Steepness5,
 								_FadeSpeed5);
 
-	wavePointSum.xyz += wave5.xyz;
-	wavePointSum.w += wave5.w;
+	wavePointSum += wave5;
+	totSteepness += _Steepness5;
 	#endif
 
-	wavePointSum.w /= 5;
+	wavePointSum.w /= totSteepness;
 	wavePointSum.w = saturate(wavePointSum.w);
 	return wavePointSum;
 }
@@ -227,26 +229,21 @@ float2 AlignWithGrabTexel(float2 uv) {
 	}
 #endif
 
-	return
-		(floor(uv * _CameraDepthTexture_TexelSize.zw) + 0.5) *
-		abs(_CameraDepthTexture_TexelSize.xy);
+	return (floor(uv * _CameraDepthTexture_TexelSize.zw) + 0.5) * abs(_CameraDepthTexture_TexelSize.xy);
 }
 
 float3 ColorBelowWater(float4 screenPos, float3 tangentSpaceNormal) {
 	float2 uvOffset = tangentSpaceNormal.xy * _RefractionStrength;
-	uvOffset.y *=
-		_CameraDepthTexture_TexelSize.z * abs(_CameraDepthTexture_TexelSize.y);
+	uvOffset.y *= _CameraDepthTexture_TexelSize.z * abs(_CameraDepthTexture_TexelSize.y);
 	float2 uv = AlignWithGrabTexel((screenPos.xy + uvOffset) / screenPos.w);
 
-	float backgroundDepth =
-		LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, uv));
+	float backgroundDepth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, uv));
 	float surfaceDepth = UNITY_Z_0_FAR_FROM_CLIPSPACE(screenPos.z);
 	float depthDifference = backgroundDepth - surfaceDepth;
 
 	uvOffset *= saturate(depthDifference);
 	uv = AlignWithGrabTexel((screenPos.xy + uvOffset) / screenPos.w);
-	backgroundDepth =
-		LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, uv));
+	backgroundDepth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, uv));
 	depthDifference = backgroundDepth - surfaceDepth;
 
 	float3 backgroundColor = tex2D(_WaterBackground, uv).rgb;

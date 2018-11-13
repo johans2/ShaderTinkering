@@ -111,7 +111,7 @@ Material:
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _Power: 1.3
-    - _RefractionStrength: 0.205
+    - _RefractionStrength: 0.082
     - _Scale: 1.18
     - _Shininess: 0
     - _SmoothNess: 0.9
@@ -130,7 +130,7 @@ Material:
     - _Steepness4: 0
     - _Steepness5: 0.45
     - _UVSec: 0
-    - _WaterFogDensity: 6.15
+    - _WaterFogDensity: 1.36
     - _Wave2Enabled: 1
     - _Wave3Enabled: 1
     - _Wave4Enabled: 0
