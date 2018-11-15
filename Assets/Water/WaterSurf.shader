@@ -5,9 +5,14 @@ Shader "Custom/WaterSurf" {
 		_Color("Color", Color) = (0,0,1,1)
 		_SmoothNess("SmoothNess", Range(0.0,1.0)) = 0
 
-		_NormalMap("Normalmap", 2D) = "white" {}
-		_NormalMapMoveDir("Normalmap move dir", Vector) = (0,0,0,0)
-		_NormalMapMoveSpeed("Normalmap move speed", Float) = 0
+		[Header(Normals)]
+		_NormalMap1("Normalmap 1", 2D) = "white" {}
+		_NormalMapMoveDir1("Normalmap 1 move dir", Vector) = (0,0,0,0)
+		_NormalMapMoveSpeed1("Normalmap 1 move speed", Float) = 0
+
+		_NormalMap2("Normalmap 2", 2D) = "white" {}
+		_NormalMapMoveDir2("Normalmap 2 move dir", Vector) = (0,0,0,0)
+		_NormalMapMoveSpeed2("Normalmap 2 move speed", Float) = 0
 			
 		[Header(Water fog)]
 		_WaterFogColor("Water Fog Color", Color) = (0, 0, 0, 0)
@@ -17,7 +22,7 @@ Shader "Custom/WaterSurf" {
 		_RefractionStrength("Refraction Strength", Range(0, 1)) = 0.25
 
 		[Header(Subsurface scattering)]
-		_Power("Power", Float) = 0
+		_SSSPower("Power", Float) = 0
 
 		[Header(Wave crest foam)]
 		_FoamTex("Foam texture", 2D) = "white" {}
@@ -132,23 +137,34 @@ Shader "Custom/WaterSurf" {
 		#pragma shader_feature WAVE5
 
 		struct Input {
-			float2 uv_NormalMap;
+			float2 uv_NormalMap1;
+			float2 uv_NormalMap2;
 			float2 uv_FoamTex;
 			float2 uv_FoamNormals;
 			float4 screenPos;
 			float crestFactor;
 		};
 
-		sampler2D _NormalMap;
 		sampler2D _FoamTex;
 		sampler2D _FoamNormals;
-		half4 _NormalMapMoveDir;
-		half _NormalMapMoveSpeed;
+
+		// Normal maps
+		sampler2D _NormalMap1;
+		half4 _NormalMapMoveDir1;
+		half _NormalMapMoveSpeed1;
+
+		sampler2D _NormalMap2;
+		half4 _NormalMapMoveDir2;
+		half _NormalMapMoveSpeed2;
+
+		// Color
 		float4 _Color;
 		float4 _SSSColor;
+
+		// Other
 		float _SmoothNess;
 
-		float _Power;
+		float _SSSPower;
 
 		void vert(inout appdata_full v, out Input o) {
 			UNITY_INITIALIZE_OUTPUT(Input, o);
@@ -183,7 +199,7 @@ Shader "Custom/WaterSurf" {
 			// ViewDir dot LightDir
 			float VdotL = max(0, dot(normalize(-_WorldSpaceCameraPos.xyz), gi.light.dir));
 
-			float SSS = NdotL * VdotN * VdotL * _Power;
+			float SSS = NdotL * VdotN * VdotL * _SSSPower;
 
 			// Final add
 			pbr.rgb = pbr.rgb + SSS * _Color;
@@ -200,18 +216,22 @@ Shader "Custom/WaterSurf" {
 		}
 		
 		void surf(Input IN, inout SurfaceOutputStandard o) {
-			float4 foamColor = tex2D(_FoamTex, IN.uv_FoamTex + _NormalMapMoveDir.xy * _NormalMapMoveSpeed * _Time.x);
+			float4 foamColor = tex2D(_FoamTex, IN.uv_FoamTex + _NormalMapMoveDir1.xy * _NormalMapMoveSpeed1 * _Time.x);
 			float foamFactor = saturate( pow(IN.crestFactor, _FoamSharpness));
 
-			float3 waterNormal = normalize(o.Normal + UnpackNormal(tex2D(_NormalMap, IN.uv_NormalMap + _NormalMapMoveDir.xy * _NormalMapMoveSpeed * _Time.x)));
-			float3 foamNormal = normalize(o.Normal + UnpackNormal(tex2D(_FoamNormals, IN.uv_FoamNormals + _NormalMapMoveDir.xy * _NormalMapMoveSpeed * _Time.x)));
+			float3 waterNormal1 = normalize(o.Normal + UnpackNormal(tex2D(_NormalMap1, IN.uv_NormalMap1 + _NormalMapMoveDir1.xy * _NormalMapMoveSpeed1 * _Time.x)));
+			float3 waterNormal2 = normalize(o.Normal + UnpackNormal(tex2D(_NormalMap2, IN.uv_NormalMap2 + _NormalMapMoveDir2.xy * _NormalMapMoveSpeed2 * _Time.x)));
+
+			float3 totalWaterNormal = waterNormal1 + waterNormal2;
+
+			float3 foamNormal = normalize(o.Normal + UnpackNormal(tex2D(_FoamNormals, IN.uv_FoamNormals + _NormalMapMoveDir1.xy * _NormalMapMoveSpeed1 * _Time.x)));
 			float alpha = saturate(_Color.a + foamFactor);
 
 			o.Albedo = _Color;
-			o.Smoothness = saturate(_SmoothNess - (foamFactor*2));
+			o.Smoothness = saturate(_SmoothNess - (foamFactor*4));
 			o.Metallic = 0.0;
 			o.Alpha = alpha;
-			o.Normal = lerp(waterNormal, foamNormal, foamFactor*2);
+			o.Normal = lerp(totalWaterNormal, foamNormal, foamFactor*2);
 			o.Emission = ColorBelowWater(IN.screenPos, o.Normal) * (1 - alpha) + foamColor * foamFactor;
 		}
 
