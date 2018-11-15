@@ -115,10 +115,10 @@ Material:
     - _GlossyReflections: 1
     - _Metallic: 0
     - _Mode: 0
-    - _NormalMapBias: 0.31
+    - _NormalMapBias: 0.247
     - _NormalMapMoveSpeed: 4
     - _NormalMapMoveSpeed1: 5
-    - _NormalMapMoveSpeed2: 4
+    - _NormalMapMoveSpeed2: 10
     - _Occlusion: 1
     - _OcclusionStrength: 1
     - _Parallax: 0.02

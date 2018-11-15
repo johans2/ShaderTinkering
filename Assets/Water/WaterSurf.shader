@@ -229,19 +229,20 @@ Shader "Custom/WaterSurf" {
 			float4 foamColor = tex2D(_FoamTex, IN.uv_FoamTex + _NormalMapMoveDir1.xy * _NormalMapMoveSpeed1 * _Time.x);
 			float foamFactor = saturate( pow(IN.crestFactor, _FoamSharpness));
 
-			float3 waterNormal1 = normalize(o.Normal + UnpackNormal(tex2D(_NormalMap1, IN.uv_NormalMap1 + _NormalMapMoveDir1.xy * _NormalMapMoveSpeed1 * _Time.x)));
-			float3 waterNormal2 = normalize(o.Normal + UnpackNormal(tex2D(_NormalMap2, IN.uv_NormalMap2 + _NormalMapMoveDir2.xy * _NormalMapMoveSpeed2 * _Time.x)));
+			float3 waterNormal1 = normalize(UnpackNormal(tex2D(_NormalMap1, IN.uv_NormalMap1 + _NormalMapMoveDir1.xy * _NormalMapMoveSpeed1 * _Time.x)));
+			float3 waterNormal2 = normalize(UnpackNormal(tex2D(_NormalMap2, IN.uv_NormalMap2 + _NormalMapMoveDir2.xy * _NormalMapMoveSpeed2 * _Time.x)));
 
-			float3 totalWaterNormal = lerp(waterNormal1, waterNormal2, _NormalMapBias);
+			float3 totalWaterNormal = normalize(float3(waterNormal1.xy + waterNormal2.xy, waterNormal1.z));
+			totalWaterNormal.xy *= _NormalMapBias;
 
-			float3 foamNormal = normalize(o.Normal + UnpackNormal(tex2D(_FoamNormals, IN.uv_FoamNormals + _NormalMapMoveDir1.xy * _NormalMapMoveSpeed1 * _Time.x)));
+			float3 foamNormal = normalize(UnpackNormal(tex2D(_FoamNormals, IN.uv_FoamNormals + _NormalMapMoveDir1.xy * _NormalMapMoveSpeed1 * _Time.x)));
 			float alpha = saturate(_Color.a + foamFactor);
 
 			o.Albedo = _Color;
 			o.Smoothness = saturate(_SmoothNess - (foamFactor*4));
 			o.Metallic = 0.0;
 			o.Alpha = alpha;
-			o.Normal = lerp(totalWaterNormal, foamNormal, foamFactor*2);
+			o.Normal = lerp(normalize(totalWaterNormal), foamNormal, foamFactor*2);
 			o.Emission = ColorBelowWater(IN.screenPos, o.Normal) * (1 - alpha) + foamColor * foamFactor;
 		}
 
