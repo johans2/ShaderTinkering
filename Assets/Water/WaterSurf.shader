@@ -22,8 +22,8 @@ Shader "Custom/WaterSurf" {
 		[Header(Wave crest foam)]
 		_FoamTex("Foam texture", 2D) = "white" {}
 		_FoamNormals("Foam normals", 2D) = "white" {}
-		_FoamScale("Foam Scale", Float) = 1
-		_FoamSharpness("Foam Sharpness", Float) = 1
+		_FoamSpread("Foam Scale", Range(0.1, 3.0)) = 2.43
+		_FoamSharpness("Foam Sharpness", Range(0.1,3.0)) = 1.34
 
 		[Header(Base Wave)]
 		_WaveLength1("Wavelength",  Float) = 0.1
@@ -149,8 +149,6 @@ Shader "Custom/WaterSurf" {
 		float _SmoothNess;
 
 		float _Power;
-		float _FoamSharpness;
-
 
 		void vert(inout appdata_full v, out Input o) {
 			UNITY_INITIALIZE_OUTPUT(Input, o);
@@ -203,7 +201,7 @@ Shader "Custom/WaterSurf" {
 		
 		void surf(Input IN, inout SurfaceOutputStandard o) {
 			float4 foamColor = tex2D(_FoamTex, IN.uv_FoamTex + _NormalMapMoveDir.xy * _NormalMapMoveSpeed * _Time.x);
-			float foamFactor = saturate( pow(IN.crestFactor, _FoamSharpness) + _FoamScale);
+			float foamFactor = saturate( pow(IN.crestFactor, _FoamSharpness));
 
 			float3 waterNormal = normalize(o.Normal + UnpackNormal(tex2D(_NormalMap, IN.uv_NormalMap + _NormalMapMoveDir.xy * _NormalMapMoveSpeed * _Time.x)));
 			float3 foamNormal = normalize(o.Normal + UnpackNormal(tex2D(_FoamNormals, IN.uv_FoamNormals + _NormalMapMoveDir.xy * _NormalMapMoveSpeed * _Time.x)));

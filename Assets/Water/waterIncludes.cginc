@@ -8,8 +8,9 @@ float _DirectionX1;
 float _DirectionY1;
 float _Steepness1;
 float _FadeSpeed1;
-float _FoamScale;
 
+float _FoamSpread;
+float _FoamSharpness;
 
 sampler2D _CameraDepthTexture;
 sampler2D _WaterBackground;
@@ -113,7 +114,7 @@ float4 WavePointSum(float3 worldPos) {
 									_Steepness1,
 									_FadeSpeed1);
 	
-	float totSteepness = _Steepness1;
+	float totSteepness = _FoamSpread;
 
 	#if WAVE2
 	float4 wave2 = WavePoint(	worldPos.xz,
@@ -125,7 +126,7 @@ float4 WavePointSum(float3 worldPos) {
 								_FadeSpeed2);
 	
 	wavePointSum += wave2;
-	totSteepness += _Steepness2;
+	totSteepness += _FoamSpread;
 	#endif
 
 
@@ -139,7 +140,7 @@ float4 WavePointSum(float3 worldPos) {
 								_FadeSpeed3);
 
 	wavePointSum += wave3;
-	totSteepness += _Steepness3;
+	totSteepness += _FoamSpread;
 	#endif
 
 
@@ -153,7 +154,7 @@ float4 WavePointSum(float3 worldPos) {
 								_FadeSpeed4);
 
 	wavePointSum += wave4;
-	totSteepness += _Steepness4;
+	totSteepness += _FoamSpread;
 	#endif
 
 
@@ -167,11 +168,11 @@ float4 WavePointSum(float3 worldPos) {
 								_FadeSpeed5);
 
 	wavePointSum += wave5;
-	totSteepness += _Steepness5;
+	totSteepness += _FoamSpread;
 	#endif
 
 	wavePointSum.w /= totSteepness;
-	wavePointSum.w = saturate(wavePointSum.w);
+	wavePointSum.w = max(0.01, wavePointSum.w);
 	return wavePointSum;
 }
 

@@ -99,8 +99,8 @@ Material:
     - _FadeSpeed4: 100
     - _FadeSpeed5: 0
     - _FoamPower: 40
-    - _FoamScale: 0.01
-    - _FoamSharpness: 1.65
+    - _FoamScale: 2.43
+    - _FoamSharpness: 1.34
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
@@ -130,7 +130,7 @@ Material:
     - _Steepness4: 0
     - _Steepness5: 0.45
     - _UVSec: 0
-    - _WaterFogDensity: 1.36
+    - _WaterFogDensity: 3.42
     - _Wave2Enabled: 1
     - _Wave3Enabled: 1
     - _Wave4Enabled: 0
