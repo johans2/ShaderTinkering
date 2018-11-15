@@ -2,9 +2,11 @@
 
 Shader "Custom/WaterSurf" {
 	Properties{
+		// Color
 		_Color("Color", Color) = (0,0,1,1)
 		_SmoothNess("SmoothNess", Range(0.0,1.0)) = 0
 
+		// Normals
 		[Header(Normals)]
 		_NormalMap1("Normalmap 1", 2D) = "white" {}
 		_NormalMapMoveDir1("Normalmap 1 move dir", Vector) = (0,0,0,0)
@@ -13,23 +15,30 @@ Shader "Custom/WaterSurf" {
 		_NormalMap2("Normalmap 2", 2D) = "white" {}
 		_NormalMapMoveDir2("Normalmap 2 move dir", Vector) = (0,0,0,0)
 		_NormalMapMoveSpeed2("Normalmap 2 move speed", Float) = 0
-			
+		
+		_NormalMapBias("Normalmap bias", Range(0.0,1.0)) = 0.5
+
+		// Fog
 		[Header(Water fog)]
 		_WaterFogColor("Water Fog Color", Color) = (0, 0, 0, 0)
 		_WaterFogDensity("Water Fog Density", Range(0, 10)) = 0.15
 
+		// Refraction
 		[Header(Refraction)]
 		_RefractionStrength("Refraction Strength", Range(0, 1)) = 0.25
 
+		// Subsurface scattering
 		[Header(Subsurface scattering)]
 		_SSSPower("Power", Float) = 0
 
+		// Wave Crest foam
 		[Header(Wave crest foam)]
 		_FoamTex("Foam texture", 2D) = "white" {}
 		_FoamNormals("Foam normals", 2D) = "white" {}
 		_FoamSpread("Foam Scale", Range(0.1, 3.0)) = 2.43
 		_FoamSharpness("Foam Sharpness", Range(0.1,3.0)) = 1.34
 
+		// Vertex waves
 		[Header(Base Wave)]
 		_WaveLength1("Wavelength",  Float) = 0.1
 		_Amplitude1("Amplitude", Float) = 0.001
@@ -152,6 +161,7 @@ Shader "Custom/WaterSurf" {
 		sampler2D _NormalMap1;
 		half4 _NormalMapMoveDir1;
 		half _NormalMapMoveSpeed1;
+		half _NormalMapBias;
 
 		sampler2D _NormalMap2;
 		half4 _NormalMapMoveDir2;
@@ -222,7 +232,7 @@ Shader "Custom/WaterSurf" {
 			float3 waterNormal1 = normalize(o.Normal + UnpackNormal(tex2D(_NormalMap1, IN.uv_NormalMap1 + _NormalMapMoveDir1.xy * _NormalMapMoveSpeed1 * _Time.x)));
 			float3 waterNormal2 = normalize(o.Normal + UnpackNormal(tex2D(_NormalMap2, IN.uv_NormalMap2 + _NormalMapMoveDir2.xy * _NormalMapMoveSpeed2 * _Time.x)));
 
-			float3 totalWaterNormal = waterNormal1 + waterNormal2;
+			float3 totalWaterNormal = lerp(waterNormal1, waterNormal2, _NormalMapBias);
 
 			float3 foamNormal = normalize(o.Normal + UnpackNormal(tex2D(_FoamNormals, IN.uv_FoamNormals + _NormalMapMoveDir1.xy * _NormalMapMoveSpeed1 * _Time.x)));
 			float alpha = saturate(_Color.a + foamFactor);
