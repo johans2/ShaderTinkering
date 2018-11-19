@@ -47,7 +47,7 @@ Material:
         m_Scale: {x: 3, y: 3}
         m_Offset: {x: 0, y: 0}
     - _IntersectionFoamRamp:
-        m_Texture: {fileID: 2800000, guid: 3245e4c95a0dce94988451e79ca6a69d, type: 3}
+        m_Texture: {fileID: 2800000, guid: 160906354400c0f41be25f4f3b5b3b5a, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
@@ -117,7 +117,7 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _IntersectionFoamDensity: 0.24
+    - _IntersectionFoamDensity: 0.51
     - _Metallic: 0
     - _Mode: 0
     - _NormalMapBias: 0.247
