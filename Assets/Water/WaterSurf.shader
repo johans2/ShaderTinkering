@@ -258,7 +258,7 @@ Shader "Custom/WaterSurf" {
 			float depthDifference = saturate(backgroundDepth - surfaceDepth);
 			float lerpValue = tex2D(_IntersectionFoamRamp, float2(saturate(depthDifference), 0));
 
-			float3 interSectionFoamColor = _IntersectionFoamColor;// tex2D(_FoamTex, IN.uv_FoamTex + float2(_Time.x * 2, 0));
+			float3 interSectionFoamColor = _IntersectionFoamColor;
 			float3 intersectionFoam = lerp(interSectionFoamColor, float3(0, 0, 0), lerpValue);
 
 			float alpha = saturate(_Color.a + foamFactor);

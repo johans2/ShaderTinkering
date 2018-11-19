@@ -148,7 +148,7 @@ Material:
     - _Steepness4: 0
     - _Steepness5: 0.45
     - _UVSec: 0
-    - _WaterFogDensity: 0.87
+    - _WaterFogDensity: 1.72
     - _Wave2Enabled: 1
     - _Wave3Enabled: 1
     - _Wave4Enabled: 0
