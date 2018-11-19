@@ -44,6 +44,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _FoamTex:
         m_Texture: {fileID: 2800000, guid: 6db914f06cbc33f45845d00e9de07bcb, type: 3}
+        m_Scale: {x: 3, y: 3}
+        m_Offset: {x: 0, y: 0}
+    - _IntersectionFoamRamp:
+        m_Texture: {fileID: 2800000, guid: 3245e4c95a0dce94988451e79ca6a69d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
@@ -113,6 +117,7 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
+    - _IntersectionFoamDensity: 0.24
     - _Metallic: 0
     - _Mode: 0
     - _NormalMapBias: 0.247
@@ -143,7 +148,7 @@ Material:
     - _Steepness4: 0
     - _Steepness5: 0.45
     - _UVSec: 0
-    - _WaterFogDensity: 3.42
+    - _WaterFogDensity: 0.87
     - _Wave2Enabled: 1
     - _Wave3Enabled: 1
     - _Wave4Enabled: 0
@@ -159,6 +164,7 @@ Material:
     - _BumpMapMoveDir: {r: -1, g: 0, b: 1, a: 1}
     - _Color: {r: 0, g: 0.116582215, b: 0.1397059, a: 0.691}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _IntersectionFoamColor: {r: 0.7520545, g: 0.75947535, b: 0.78676474, a: 1}
     - _NormalMapMoveDir: {r: -1, g: 0, b: 0, a: 0}
     - _NormalMapMoveDir1: {r: -1, g: 0, b: 0, a: 0}
     - _NormalMapMoveDir2: {r: -0.5, g: 0.5, b: 0, a: 0}

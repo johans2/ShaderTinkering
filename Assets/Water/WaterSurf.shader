@@ -38,6 +38,13 @@ Shader "Custom/WaterSurf" {
 		_FoamSpread("Foam Scale", Range(0.1, 3.0)) = 2.43
 		_FoamSharpness("Foam Sharpness", Range(0.1,3.0)) = 1.34
 
+		// Intersection foam
+		[Header(Intersection foam)]
+		_IntersectionFoamDensity("Intersection Foam Range", Range(0, 10)) = 0.15
+		_IntersectionFoamRamp("Intersection Foam Ramp", 2D) = "black" {}
+		_IntersectionFoamColor("Intersection foam Color", Color) = (1,1,1,1)
+		
+
 		// Vertex waves
 		[Header(Base Wave)]
 		_WaveLength1("Wavelength",  Float) = 0.1
@@ -154,6 +161,7 @@ Shader "Custom/WaterSurf" {
 			float crestFactor;
 		};
 
+
 		sampler2D _FoamTex;
 		sampler2D _FoamNormals;
 
@@ -174,6 +182,12 @@ Shader "Custom/WaterSurf" {
 		// Other
 		float _SmoothNess;
 
+		// Intersection foam
+		float _IntersectionFoamDensity;
+		sampler2D _IntersectionFoamRamp;
+		float4 _IntersectionFoamColor;
+
+		// SubSurface Scattering
 		float _SSSPower;
 
 		void vert(inout appdata_full v, out Input o) {
@@ -236,6 +250,17 @@ Shader "Custom/WaterSurf" {
 			totalWaterNormal.xy *= _NormalMapBias;
 
 			float3 foamNormal = normalize(UnpackNormal(tex2D(_FoamNormals, IN.uv_FoamNormals + _NormalMapMoveDir1.xy * _NormalMapMoveSpeed1 * _Time.x)));
+
+
+			float2 screenUV = AlignWithGrabTexel(IN.screenPos.xy / IN.screenPos.w);
+			float backgroundDepth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, screenUV));
+			float surfaceDepth = UNITY_Z_0_FAR_FROM_CLIPSPACE(IN.screenPos.z);
+			float depthDifference = saturate(backgroundDepth - surfaceDepth);
+			float lerpValue = tex2D(_IntersectionFoamRamp, float2(saturate(depthDifference), 0));
+
+			float3 interSectionFoamColor = _IntersectionFoamColor;// tex2D(_FoamTex, IN.uv_FoamTex + float2(_Time.x * 2, 0));
+			float3 intersectionFoam = lerp(interSectionFoamColor, float3(0, 0, 0), lerpValue);
+
 			float alpha = saturate(_Color.a + foamFactor);
 
 			o.Albedo = _Color;
@@ -243,7 +268,7 @@ Shader "Custom/WaterSurf" {
 			o.Metallic = 0.0;
 			o.Alpha = alpha;
 			o.Normal = lerp(normalize(totalWaterNormal), foamNormal, foamFactor*2);
-			o.Emission = ColorBelowWater(IN.screenPos, o.Normal) * (1 - alpha) + foamColor * foamFactor;
+			o.Emission = intersectionFoam * _IntersectionFoamDensity + ColorBelowWater(IN.screenPos, o.Normal) * (1 - alpha) + foamColor * foamFactor;
 		}
 
 		ENDCG
