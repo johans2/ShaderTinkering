@@ -40,11 +40,15 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _FoamNormals:
         m_Texture: {fileID: 2800000, guid: 36f10010ce768464587061dff0582d9b, type: 3}
-        m_Scale: {x: 1, y: 1}
+        m_Scale: {x: 3, y: 3}
         m_Offset: {x: 0, y: 0}
     - _FoamTex:
         m_Texture: {fileID: 2800000, guid: 6db914f06cbc33f45845d00e9de07bcb, type: 3}
         m_Scale: {x: 3, y: 3}
+        m_Offset: {x: 0, y: 0}
+    - _Heightmap:
+        m_Texture: {fileID: 2800000, guid: 00001f4f9b3de2d41b8cd0746b2a0e01, type: 3}
+        m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _IntersectionFoamRamp:
         m_Texture: {fileID: 2800000, guid: 160906354400c0f41be25f4f3b5b3b5a, type: 3}
@@ -64,11 +68,11 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _NormalMap1:
         m_Texture: {fileID: 2800000, guid: c8c0816bc4a29c640972a97db7cb61db, type: 3}
-        m_Scale: {x: 2, y: 2}
+        m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalMap2:
         m_Texture: {fileID: 2800000, guid: c8c0816bc4a29c640972a97db7cb61db, type: 3}
-        m_Scale: {x: 3, y: 3}
+        m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0.63, y: 0.94}
     - _Normals:
         m_Texture: {fileID: 0}
@@ -84,7 +88,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _Amplitude: 0.0007
-    - _Amplitude1: 0.08
+    - _Amplitude1: 0.1
     - _Amplitude2: 0.055
     - _Amplitude3: 0.05
     - _Amplitude4: 0.03
@@ -112,18 +116,20 @@ Material:
     - _FadeSpeed5: 0
     - _FoamPower: 40
     - _FoamScale: 2.43
-    - _FoamSharpness: 1.67
-    - _FoamSpread: 2.66
+    - _FoamSharpness: 1.25
+    - _FoamSpread: 1.55
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
+    - _HeightMapScale: 1
+    - _HeightmapStrength: 0.09
     - _IntersectionFoamDensity: 0.51
     - _Metallic: 0
     - _Mode: 0
-    - _NormalMapBias: 0.247
+    - _NormalMapBias: 0.715
     - _NormalMapMoveSpeed: 4
-    - _NormalMapMoveSpeed1: 5
-    - _NormalMapMoveSpeed2: 10
+    - _NormalMapMoveSpeed1: 0
+    - _NormalMapMoveSpeed2: 0
     - _Occlusion: 1
     - _OcclusionStrength: 1
     - _Parallax: 0.02
@@ -132,7 +138,7 @@ Material:
     - _SSSPower: 1.55
     - _Scale: 1.18
     - _Shininess: 0
-    - _SmoothNess: 0.9
+    - _SmoothNess: 0.806
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _Speed: 0.05
