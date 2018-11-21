@@ -50,6 +50,10 @@ Material:
         m_Texture: {fileID: 2800000, guid: 00001f4f9b3de2d41b8cd0746b2a0e01, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _HeightmapFoamRamp:
+        m_Texture: {fileID: 2800000, guid: 92f99976f71bfe4419ecffe59c42c1a6, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _IntersectionFoamRamp:
         m_Texture: {fileID: 2800000, guid: 160906354400c0f41be25f4f3b5b3b5a, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -88,7 +92,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _Amplitude: 0.0007
-    - _Amplitude1: 0.1
+    - _Amplitude1: 0.2
     - _Amplitude2: 0.055
     - _Amplitude3: 0.05
     - _Amplitude4: 0.03
@@ -122,14 +126,14 @@ Material:
     - _Glossiness: 0.5
     - _GlossyReflections: 1
     - _HeightMapScale: 1
-    - _HeightmapStrength: 0.09
+    - _HeightmapStrength: 0.1
     - _IntersectionFoamDensity: 0.51
     - _Metallic: 0
     - _Mode: 0
     - _NormalMapBias: 0.715
     - _NormalMapMoveSpeed: 4
     - _NormalMapMoveSpeed1: 0
-    - _NormalMapMoveSpeed2: 0
+    - _NormalMapMoveSpeed2: 5
     - _Occlusion: 1
     - _OcclusionStrength: 1
     - _Parallax: 0.02
@@ -138,7 +142,7 @@ Material:
     - _SSSPower: 1.55
     - _Scale: 1.18
     - _Shininess: 0
-    - _SmoothNess: 0.806
+    - _SmoothNess: 0.853
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _Speed: 0.05
@@ -160,7 +164,7 @@ Material:
     - _Wave4Enabled: 0
     - _Wave5Enabled: 0
     - _WaveLength: 0.001
-    - _WaveLength1: 0.75
+    - _WaveLength1: 1
     - _WaveLength2: 0.31
     - _WaveLength3: 0.54
     - _WaveLength4: 0.2
@@ -170,6 +174,8 @@ Material:
     - _BumpMapMoveDir: {r: -1, g: 0, b: 1, a: 1}
     - _Color: {r: 0, g: 0.116582215, b: 0.1397059, a: 0.691}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _HeightmapFoam: {r: 1, g: 1, b: 1, a: 1}
+    - _HeightmapFoamColor: {r: 1, g: 1, b: 1, a: 1}
     - _IntersectionFoamColor: {r: 0.7520545, g: 0.75947535, b: 0.78676474, a: 1}
     - _NormalMapMoveDir: {r: -1, g: 0, b: 0, a: 0}
     - _NormalMapMoveDir1: {r: -1, g: 0, b: 0, a: 0}

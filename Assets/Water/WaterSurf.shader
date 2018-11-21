@@ -50,6 +50,9 @@ Shader "Custom/WaterSurf" {
 		_HeightmapStrength("Heightmap strength", Range(0,5)) = 0
 		_HeightMapScale("HeightmapScale", Float) = 1
 
+		_HeightmapFoamColor("Heightmap foam color", Color) = (1,1,1,1)
+		_HeightmapFoamRamp("Heightmap foam ramp", 2D) = "black" {}
+
 		// Vertex waves
 		[Header(Base Wave)]
 		_WaveLength1("Wavelength",  Float) = 0.1
@@ -171,7 +174,7 @@ Shader "Custom/WaterSurf" {
 			float2 uv_NormalMap2;
 			float2 uv_FoamTex;
 			float2 uv_FoamNormals;
-			float2 preAnimXZ;
+			float3 wNormal;
 			float4 screenPos;
 			float crestFactor;
 		};
@@ -209,13 +212,12 @@ Shader "Custom/WaterSurf" {
 		sampler2D _Heightmap;
 		float _HeightmapStrength;
 		float _HeightMapScale;
+		float3 _HeightmapFoamColor;
+		sampler2D _HeightmapFoamRamp;
 
 		void vert(inout appdata_full v, out Input o) {
 			UNITY_INITIALIZE_OUTPUT(Input, o);
 			float3 worldPos = mul(unity_ObjectToWorld, v.vertex);
-
-			o.preAnimXZ = worldPos.xz;
-
 			float4 wavePointSum = WavePointSum(worldPos);
 			float3 pos = worldPos + wavePointSum.xyz;
 
@@ -229,6 +231,7 @@ Shader "Custom/WaterSurf" {
 
 			float3 waveNormalSum = WaveNormalSum(pos);
 
+			o.wNormal = waveNormalSum.xyz;
 			o.crestFactor = wavePointSum.w;
 
 			// Final vertex output
@@ -267,18 +270,21 @@ Shader "Custom/WaterSurf" {
 		}
 		
 		void surf(Input IN, inout SurfaceOutputStandard o) {
-			float4 foamColor = tex2D(_FoamTex, IN.uv_FoamTex + _NormalMapMoveDir1.xy * _NormalMapMoveSpeed1 * _Time.x);
-			float foamFactor = saturate( pow(IN.crestFactor, _FoamSharpness));
 
+			// ---------- Normal maps ----------
 			float3 waterNormal1 = normalize(UnpackNormal(tex2D(_NormalMap1, IN.uv_NormalMap1 * _HeightMapScale + _NormalMapMoveDir1.xy * _NormalMapMoveSpeed1 * _Time.x)));
-			float3 waterNormal2 = normalize(UnpackNormal(tex2D(_NormalMap2, IN.preAnimXZ * _HeightMapScale + _NormalMapMoveDir2.xy * _NormalMapMoveSpeed2 * _Time.x)));
-
+			float3 waterNormal2 = normalize(UnpackNormal(tex2D(_NormalMap2, IN.uv_NormalMap2 * _HeightMapScale + _NormalMapMoveDir2.xy * _NormalMapMoveSpeed2 * _Time.x)));
 			float3 totalWaterNormal = waterNormal1;// normalize(float3(waterNormal1.xy + waterNormal2.xy, waterNormal1.z));
 			totalWaterNormal.xy *= _NormalMapBias;
 
+			o.Normal = totalWaterNormal;// lerp(normalize(totalWaterNormal), foamNormal, foamFactor * 2);
+
+			// ---------- Wave crest foam ---------- TODO: remove this.
+			float4 foamColor = tex2D(_FoamTex, IN.uv_FoamTex + _NormalMapMoveDir1.xy * _NormalMapMoveSpeed1 * _Time.x);
+			float foamFactor = saturate( pow(IN.crestFactor, _FoamSharpness));
 			float3 foamNormal = normalize(UnpackNormal(tex2D(_FoamNormals, IN.uv_FoamNormals + _NormalMapMoveDir1.xy * _NormalMapMoveSpeed1 * _Time.x)));
 
-
+			// ---------- Intersection foam ----------
 			float2 screenUV = AlignWithGrabTexel(IN.screenPos.xy / IN.screenPos.w);
 			float backgroundDepth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, screenUV));
 			float surfaceDepth = UNITY_Z_0_FAR_FROM_CLIPSPACE(IN.screenPos.z);
@@ -290,12 +296,23 @@ Shader "Custom/WaterSurf" {
 
 			float alpha = saturate(_Color.a + foamFactor);
 
-			o.Albedo = _Color;
-			o.Smoothness = _SmoothNess;// saturate(_SmoothNess - (foamFactor * 4));
+			// ---------- Height map foam ----------
+			float heightMapAdd = pow(tex2D(_Heightmap, IN.uv_NormalMap1).r, 4);
+			float heightMapAddRamped = tex2D(_HeightmapFoamRamp, float2(heightMapAdd, 0));
+
+			float3 dir = float3(0, 0, 1);
+			float d = dot(IN.wNormal, dir);
+			float u = dot(IN.wNormal, float3(0,1,0));
+
+
+
+			float3 foam = ((heightMapAdd + pow(IN.crestFactor, 2)) / 2);
+
+			o.Albedo = _Color + foam;
+			o.Smoothness = _SmoothNess;
 			o.Metallic = 0.0;
 			o.Alpha = alpha;
-			o.Normal = totalWaterNormal;// lerp(normalize(totalWaterNormal), foamNormal, foamFactor * 2);
-			o.Emission = intersectionFoam * _IntersectionFoamDensity + ColorBelowWater(IN.screenPos, o.Normal) * (1 - alpha) + foamColor * foamFactor;
+			o.Emission = intersectionFoam * _IntersectionFoamDensity + ColorBelowWater(IN.screenPos, o.Normal) * (1 - alpha);
 		}
 
 		ENDCG
