@@ -132,8 +132,8 @@ Material:
     - _Mode: 0
     - _NormalMapBias: 0.715
     - _NormalMapMoveSpeed: 4
-    - _NormalMapMoveSpeed1: 0
-    - _NormalMapMoveSpeed2: 5
+    - _NormalMapMoveSpeed1: 1
+    - _NormalMapMoveSpeed2: 0
     - _Occlusion: 1
     - _OcclusionStrength: 1
     - _Parallax: 0.02
