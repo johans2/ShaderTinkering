@@ -29,10 +29,7 @@ Shader "Custom/WaterSurf" {
 
 		// Wave Crest foam
 		[Header(Wave crest foam)]
-		_FoamTex("Foam texture", 2D) = "white" {}
-		_FoamNormals("Foam normals", 2D) = "white" {}
 		_FoamSpread("Foam Scale", Range(0.1, 3.0)) = 2.43
-		_FoamSharpness("Foam Sharpness", Range(0.1,3.0)) = 1.34
 
 		// Intersection foam
 		[Header(Intersection foam)]
