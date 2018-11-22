@@ -50,6 +50,10 @@ Material:
         m_Texture: {fileID: 2800000, guid: 00001f4f9b3de2d41b8cd0746b2a0e01, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Heightmap2:
+        m_Texture: {fileID: 2800000, guid: 00001f4f9b3de2d41b8cd0746b2a0e01, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _HeightmapFoamRamp:
         m_Texture: {fileID: 2800000, guid: 92f99976f71bfe4419ecffe59c42c1a6, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -76,7 +80,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _NormalMap2:
         m_Texture: {fileID: 2800000, guid: c8c0816bc4a29c640972a97db7cb61db, type: 3}
-        m_Scale: {x: 1, y: 1}
+        m_Scale: {x: 2, y: 2}
         m_Offset: {x: 0.63, y: 0.94}
     - _Normals:
         m_Texture: {fileID: 0}
@@ -92,7 +96,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _Amplitude: 0.0007
-    - _Amplitude1: 0.2
+    - _Amplitude1: 0.15
     - _Amplitude2: 0.055
     - _Amplitude3: 0.05
     - _Amplitude4: 0.03
@@ -101,7 +105,7 @@ Material:
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
-    - _DirectionX1: 0.067
+    - _DirectionX1: -0.05
     - _DirectionX2: 0.194
     - _DirectionX3: -0.568
     - _DirectionX4: 0.05
@@ -127,26 +131,27 @@ Material:
     - _GlossyReflections: 1
     - _HeightMapScale: 1
     - _HeightmapStrength: 0.1
+    - _HeightmapStrength2: 0
     - _IntersectionFoamDensity: 0.51
     - _Metallic: 0
     - _Mode: 0
-    - _NormalMapBias: 0.715
+    - _NormalMapBias: 0.696
     - _NormalMapMoveSpeed: 4
-    - _NormalMapMoveSpeed1: 1
-    - _NormalMapMoveSpeed2: 0
+    - _NormalMapMoveSpeed1: 2
+    - _NormalMapMoveSpeed2: 5
     - _Occlusion: 1
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _Power: 1.3
     - _RefractionStrength: 0.082
-    - _SSSPower: 1.55
+    - _SSSPower: 1
     - _Scale: 1.18
     - _Shininess: 0
     - _SmoothNess: 0.853
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _Speed: 0.05
-    - _Speed1: 3
+    - _Speed1: 7
     - _Speed2: 14
     - _Speed3: 15
     - _Speed4: 9
@@ -178,7 +183,7 @@ Material:
     - _HeightmapFoamColor: {r: 1, g: 1, b: 1, a: 1}
     - _IntersectionFoamColor: {r: 0.7520545, g: 0.75947535, b: 0.78676474, a: 1}
     - _NormalMapMoveDir: {r: -1, g: 0, b: 0, a: 0}
-    - _NormalMapMoveDir1: {r: -1, g: 0, b: 0, a: 0}
+    - _NormalMapMoveDir1: {r: -1, g: -0.3, b: 0, a: 0}
     - _NormalMapMoveDir2: {r: -0.5, g: 0.5, b: 0, a: 0}
     - _PumpMapMoveDir: {r: 0, g: 0, b: 0, a: 0}
     - _SSSColor: {r: 1, g: 0, b: 0, a: 1}

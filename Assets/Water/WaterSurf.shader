@@ -12,8 +12,20 @@ Shader "Custom/WaterSurf" {
 		_NormalMapMoveDir1("Normalmap 1 move dir", Vector) = (0,0,0,0)
 		_NormalMapMoveSpeed1("Normalmap 1 move speed", Float) = 0
 
+		_NormalMap2("Normalmap 2", 2D) = "white" {}
+		_NormalMapMoveDir2("Normalmap 2 move dir", Vector) = (0,0,0,0)
+		_NormalMapMoveSpeed2("Normalmap 2 move speed", Float) = 0
+
 		_NormalMapBias("Normalmap bias", Range(0.0,1.0)) = 0.5
 
+		// Height map
+		[Header(Height map)]
+		_Heightmap("Height map", 2D) = "black" {}
+		_Heightmap2("Height map", 2D) = "black" {}
+		_HeightmapStrength("Heightmap strength", Range(0,5)) = 0
+
+		_HeightmapFoamColor("Heightmap foam color", Color) = (1,1,1,1)
+		
 		// Fog
 		[Header(Water fog)]
 		_WaterFogColor("Water Fog Color", Color) = (0, 0, 0, 0)
@@ -37,13 +49,6 @@ Shader "Custom/WaterSurf" {
 		_IntersectionFoamRamp("Intersection Foam Ramp", 2D) = "black" {}
 		_IntersectionFoamColor("Intersection foam Color", Color) = (1,1,1,1)
 
-		// Height map
-		[Header(Height map)]
-		_Heightmap("Height map", 2D) = "black" {}
-		_HeightmapStrength("Heightmap strength", Range(0,5)) = 0
-
-		_HeightmapFoamColor("Heightmap foam color", Color) = (1,1,1,1)
-		_HeightmapFoamRamp("Heightmap foam ramp", 2D) = "black" {}
 
 		// Vertex waves
 		[Header(Base Wave)]
@@ -121,9 +126,13 @@ Shader "Custom/WaterSurf" {
 		
 		// Height map
 		sampler2D _Heightmap;
+		sampler2D _Heightmap2;
 		float _HeightmapStrength;
+
 		half4 _NormalMapMoveDir1;
+		half4 _NormalMapMoveDir2;
 		half _NormalMapMoveSpeed1;
+		half _NormalMapMoveSpeed2;
 
 		void vert(inout appdata_full v) {
 			float3 worldPos = mul(unity_ObjectToWorld, v.vertex);
@@ -131,8 +140,12 @@ Shader "Custom/WaterSurf" {
 			float3 wavePointSum = worldPos + WavePointSum(worldPos).xyz;
 			
 			// Add heightmap value to pos.y
-			float heightAdd = tex2Dlod(_Heightmap, float4(v.texcoord.xy + _NormalMapMoveDir1.xy * _NormalMapMoveSpeed1 * _Time.x, 0, 0)).r;
-			wavePointSum.y += (heightAdd * _HeightmapStrength);
+			float heightAdd1 = tex2Dlod(_Heightmap, float4(v.texcoord.xy + _NormalMapMoveDir1.xy * _NormalMapMoveSpeed1 * _Time.x, 0, 0)).r;
+			float heightAdd2 = tex2Dlod(_Heightmap2, float4(v.texcoord.xy + _NormalMapMoveDir2.xy * _NormalMapMoveSpeed2 * _Time.x, 0, 0)).r;
+
+			float heightAddCombined = (heightAdd1 + heightAdd2) / 2;
+
+			wavePointSum.y += (heightAddCombined * _HeightmapStrength);
 
 			// Final vertex output
 			v.vertex.xyz = mul(unity_WorldToObject, float4(wavePointSum, 1));
@@ -164,6 +177,7 @@ Shader "Custom/WaterSurf" {
 
 		struct Input {
 			float2 uv_NormalMap1;
+			float2 uv_NormalMap2;
 			float3 wNormal;
 			float4 screenPos;
 			float crestFactor;
@@ -171,8 +185,11 @@ Shader "Custom/WaterSurf" {
 
 		// Normal maps
 		sampler2D _NormalMap1;
+		sampler2D _NormalMap2;
 		half4 _NormalMapMoveDir1;
 		half _NormalMapMoveSpeed1;
+		half4 _NormalMapMoveDir2;
+		half _NormalMapMoveSpeed2;
 		half _NormalMapBias;
 
 		// Color
@@ -192,9 +209,9 @@ Shader "Custom/WaterSurf" {
 
 		// Height map
 		sampler2D _Heightmap;
+		sampler2D _Heightmap2;
 		float _HeightmapStrength;
 		float3 _HeightmapFoamColor;
-		sampler2D _HeightmapFoamRamp;
 
 		void vert(inout appdata_full v, out Input o) {
 			UNITY_INITIALIZE_OUTPUT(Input, o);
@@ -207,8 +224,12 @@ Shader "Custom/WaterSurf" {
 
 			// Read heightmap based on pos xz
 			// Add heightmap value to pos.y
-			float heightAdd = tex2Dlod(_Heightmap, float4(v.texcoord.xy + _NormalMapMoveDir1.xy * _NormalMapMoveSpeed1 * _Time.x, 0, 0)).r;
-			pos.y += (heightAdd * _HeightmapStrength);
+			float heightAdd1 = tex2Dlod(_Heightmap, float4(v.texcoord.xy + _NormalMapMoveDir1.xy * _NormalMapMoveSpeed1 * _Time.x, 0, 0)).r;
+			float heightAdd2 = tex2Dlod(_Heightmap2, float4(v.texcoord.xy + _NormalMapMoveDir2.xy * _NormalMapMoveSpeed2 * _Time.x, 0, 0)).r;
+
+			float heightAddCombined = (heightAdd1 + heightAdd2) / 2;
+
+			pos.y += (heightAddCombined * _HeightmapStrength);
 
 			float3 waveNormalSum = WaveNormalSum(pos);
 
@@ -254,7 +275,8 @@ Shader "Custom/WaterSurf" {
 
 			// ---------- Normal maps ----------
 			float3 waterNormal1 = normalize(UnpackNormal(tex2D(_NormalMap1, IN.uv_NormalMap1 + _NormalMapMoveDir1.xy * _NormalMapMoveSpeed1 * _Time.x)));
-			float3 totalWaterNormal = waterNormal1;// normalize(float3(waterNormal1.xy + waterNormal2.xy, waterNormal1.z));
+			float3 waterNormal2 = normalize(UnpackNormal(tex2D(_NormalMap2, IN.uv_NormalMap2 + _NormalMapMoveDir2.xy * _NormalMapMoveSpeed2 * _Time.x)));
+			float3 totalWaterNormal = normalize(float3(waterNormal1.xy + waterNormal2.xy, waterNormal1.z));
 			totalWaterNormal.xy *= _NormalMapBias;
 
 			o.Normal = totalWaterNormal;// lerp(normalize(totalWaterNormal), foamNormal, foamFactor * 2);
@@ -271,13 +293,17 @@ Shader "Custom/WaterSurf" {
 
 
 			// ---------- Height map foam ----------
-			float heightMapAdd = pow(tex2D(_Heightmap, IN.uv_NormalMap1 + _NormalMapMoveDir1.xy * _NormalMapMoveSpeed1 * _Time.x).r, 4);
+			float heightMapAdd1 = pow(tex2D(_Heightmap, IN.uv_NormalMap1 + _NormalMapMoveDir1.xy * _NormalMapMoveSpeed1 * _Time.x).r, 4);
+			float heightMapAdd2 = pow(tex2D(_Heightmap2, IN.uv_NormalMap2 + _NormalMapMoveDir2.xy * _NormalMapMoveSpeed2 * _Time.x).r, 4);
+
+			float totalHeightAdd = (heightMapAdd1 + heightMapAdd2) / 2;
+
 
 			float3 dir = float3(0, 0, 1);
 			float d = dot(IN.wNormal, dir);
 			float u = dot(IN.wNormal, float3(0,1,0));
 
-			float3 foam = ((heightMapAdd + pow(IN.crestFactor, 1)) / 2);
+			float3 foam = ((totalHeightAdd + pow(IN.crestFactor, 1)) / 2);
 
 			float alpha = saturate(_Color.a + foam);
 
