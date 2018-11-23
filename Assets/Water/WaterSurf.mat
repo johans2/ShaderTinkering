@@ -130,7 +130,7 @@ Material:
     - _Glossiness: 0.5
     - _GlossyReflections: 1
     - _HeightMapScale: 1
-    - _HeightmapStrength: 0.1
+    - _HeightmapStrength: 0.05
     - _HeightmapStrength2: 0
     - _IntersectionFoamDensity: 0.51
     - _Metallic: 0

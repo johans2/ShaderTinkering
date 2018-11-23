@@ -61,15 +61,15 @@ float _FadeSpeed5;
 
 // Returns x,y,z position and w crestFactor (used for foam)
 float4 WavePoint(float2 position, float amplitude, float wavelength, float speed, float2 direction, float steepness, float fadeSpeed) {
-    float frequency = 2 / wavelength;
-    float phaseConstantSpeed = speed * 2 / wavelength;
+    half frequency = 2 / wavelength;
+    half phaseConstantSpeed = speed * 2 / wavelength;
 	
 
-	float2 normalizedDir = normalize(direction);
-    float fi = _Time.x  * phaseConstantSpeed;
-    float dirDotPos = dot(normalizedDir, position);
+	half2 normalizedDir = normalize(direction);
+    half fi = _Time.x  * phaseConstantSpeed;
+    half dirDotPos = dot(normalizedDir, position);
 
-	float fade = cos(fadeSpeed * _Time.x) / 2 + 0.5;
+	half fade = cos(fadeSpeed * _Time.x) / 2 + 0.5;
 	amplitude *= fade;
 
     float waveGretsX = steepness * amplitude * normalizedDir.x * cos(frequency * dirDotPos + fi);
@@ -85,12 +85,12 @@ float4 WavePoint(float2 position, float amplitude, float wavelength, float speed
 
 float3 WaveNormal(float3 position, float amplitude, float wavelength, float speed, float2 direction, float steepness) {
 
-	float frequency = 2 / wavelength;
-	float phaseConstantSpeed = speed * 2 / wavelength;
+	half frequency = 2 / wavelength;
+	half phaseConstantSpeed = speed * 2 / wavelength;
 
-	float2 normalizedDir = normalize(direction);
-	float fi = _Time.x  * phaseConstantSpeed;
-	float dirDotPos = dot(normalizedDir, position.xz);
+	half2 normalizedDir = normalize(direction);
+	half fi = _Time.x  * phaseConstantSpeed;
+	half dirDotPos = dot(normalizedDir, position.xz);
 
 	float WA = frequency * amplitude;
 	float S = sin(frequency * dirDotPos + fi);

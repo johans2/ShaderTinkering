@@ -103,16 +103,15 @@ Shader "Custom/WaterSurf" {
 	}
 	SubShader{
 		
-		
-		Tags{ "Lightmode" = "ForwardBase" "Queue" = "Transparent" "RenderType" = "Transparent" }
 		ZWrite on
 		Cull back
 		Colormask 0
 		Lighting Off
+
 		// ------- PASS 1 ---------------
 		CGPROGRAM
 
-		#pragma surface surf Standard vertex:vert nometa novertexlights noforwardadd
+		#pragma surface surf Standard vertex:vert nometa
 		#include "UnityCG.cginc"
 		#include "WaterIncludes.cginc"
 		#pragma shader_feature WAVE2
@@ -143,6 +142,9 @@ Shader "Custom/WaterSurf" {
 			float heightAdd1 = tex2Dlod(_Heightmap, float4(v.texcoord.xy + _NormalMapMoveDir1.xy * _NormalMapMoveSpeed1 * _Time.x, 0, 0)).r;
 			float heightAdd2 = tex2Dlod(_Heightmap2, float4(v.texcoord.xy + _NormalMapMoveDir2.xy * _NormalMapMoveSpeed2 * _Time.x, 0, 0)).r;
 
+			heightAdd1 = (heightAdd1 - 0.5) * 2;
+			heightAdd2 = (heightAdd2 - 0.5) * 2;
+
 			float heightAddCombined = (heightAdd1 + heightAdd2) / 2;
 
 			wavePointSum.y += (heightAddCombined * _HeightmapStrength);
@@ -154,10 +156,15 @@ Shader "Custom/WaterSurf" {
 		void surf(Input IN, inout SurfaceOutputStandard o) { }
 
 		ENDCG
+		// ------- END PASS 1 ---------------
+
 
 		GrabPass{ "_WaterBackground" }
 
 		// ------- PASS 2 ---------------
+		
+		Tags{ "Lightmode" = "ForwardBase" "Queue" = "Transparent" "RenderType" = "Transparent" }
+
 		ZWrite off
 		Cull back
 		Blend SrcAlpha OneMinusSrcAlpha
@@ -165,7 +172,7 @@ Shader "Custom/WaterSurf" {
 
 		CGPROGRAM
 
-		#pragma surface surf StandardTranslucent vertex:vert alpha:fade finalcolor:ResetAlpha nometa novertexlights
+		#pragma surface surf StandardTranslucent vertex:vert alpha:fade finalcolor:ResetAlpha nometa novertexlights noforwardadd 
 		#include "UnityCG.cginc"
 		#include "UnityPBSLighting.cginc"
 		#include "WaterIncludes.cginc"
@@ -178,7 +185,6 @@ Shader "Custom/WaterSurf" {
 		struct Input {
 			float2 uv_NormalMap1;
 			float2 uv_NormalMap2;
-			float3 wNormal;
 			float4 screenPos;
 			float crestFactor;
 		};
@@ -193,25 +199,25 @@ Shader "Custom/WaterSurf" {
 		half _NormalMapBias;
 
 		// Color
-		float4 _Color;
-		float4 _SSSColor;
+		fixed4 _Color;
+		fixed4 _SSSColor;
 
 		// Other
-		float _SmoothNess;
+		half _SmoothNess;
 
 		// Intersection foam
-		float _IntersectionFoamDensity;
+		half _IntersectionFoamDensity;
 		sampler2D _IntersectionFoamRamp;
-		float4 _IntersectionFoamColor;
+		fixed4 _IntersectionFoamColor;
 
 		// SubSurface Scattering
-		float _SSSPower;
+		half _SSSPower;
 
 		// Height map
 		sampler2D _Heightmap;
 		sampler2D _Heightmap2;
-		float _HeightmapStrength;
-		float3 _HeightmapFoamColor;
+		half _HeightmapStrength;
+		fixed3 _HeightmapFoamColor;
 
 		void vert(inout appdata_full v, out Input o) {
 			UNITY_INITIALIZE_OUTPUT(Input, o);
@@ -222,10 +228,11 @@ Shader "Custom/WaterSurf" {
 			// This is to avoid z fighting between the two passes. Can probably be done in a better way.
 			pos.y += 0.0001;
 
-			// Read heightmap based on pos xz
-			// Add heightmap value to pos.y
 			float heightAdd1 = tex2Dlod(_Heightmap, float4(v.texcoord.xy + _NormalMapMoveDir1.xy * _NormalMapMoveSpeed1 * _Time.x, 0, 0)).r;
 			float heightAdd2 = tex2Dlod(_Heightmap2, float4(v.texcoord.xy + _NormalMapMoveDir2.xy * _NormalMapMoveSpeed2 * _Time.x, 0, 0)).r;
+
+			heightAdd1 = (heightAdd1 - 0.5) * 2;
+			heightAdd2 = (heightAdd2 - 0.5) * 2;
 
 			float heightAddCombined = (heightAdd1 + heightAdd2) / 2;
 
@@ -233,7 +240,6 @@ Shader "Custom/WaterSurf" {
 
 			float3 waveNormalSum = WaveNormalSum(pos);
 
-			o.wNormal = waveNormalSum.xyz;
 			o.crestFactor = wavePointSum.w;
 
 			// Final vertex output
@@ -279,7 +285,7 @@ Shader "Custom/WaterSurf" {
 			float3 totalWaterNormal = normalize(float3(waterNormal1.xy + waterNormal2.xy, waterNormal1.z));
 			totalWaterNormal.xy *= _NormalMapBias;
 
-			o.Normal = totalWaterNormal;// lerp(normalize(totalWaterNormal), foamNormal, foamFactor * 2);
+			o.Normal = totalWaterNormal;
 
 			// ---------- Intersection foam ----------
 			float2 screenUV = AlignWithGrabTexel(IN.screenPos.xy / IN.screenPos.w);
@@ -298,17 +304,12 @@ Shader "Custom/WaterSurf" {
 
 			float totalHeightAdd = (heightMapAdd1 + heightMapAdd2) / 2;
 
-
-			float3 dir = float3(0, 0, 1);
-			float d = dot(IN.wNormal, dir);
-			float u = dot(IN.wNormal, float3(0,1,0));
-
 			float3 foam = ((totalHeightAdd + pow(IN.crestFactor, 1)) / 2);
 
 			float alpha = saturate(_Color.a + foam);
 
 			o.Albedo = _Color + foam;
-			o.Smoothness = _SmoothNess;
+			o.Smoothness = _SmoothNess - foam;
 			o.Metallic = 0.0;
 			o.Alpha = alpha;
 			o.Emission = intersectionFoam * _IntersectionFoamDensity + ColorBelowWater(IN.screenPos, o.Normal) * (1 - alpha);
