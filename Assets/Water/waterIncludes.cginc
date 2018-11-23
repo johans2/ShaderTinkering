@@ -248,6 +248,6 @@ float3 ColorBelowWater(float4 screenPos, float3 tangentSpaceNormal) {
 	depthDifference = backgroundDepth - surfaceDepth;
 
 	float3 backgroundColor = tex2D(_WaterBackground, uv).rgb;
-	float fogFactor = exp2(-_WaterFogDensity * depthDifference);
+	float fogFactor = saturate(exp2(-_WaterFogDensity * depthDifference));
 	return lerp(_WaterFogColor, backgroundColor, fogFactor);
 }

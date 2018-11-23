@@ -102,12 +102,14 @@ Shader "Custom/WaterSurf" {
 	}
 	SubShader{
 		
+		// ------- PASS 1 ---------------
+		Tags{ "Queue" = "Transparent" "RenderType" = "Transparent" }
+
 		ZWrite on
 		Cull back
 		Colormask 0
 		Lighting Off
 
-		// ------- PASS 1 ---------------
 		CGPROGRAM
 
 		#pragma surface surf Standard vertex:vert nometa
@@ -293,9 +295,7 @@ Shader "Custom/WaterSurf" {
 			float surfaceDepth = UNITY_Z_0_FAR_FROM_CLIPSPACE(IN.screenPos.z);
 			float depthDifference = saturate(backgroundDepth - surfaceDepth);
 			float lerpValue = tex2D(_IntersectionFoamRamp, float2(saturate(depthDifference), 0));
-
-			float3 interSectionFoamColor = _IntersectionFoamColor;
-			float3 intersectionFoam = lerp(interSectionFoamColor, float3(0, 0, 0), lerpValue);
+			fixed3 intersectionFoam = lerp(_IntersectionFoamColor, float3(0, 0, 0), lerpValue);
 
 
 			// ---------- Height map foam ----------
