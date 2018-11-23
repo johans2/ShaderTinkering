@@ -129,13 +129,14 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
+    - _HeightMapFoamStrength: 0.848
     - _HeightMapScale: 1
     - _HeightmapStrength: 0.05
     - _HeightmapStrength2: 0
     - _IntersectionFoamDensity: 0.51
     - _Metallic: 0
     - _Mode: 0
-    - _NormalMapBias: 0.696
+    - _NormalMapBias: 0.521
     - _NormalMapMoveSpeed: 4
     - _NormalMapMoveSpeed1: 2
     - _NormalMapMoveSpeed2: 5

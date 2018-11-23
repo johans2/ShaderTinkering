@@ -7,25 +7,24 @@ Shader "Custom/WaterSurf" {
 		_SmoothNess("SmoothNess", Range(0.0,1.0)) = 0
 
 		// Normals
-		[Header(Normals)]
+		[Header(Distortions 1)]
 		_NormalMap1("Normalmap 1", 2D) = "white" {}
 		_NormalMapMoveDir1("Normalmap 1 move dir", Vector) = (0,0,0,0)
 		_NormalMapMoveSpeed1("Normalmap 1 move speed", Float) = 0
+		_Heightmap("Height map", 2D) = "black" {}
 
+		[Header(Distortions 2)]
 		_NormalMap2("Normalmap 2", 2D) = "white" {}
 		_NormalMapMoveDir2("Normalmap 2 move dir", Vector) = (0,0,0,0)
 		_NormalMapMoveSpeed2("Normalmap 2 move speed", Float) = 0
-
-		_NormalMapBias("Normalmap bias", Range(0.0,1.0)) = 0.5
-
-		// Height map
-		[Header(Height map)]
-		_Heightmap("Height map", 2D) = "black" {}
 		_Heightmap2("Height map", 2D) = "black" {}
-		_HeightmapStrength("Heightmap strength", Range(0,5)) = 0
 
+		[Header(Distortion settings)]
+		_NormalMapBias("Normalmap Strength", Range(0.0,1.0)) = 0.5
+		_HeightmapStrength("Heightmap strength", Range(0,5)) = 0
 		_HeightmapFoamColor("Heightmap foam color", Color) = (1,1,1,1)
-		
+		_HeightMapFoamStrength("Heightmap foam strength", Range(0,2)) = 1
+
 		// Fog
 		[Header(Water fog)]
 		_WaterFogColor("Water Fog Color", Color) = (0, 0, 0, 0)
@@ -218,6 +217,7 @@ Shader "Custom/WaterSurf" {
 		sampler2D _Heightmap2;
 		half _HeightmapStrength;
 		fixed3 _HeightmapFoamColor;
+		half _HeightMapFoamStrength;
 
 		void vert(inout appdata_full v, out Input o) {
 			UNITY_INITIALIZE_OUTPUT(Input, o);
@@ -302,7 +302,7 @@ Shader "Custom/WaterSurf" {
 			float heightMapAdd1 = pow(tex2D(_Heightmap, IN.uv_NormalMap1 + _NormalMapMoveDir1.xy * _NormalMapMoveSpeed1 * _Time.x).r, 4);
 			float heightMapAdd2 = pow(tex2D(_Heightmap2, IN.uv_NormalMap2 + _NormalMapMoveDir2.xy * _NormalMapMoveSpeed2 * _Time.x).r, 4);
 
-			float totalHeightAdd = (heightMapAdd1 + heightMapAdd2) / 2;
+			float totalHeightAdd = ((heightMapAdd1 + heightMapAdd2) / 2) * _HeightMapFoamStrength;
 
 			float3 foam = ((totalHeightAdd + pow(IN.crestFactor, 1)) / 2);
 
