@@ -96,7 +96,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _Amplitude: 0.0007
-    - _Amplitude1: 0.15
+    - _Amplitude1: 0.17
     - _Amplitude2: 0.055
     - _Amplitude3: 0.05
     - _Amplitude4: 0.03
@@ -118,7 +118,7 @@ Material:
     - _Distortion: 10.11
     - _DstBlend: 0
     - _FadeSpeed1: 0
-    - _FadeSpeed2: 0
+    - _FadeSpeed2: -10
     - _FadeSpeed3: 0
     - _FadeSpeed4: 100
     - _FadeSpeed5: 0
@@ -170,7 +170,7 @@ Material:
     - _Wave4Enabled: 0
     - _Wave5Enabled: 0
     - _WaveLength: 0.001
-    - _WaveLength1: 1
+    - _WaveLength1: 1.2
     - _WaveLength2: 0.31
     - _WaveLength3: 0.54
     - _WaveLength4: 0.2

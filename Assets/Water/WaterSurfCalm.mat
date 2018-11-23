@@ -118,7 +118,7 @@ Material:
     - _Distortion: 10.11
     - _DstBlend: 0
     - _FadeSpeed1: 19.2
-    - _FadeSpeed2: 0
+    - _FadeSpeed2: 5
     - _FadeSpeed3: 10
     - _FadeSpeed4: 100
     - _FadeSpeed5: 0
