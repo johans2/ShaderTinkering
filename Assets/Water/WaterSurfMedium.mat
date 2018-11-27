@@ -138,8 +138,8 @@ Material:
     - _Mode: 0
     - _NormalMapBias: 0.239
     - _NormalMapMoveSpeed: 4
-    - _NormalMapMoveSpeed1: 1
-    - _NormalMapMoveSpeed2: 3
+    - _NormalMapMoveSpeed1: 3
+    - _NormalMapMoveSpeed2: 3.52
     - _Occlusion: 1
     - _OcclusionStrength: 1
     - _Parallax: 0.02
@@ -148,7 +148,7 @@ Material:
     - _SSSPower: 1.3
     - _Scale: 1.18
     - _Shininess: 0
-    - _SmoothNess: 0.637
+    - _SmoothNess: 0.538
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _Speed: 0.05

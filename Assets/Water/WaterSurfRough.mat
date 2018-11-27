@@ -4,7 +4,7 @@
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: WaterSurfRough
   m_Shader: {fileID: 4800000, guid: dfe00a955f590494e89617f1f9315134, type: 3}
@@ -96,7 +96,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _Amplitude: 0.0007
-    - _Amplitude1: 0.17
+    - _Amplitude1: 0.3
     - _Amplitude2: 0.055
     - _Amplitude3: 0.05
     - _Amplitude4: 0.03
@@ -148,7 +148,7 @@ Material:
     - _SSSPower: 1
     - _Scale: 1.18
     - _Shininess: 0
-    - _SmoothNess: 0.853
+    - _SmoothNess: 0.706
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _Speed: 0.05

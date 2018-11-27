@@ -164,7 +164,7 @@ Shader "Custom/WaterSurf" {
 
 		// ------- PASS 2 ---------------
 		
-		Tags{ "Lightmode" = "ForwardBase" "Queue" = "Transparent" "RenderType" = "Transparent" }
+		Tags{ "Queue" = "Transparent" "RenderType" = "Transparent" }
 
 		ZWrite off
 		Cull back
