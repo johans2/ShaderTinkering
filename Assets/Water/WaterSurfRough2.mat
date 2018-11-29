@@ -8,7 +8,7 @@ Material:
   m_PrefabInternal: {fileID: 0}
   m_Name: WaterSurfRough2
   m_Shader: {fileID: 4800000, guid: dfe00a955f590494e89617f1f9315134, type: 3}
-  m_ShaderKeywords: WAVE2 WAVE3 WAVE4
+  m_ShaderKeywords: WAVE2 WAVE3 WAVE4 WAVE5
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -97,10 +97,10 @@ Material:
     m_Floats:
     - _Amplitude: 0.0007
     - _Amplitude1: 0.5
-    - _Amplitude2: 0.08
-    - _Amplitude3: 0.11
+    - _Amplitude2: 0.13
+    - _Amplitude3: 0.14
     - _Amplitude4: 0.5
-    - _Amplitude5: 0.017
+    - _Amplitude5: 0.7
     - _BumpMapMoveSpeed: 4
     - _BumpScale: 1
     - _Cutoff: 0.5
@@ -131,7 +131,7 @@ Material:
     - _GlossyReflections: 1
     - _HeightMapFoamStrength: 1.09
     - _HeightMapScale: 1
-    - _HeightmapStrength: 0.14
+    - _HeightmapStrength: 0.18
     - _HeightmapStrength2: 0
     - _IntersectionFoamDensity: 0.87
     - _Metallic: 0
@@ -148,19 +148,19 @@ Material:
     - _SSSPower: 1
     - _Scale: 1.18
     - _Shininess: 0
-    - _SmoothNess: 0.838
+    - _SmoothNess: 0.717
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _Speed: 0.05
     - _Speed1: 50
-    - _Speed2: 43
-    - _Speed3: 51
+    - _Speed2: 53
+    - _Speed3: 61
     - _Speed4: 30
-    - _Speed5: 7
+    - _Speed5: 100
     - _SrcBlend: 1
     - _Steepness1: 0
-    - _Steepness2: 3
-    - _Steepness3: 3
+    - _Steepness2: 2.42
+    - _Steepness3: 1.65
     - _Steepness4: 0
     - _Steepness5: 0.45
     - _UVSec: 0
@@ -168,13 +168,13 @@ Material:
     - _Wave2Enabled: 1
     - _Wave3Enabled: 1
     - _Wave4Enabled: 1
-    - _Wave5Enabled: 0
+    - _Wave5Enabled: 1
     - _WaveLength: 0.001
     - _WaveLength1: 4.91
-    - _WaveLength2: 1.2
-    - _WaveLength3: 1.31
+    - _WaveLength2: 1.37
+    - _WaveLength3: 1.51
     - _WaveLength4: 6.74
-    - _WaveLength5: 0.13
+    - _WaveLength5: 10
     - _ZWrite: 1
     - _ZWrite_Prepass_Enabled: 0
     m_Colors:
