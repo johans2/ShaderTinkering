@@ -227,7 +227,7 @@ Shader "Custom/WaterSurf" {
 			float3 pos = worldPos + wavePointSum.xyz;
 
 			// This is to avoid z fighting between the two passes. Can probably be done in a better way.
-			pos.y += 0.0001;
+			pos.y += 0.001;
 
 			float heightAdd1 = tex2Dlod(_Heightmap, float4(v.texcoord.xy + _NormalMapMoveDir1.xy * _NormalMapMoveSpeed1 * _Time.x, 0, 0)).r;
 			float heightAdd2 = tex2Dlod(_Heightmap2, float4(v.texcoord.xy + _NormalMapMoveDir2.xy * _NormalMapMoveSpeed2 * _Time.x, 0, 0)).r;
