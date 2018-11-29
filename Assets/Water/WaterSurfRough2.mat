@@ -148,7 +148,7 @@ Material:
     - _SSSPower: 1
     - _Scale: 1.18
     - _Shininess: 0
-    - _SmoothNess: 0.592
+    - _SmoothNess: 0.838
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _Speed: 0.05
