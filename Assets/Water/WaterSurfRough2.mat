@@ -6,7 +6,7 @@ Material:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: WaterSurfRough
+  m_Name: WaterSurfRough2
   m_Shader: {fileID: 4800000, guid: dfe00a955f590494e89617f1f9315134, type: 3}
   m_ShaderKeywords: WAVE2 WAVE3
   m_LightmapFlags: 4
@@ -76,11 +76,11 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _NormalMap1:
         m_Texture: {fileID: 2800000, guid: c8c0816bc4a29c640972a97db7cb61db, type: 3}
-        m_Scale: {x: 1, y: 1}
+        m_Scale: {x: 5, y: 5}
         m_Offset: {x: 0, y: 0}
     - _NormalMap2:
         m_Texture: {fileID: 2800000, guid: c8c0816bc4a29c640972a97db7cb61db, type: 3}
-        m_Scale: {x: 2, y: 2}
+        m_Scale: {x: 7, y: 7}
         m_Offset: {x: 0.63, y: 0.94}
     - _Normals:
         m_Texture: {fileID: 0}
@@ -96,7 +96,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _Amplitude: 0.0007
-    - _Amplitude1: 0.3
+    - _Amplitude1: 0.2
     - _Amplitude2: 0.055
     - _Amplitude3: 0.05
     - _Amplitude4: 0.03
@@ -117,7 +117,7 @@ Material:
     - _DirectionY5: 1
     - _Distortion: 10.11
     - _DstBlend: 0
-    - _FadeSpeed1: 10
+    - _FadeSpeed1: 0
     - _FadeSpeed2: 0
     - _FadeSpeed3: 0
     - _FadeSpeed4: 100
@@ -129,14 +129,14 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _HeightMapFoamStrength: 0.848
+    - _HeightMapFoamStrength: 1.09
     - _HeightMapScale: 1
-    - _HeightmapStrength: 0.05
+    - _HeightmapStrength: 0.14
     - _HeightmapStrength2: 0
     - _IntersectionFoamDensity: 0.87
     - _Metallic: 0
     - _Mode: 0
-    - _NormalMapBias: 0.521
+    - _NormalMapBias: 0.579
     - _NormalMapMoveSpeed: 4
     - _NormalMapMoveSpeed1: 2
     - _NormalMapMoveSpeed2: 5
@@ -152,9 +152,9 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _Speed: 0.05
-    - _Speed1: 7
-    - _Speed2: 14
-    - _Speed3: 15
+    - _Speed1: 12
+    - _Speed2: 16
+    - _Speed3: 17
     - _Speed4: 9
     - _Speed5: 7
     - _SrcBlend: 1

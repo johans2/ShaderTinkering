@@ -5,6 +5,7 @@ Shader "Custom/WaterSurf" {
 		// Color
 		_Color("Color", Color) = (0,0,1,1)
 		_SmoothNess("SmoothNess", Range(0.0,1.0)) = 0
+		[Toggle(ZWRITE_REPASS)] _ZWrite_Prepass_Enabled("ZWrite prepass (use for high waves close to camera)", Float) = 0
 
 		// Normals
 		[Header(Distortions 1)]
@@ -103,8 +104,7 @@ Shader "Custom/WaterSurf" {
 	SubShader{
 		
 		// ------- PASS 1 ---------------
-		Tags{ "Queue" = "Transparent" "RenderType" = "Transparent" }
-
+		
 		ZWrite on
 		Cull back
 		Colormask 0
@@ -158,7 +158,6 @@ Shader "Custom/WaterSurf" {
 
 		ENDCG
 		// ------- END PASS 1 ---------------
-
 
 		GrabPass{ "_WaterBackground" }
 
