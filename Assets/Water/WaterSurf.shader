@@ -57,7 +57,7 @@ Shader "Custom/WaterSurf" {
 		_Speed1("Speed", Float) = 1
 		_DirectionX1("Direction X", Range(-1,1)) = 1
 		_DirectionY1("Direction Y", Range(-1,1)) = 1
-		_Steepness1("Steepness", Range(0,3)) = 0.1
+		_Steepness1("Steepness", Range(0,10)) = 0.1
 		_FadeSpeed1("FadeSpeed", Float) = 1.0
 
 		[Header(Additional Waves)]
@@ -68,7 +68,7 @@ Shader "Custom/WaterSurf" {
 		_Speed2("Speed", Float) = 1
 		_DirectionX2("Direction X", Range(-1,1)) = 1
 		_DirectionY2("Direction Y", Range(-1,1)) = 1
-		_Steepness2("Steepness", Range(0,3)) = 0.1
+		_Steepness2("Steepness", Range(0,10)) = 0.1
 		_FadeSpeed2("FadeSpeed", Float) = 1.0
 
 		[Header(Wave 3)]
@@ -78,7 +78,7 @@ Shader "Custom/WaterSurf" {
 		_Speed3("Speed", Float) = 1
 		_DirectionX3("Direction X", Range(-1,1)) = 1
 		_DirectionY3("Direction Y", Range(-1,1)) = 1
-		_Steepness3("Steepness", Range(0,3)) = 0.1
+		_Steepness3("Steepness", Range(0,10)) = 0.1
 		_FadeSpeed3("FadeSpeed", Float) = 1.0
 
 		[Header(Wave 4)]
@@ -88,7 +88,7 @@ Shader "Custom/WaterSurf" {
 		_Speed4("Speed", Float) = 1
 		_DirectionX4("Direction X", Range(-1,1)) = 1
 		_DirectionY4("Direction Y", Range(-1,1)) = 1
-		_Steepness4("Steepness", Range(0,3)) = 0.1
+		_Steepness4("Steepness", Range(0,10)) = 0.1
 		_FadeSpeed4("FadeSpeed", Float) = 1.0
 
 		[Header(Wave 5)]
@@ -98,7 +98,7 @@ Shader "Custom/WaterSurf" {
 		_Speed5("Speed", Float) = 1
 		_DirectionX5("Direction X", Range(-1,1)) = 1
 		_DirectionY5("Direction Y", Range(-1,1)) = 1
-		_Steepness5("Steepness", Range(0,3)) = 0.1
+		_Steepness5("Steepness", Range(0,10)) = 0.1
 		_FadeSpeed5("FadeSpeed", Float) = 1.0
 	}
 	SubShader{
