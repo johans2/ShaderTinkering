@@ -5,7 +5,7 @@ Shader "Custom/WaterSurf" {
 		// Color
 		_Color("Color", Color) = (0,0,1,1)
 		_SmoothNess("SmoothNess", Range(0.0,1.0)) = 0
-		[Toggle(ZWRITE_REPASS)] _ZWrite_Prepass_Enabled("ZWrite prepass (use for high waves close to camera)", Float) = 0
+        _WaveFoamDir("Wave foam direction", Vector) = (0,0,0,0)
 
 		// Normals
 		[Header(Distortions 1)]
@@ -187,6 +187,7 @@ Shader "Custom/WaterSurf" {
 			float2 uv_NormalMap2;
 			float4 screenPos;
 			float crestFactor;
+			float3 worldDirNormal;
 		};
 
 		// Normal maps
@@ -204,6 +205,7 @@ Shader "Custom/WaterSurf" {
 
 		// Other
 		half _SmoothNess;
+        fixed4 _WaveFoamDir;
 
 		// Intersection foam
 		half _IntersectionFoamDensity;
@@ -242,7 +244,8 @@ Shader "Custom/WaterSurf" {
 			float3 waveNormalSum = WaveNormalSum(pos);
 
 			o.crestFactor = wavePointSum.w;
-
+            o.worldDirNormal = waveNormalSum.xyz;
+            
 			// Final vertex output
 			v.vertex = mul(unity_WorldToObject, float4(pos,1));
 			v.normal = normalize(waveNormalSum);
@@ -279,6 +282,7 @@ Shader "Custom/WaterSurf" {
 		}
 		
 		void surf(Input IN, inout SurfaceOutputStandard o) {
+            float noFoam = saturate(dot(IN.worldDirNormal, _WaveFoamDir));
 
 			// ---------- Normal maps ----------
 			float3 waterNormal1 = normalize(UnpackNormal(tex2D(_NormalMap1, IN.uv_NormalMap1 + _NormalMapMoveDir1.xy * _NormalMapMoveSpeed1 * _Time.x)));
@@ -303,12 +307,13 @@ Shader "Custom/WaterSurf" {
 
 			float totalHeightAdd = ((heightMapAdd1 + heightMapAdd2) / 2) * _HeightMapFoamStrength;
 
-			float3 foam = ((totalHeightAdd + pow(IN.crestFactor, 1)) / 2);
 
+			float3 foam = ((totalHeightAdd + pow(IN.crestFactor, 1)) / 2) * (1 - noFoam);
+            
 			float alpha = saturate(_Color.a + foam);
-
-			o.Albedo = _Color + foam;
-			o.Smoothness = _SmoothNess - foam;
+            
+			o.Albedo =  _Color + foam;
+			o.Smoothness = saturate( _SmoothNess - foam);
 			o.Metallic = 0.0;
 			o.Alpha = alpha;
 			o.Emission = intersectionFoam * _IntersectionFoamDensity + ColorBelowWater(IN.screenPos, o.Normal) * (1 - alpha);

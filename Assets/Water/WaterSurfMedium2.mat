@@ -125,13 +125,13 @@ Material:
     - _FoamPower: 40
     - _FoamScale: 2.43
     - _FoamSharpness: 1.25
-    - _FoamSpread: 0.7
+    - _FoamSpread: 1.26
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
     - _HeightMapFoamStrength: 0.594
     - _HeightMapScale: 1
-    - _HeightmapStrength: 0.13
+    - _HeightmapStrength: 0.25
     - _HeightmapStrength2: 0
     - _IntersectionFoamDensity: 0.51
     - _Metallic: 0
@@ -145,10 +145,10 @@ Material:
     - _Parallax: 0.02
     - _Power: 1.3
     - _RefractionStrength: 0.382
-    - _SSSPower: 2.58
+    - _SSSPower: 1.5
     - _Scale: 1.18
     - _Shininess: 0
-    - _SmoothNess: 0.753
+    - _SmoothNess: 0.825
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _Speed: 0.05
@@ -160,7 +160,7 @@ Material:
     - _SrcBlend: 1
     - _Steepness1: 0
     - _Steepness2: 2.04
-    - _Steepness3: 1.5
+    - _Steepness3: 1.54
     - _Steepness4: 0.68
     - _Steepness5: 0
     - _UVSec: 0
@@ -190,3 +190,6 @@ Material:
     - _PumpMapMoveDir: {r: 0, g: 0, b: 0, a: 0}
     - _SSSColor: {r: 1, g: 0, b: 0, a: 1}
     - _WaterFogColor: {r: 0, g: 0.14150941, b: 0.06810738, a: 1}
+    - _WaveDir: {r: 0, g: 0, b: -5.92, a: 0}
+    - _WaveFoamDir: {r: 0, g: 0, b: -7.13, a: 0}
+    - _WaveFoamSideDir: {r: 0, g: 0, b: 0, a: 0}

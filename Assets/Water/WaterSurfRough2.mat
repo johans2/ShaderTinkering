@@ -145,14 +145,14 @@ Material:
     - _Parallax: 0.02
     - _Power: 1.3
     - _RefractionStrength: 0.073
-    - _SSSPower: 1
+    - _SSSPower: 1.5
     - _Scale: 1.18
     - _Shininess: 0
     - _SmoothNess: 0.717
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _Speed: 0.05
-    - _Speed1: 50
+    - _Speed1: 80
     - _Speed2: 53
     - _Speed3: 61
     - _Speed4: 30
@@ -162,7 +162,7 @@ Material:
     - _Steepness2: 2.42
     - _Steepness3: 1.65
     - _Steepness4: 0
-    - _Steepness5: 0.45
+    - _Steepness5: 0
     - _UVSec: 0
     - _WaterFogDensity: 1.36
     - _Wave2Enabled: 1
@@ -190,3 +190,6 @@ Material:
     - _PumpMapMoveDir: {r: 0, g: 0, b: 0, a: 0}
     - _SSSColor: {r: 1, g: 0, b: 0, a: 1}
     - _WaterFogColor: {r: 0, g: 0.119969055, b: 0.14705884, a: 1}
+    - _WaveDir: {r: 0, g: 0, b: -4.29, a: 0}
+    - _WaveFoamDir: {r: 0, g: 0, b: -3.37, a: 0}
+    - _WaveFoamSideDir: {r: 0, g: 0, b: 0, a: 0}

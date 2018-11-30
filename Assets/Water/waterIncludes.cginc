@@ -75,8 +75,6 @@ float4 WavePoint(float2 position, float amplitude, float wavelength, float speed
     float waveGretsX = steepness * amplitude * normalizedDir.x * cos(frequency * dirDotPos + fi);
 	float crest = sin(frequency * dirDotPos + fi);
     float waveGretsY = amplitude * crest;
-	//								-1 < x < 1
-	//								max: amplitude * 1
     float waveGretsZ = steepness * amplitude * normalizedDir.y * cos(frequency * dirDotPos + fi);
 	float crestFactor = crest * saturate(steepness) * fade;
 
@@ -98,7 +96,7 @@ float3 WaveNormal(float3 position, float amplitude, float wavelength, float spee
 
 	float3 normal = float3 (
 		normalizedDir.x * WA * C,
-		steepness * WA * S,
+		min(0.2f,steepness * WA * S),
 		normalizedDir.y * WA * C
 	);
 

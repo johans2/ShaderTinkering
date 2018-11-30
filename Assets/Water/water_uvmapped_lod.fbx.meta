@@ -9,28 +9,33 @@ ModelImporter:
     100006: Plane_LOD3
     100008: Plane_LOD4
     100010: //RootNode
+    100012: Plane_LOD5
     400000: Plane_LOD0
     400002: Plane_LOD1
     400004: Plane_LOD2
     400006: Plane_LOD3
     400008: Plane_LOD4
     400010: //RootNode
+    400012: Plane_LOD5
     2100000: No Name
     2300000: Plane_LOD0
     2300002: Plane_LOD1
     2300004: Plane_LOD2
     2300006: Plane_LOD3
     2300008: Plane_LOD4
+    2300010: Plane_LOD5
     3300000: Plane_LOD0
     3300002: Plane_LOD1
     3300004: Plane_LOD2
     3300006: Plane_LOD3
     3300008: Plane_LOD4
+    3300010: Plane_LOD5
     4300000: Plane_LOD4
     4300002: Plane_LOD3
     4300004: Plane_LOD2
     4300006: Plane_LOD1
     4300008: Plane_LOD0
+    4300010: Plane_LOD5
     20500000: //RootNode
   externalObjects: {}
   materials:
@@ -67,6 +72,7 @@ ModelImporter:
     - 0.125
     - 0.0625
     - 0.03125
+    - 0.015625
     - 0.01
     globalScale: 1
     meshCompression: 0
