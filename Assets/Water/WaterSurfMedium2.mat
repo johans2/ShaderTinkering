@@ -153,13 +153,13 @@ Material:
     - _SpecularHighlights: 1
     - _Speed: 0.05
     - _Speed1: 50
-    - _Speed2: 73.9
-    - _Speed3: -71
+    - _Speed2: 93.9
+    - _Speed3: -91
     - _Speed4: 64.51
     - _Speed5: 41
     - _SrcBlend: 1
     - _Steepness1: 0
-    - _Steepness2: 0.79
+    - _Steepness2: 2.04
     - _Steepness3: 1.5
     - _Steepness4: 0.68
     - _Steepness5: 0
