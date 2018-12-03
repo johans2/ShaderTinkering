@@ -7,7 +7,7 @@ Shader "Custom/WaterSurf" {
 		_SmoothNess("SmoothNess", Range(0.0,1.0)) = 0
         _WaveFoamDir("Wave foam direction", Vector) = (0,0,0,0)
 
-		// Normals
+		// Distortion (normals and height maps)
 		[Header(Distortions 1)]
 		_NormalMap1("Normalmap 1", 2D) = "white" {}
 		_NormalMapMoveDir1("Normalmap 1 move dir", Vector) = (0,0,0,0)
@@ -291,19 +291,22 @@ Shader "Custom/WaterSurf" {
 			// ---------- Height map foam ----------
 			float heightMapAdd1 = pow(tex2D(_Heightmap, IN.uv_NormalMap1 + _NormalMapMoveDir1.xy * _NormalMapMoveSpeed1 * _Time.x).r, 4);
 			float heightMapAdd2 = pow(tex2D(_Heightmap2, IN.uv_NormalMap2 + _NormalMapMoveDir2.xy * _NormalMapMoveSpeed2 * _Time.x).r, 4);
-
 			float totalHeightAdd = ((heightMapAdd1 + heightMapAdd2) / 2) * _HeightMapFoamStrength;
 
-
-			float3 foam = ((totalHeightAdd + pow(IN.crestFactor, 1)) / 2) * (1 - noFoam);
+			// ---------- Total water foam ----------
+			float3 foam = ((totalHeightAdd + IN.crestFactor) / 2) * (1 - noFoam);
             
+            // ---------- Alpha ----------            
 			float alpha = saturate(_Color.a + foam);
+			
+            // ---------- Refraction, fog and intersection ----------
+            float3 colorBelowWater = ColorBelowWater(IN.screenPos, o.Normal);
             
 			o.Albedo =  _Color + foam;
 			o.Smoothness = saturate( _SmoothNess - foam);
 			o.Metallic = 0.0;
 			o.Alpha = alpha;
-			o.Emission = ColorBelowWater(IN.screenPos, o.Normal) * (1 - alpha);
+			o.Emission = colorBelowWater * (1 - alpha);
 		}
 
 		ENDCG
