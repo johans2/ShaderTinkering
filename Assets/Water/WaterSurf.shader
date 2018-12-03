@@ -5,6 +5,7 @@ Shader "Custom/WaterSurf" {
 		// Color
 		_Color("Color", Color) = (0,0,1,1)
 		_SmoothNess("SmoothNess", Range(0.0,1.0)) = 0
+        _Metallic("Reflectivity", Range(0.0,1.0)) = 0
         _WaveFoamDir("Wave foam direction", Vector) = (0,0,0,0)
 
 		// Distortion (normals and height maps)
@@ -206,6 +207,7 @@ Shader "Custom/WaterSurf" {
 
 		// Other
 		half _SmoothNess;
+		half _Metallic;
         fixed4 _WaveFoamDir;
 
 		// SubSurface Scattering
@@ -304,7 +306,7 @@ Shader "Custom/WaterSurf" {
             
 			o.Albedo =  _Color + foam;
 			o.Smoothness = saturate( _SmoothNess - foam);
-			o.Metallic = 0.0;
+			o.Metallic = _Metallic;
 			o.Alpha = alpha;
 			o.Emission = colorBelowWater * (1 - alpha);
 		}
