@@ -157,6 +157,7 @@ Shader "Custom/WaterSurf" {
 		void surf(Input IN, inout SurfaceOutputStandard o) { }
 
 		ENDCG
+		
 		// ------- END PASS 1 ---------------
 
 		GrabPass{ "_WaterBackground" }
@@ -206,11 +207,6 @@ Shader "Custom/WaterSurf" {
 		// Other
 		half _SmoothNess;
         fixed4 _WaveFoamDir;
-
-		// Intersection foam
-		half _IntersectionFoamDensity;
-		sampler2D _IntersectionFoamRamp;
-		fixed4 _IntersectionFoamColor;
 
 		// SubSurface Scattering
 		half _SSSPower;
@@ -292,15 +288,6 @@ Shader "Custom/WaterSurf" {
 
 			o.Normal = totalWaterNormal;
 
-			// ---------- Intersection foam ----------
-			float2 screenUV = AlignWithGrabTexel(IN.screenPos.xy / IN.screenPos.w);
-			float backgroundDepth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, screenUV));
-			float surfaceDepth = UNITY_Z_0_FAR_FROM_CLIPSPACE(IN.screenPos.z);
-			float depthDifference = saturate(backgroundDepth - surfaceDepth);
-			float lerpValue = tex2D(_IntersectionFoamRamp, float2(saturate(depthDifference), 0));
-			fixed3 intersectionFoam = lerp(_IntersectionFoamColor, float3(0, 0, 0), lerpValue);
-
-
 			// ---------- Height map foam ----------
 			float heightMapAdd1 = pow(tex2D(_Heightmap, IN.uv_NormalMap1 + _NormalMapMoveDir1.xy * _NormalMapMoveSpeed1 * _Time.x).r, 4);
 			float heightMapAdd2 = pow(tex2D(_Heightmap2, IN.uv_NormalMap2 + _NormalMapMoveDir2.xy * _NormalMapMoveSpeed2 * _Time.x).r, 4);
@@ -316,7 +303,7 @@ Shader "Custom/WaterSurf" {
 			o.Smoothness = saturate( _SmoothNess - foam);
 			o.Metallic = 0.0;
 			o.Alpha = alpha;
-			o.Emission = intersectionFoam * _IntersectionFoamDensity + ColorBelowWater(IN.screenPos, o.Normal) * (1 - alpha);
+			o.Emission = ColorBelowWater(IN.screenPos, o.Normal) * (1 - alpha);
 		}
 
 		ENDCG

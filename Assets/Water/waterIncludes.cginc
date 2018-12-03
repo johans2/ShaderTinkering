@@ -19,6 +19,11 @@ float4 _WaterFogColor;
 float _WaterFogDensity;
 float _RefractionStrength;
 
+// Intersection foam
+half _IntersectionFoamDensity;
+sampler2D _IntersectionFoamRamp;
+fixed4 _IntersectionFoamColor;
+
 #if WAVE2
 float _WaveLength2;
 float _Amplitude2;
@@ -244,8 +249,18 @@ float3 ColorBelowWater(float4 screenPos, float3 tangentSpaceNormal) {
 	uv = AlignWithGrabTexel((screenPos.xy + uvOffset) / screenPos.w);
 	backgroundDepth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, uv));
 	depthDifference = backgroundDepth - surfaceDepth;
-
+    
+    // Fog and refraction
 	float3 backgroundColor = tex2D(_WaterBackground, uv).rgb;
 	float fogFactor = saturate(exp2(-_WaterFogDensity * depthDifference));
-	return lerp(_WaterFogColor, backgroundColor, fogFactor);
+	
+	// Intersection foam
+	float interSectionFoamRange = saturate(exp2(-_IntersectionFoamDensity * depthDifference)) ;
+	float interSectionFoamFactor = tex2D(_IntersectionFoamRamp, float2(saturate(interSectionFoamRange), 0));
+	
+	// Final interpolated color
+	float3 colorUnderWater = lerp(_WaterFogColor, backgroundColor, fogFactor); 
+	float3 finalColor = lerp(_IntersectionFoamColor,colorUnderWater, 1 - interSectionFoamFactor);
+	
+	return finalColor;;
 }
