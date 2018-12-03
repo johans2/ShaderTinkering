@@ -59,7 +59,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _IntersectionFoamRamp:
-        m_Texture: {fileID: 2800000, guid: 92f99976f71bfe4419ecffe59c42c1a6, type: 3}
+        m_Texture: {fileID: 2800000, guid: 038654f505566dc44944fe6c706eed63, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
@@ -133,7 +133,7 @@ Material:
     - _HeightMapScale: 1
     - _HeightmapStrength: 0.18
     - _HeightmapStrength2: 0
-    - _IntersectionFoamDensity: 0.2
+    - _IntersectionFoamDensity: 1.79
     - _Metallic: 0
     - _Mode: 0
     - _NormalMapBias: 0.588
@@ -183,7 +183,7 @@ Material:
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _HeightmapFoam: {r: 1, g: 1, b: 1, a: 1}
     - _HeightmapFoamColor: {r: 1, g: 1, b: 1, a: 1}
-    - _IntersectionFoamColor: {r: 0.9811321, g: 0.9811321, b: 0.9811321, a: 1}
+    - _IntersectionFoamColor: {r: 0.764151, g: 0.764151, b: 0.764151, a: 1}
     - _NormalMapMoveDir: {r: -1, g: 0, b: 0, a: 0}
     - _NormalMapMoveDir1: {r: -1, g: -0.3, b: 0, a: 0}
     - _NormalMapMoveDir2: {r: -0.5, g: 0.5, b: 0, a: 0}
