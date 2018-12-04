@@ -256,7 +256,7 @@ float3 ColorBelowWater(float4 screenPos, float3 tangentSpaceNormal) {
 	
 	// Intersection foam
 	float interSectionFoamRange = saturate(exp2(-depthDifference)) ;
-	float interSectionFoamFactor = tex2D(_IntersectionFoamRamp, float2(saturate(interSectionFoamRange), 0));
+	float interSectionFoamFactor = tex2D(_IntersectionFoamRamp, float2(interSectionFoamRange, 0));
 	
 	// Final interpolated color
 	float3 colorUnderWater = lerp(_WaterFogColor, backgroundColor, fogFactor); 

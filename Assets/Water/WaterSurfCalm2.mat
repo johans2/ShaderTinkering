@@ -6,9 +6,9 @@ Material:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: WaterSurfRough2
+  m_Name: WaterSurfCalm2
   m_Shader: {fileID: 4800000, guid: dfe00a955f590494e89617f1f9315134, type: 3}
-  m_ShaderKeywords: WAVE2 WAVE3 WAVE4 WAVE5
+  m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -59,7 +59,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _IntersectionFoamRamp:
-        m_Texture: {fileID: 2800000, guid: 038654f505566dc44944fe6c706eed63, type: 3}
+        m_Texture: {fileID: 2800000, guid: 160906354400c0f41be25f4f3b5b3b5a, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
@@ -76,11 +76,11 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _NormalMap1:
         m_Texture: {fileID: 2800000, guid: c8c0816bc4a29c640972a97db7cb61db, type: 3}
-        m_Scale: {x: 2, y: 2}
+        m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalMap2:
         m_Texture: {fileID: 2800000, guid: c8c0816bc4a29c640972a97db7cb61db, type: 3}
-        m_Scale: {x: 3, y: 3}
+        m_Scale: {x: 1, y: 2}
         m_Offset: {x: 0.63, y: 0.94}
     - _Normals:
         m_Texture: {fileID: 0}
@@ -96,100 +96,97 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _Amplitude: 0.0007
-    - _Amplitude1: 0.55
-    - _Amplitude2: 0.13
-    - _Amplitude3: 0.14
-    - _Amplitude4: 0.5
-    - _Amplitude5: 0.7
+    - _Amplitude1: 0.07
+    - _Amplitude2: 0.01
+    - _Amplitude3: 0.007
+    - _Amplitude4: 0.04
+    - _Amplitude5: 0.017
     - _BumpMapMoveSpeed: 4
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
-    - _DirectionX1: 0.004
-    - _DirectionX2: 0.194
+    - _DirectionX1: -0.05
+    - _DirectionX2: -0.43
     - _DirectionX3: -0.568
-    - _DirectionX4: -1
-    - _DirectionX5: 0.335
+    - _DirectionX4: 0.05
+    - _DirectionX5: 0.38
     - _DirectionY1: 1
-    - _DirectionY2: 1
+    - _DirectionY2: 0.3
     - _DirectionY3: 1
-    - _DirectionY4: -0.199
+    - _DirectionY4: 0.469
     - _DirectionY5: 1
     - _Distortion: 10.11
     - _DstBlend: 0
-    - _FadeSpeed1: 0
-    - _FadeSpeed2: 0
-    - _FadeSpeed3: 0
+    - _FadeSpeed1: 19.2
+    - _FadeSpeed2: 5
+    - _FadeSpeed3: 10
     - _FadeSpeed4: 0
     - _FadeSpeed5: 0
     - _FoamPower: 40
     - _FoamScale: 2.43
     - _FoamSharpness: 1.25
-    - _FoamSpread: 0.92
+    - _FoamSpread: 3
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _HeightMapFoamStrength: 1.09
+    - _HeightMapFoamStrength: 0.17
     - _HeightMapScale: 1
-    - _HeightmapStrength: 0.32
+    - _HeightmapStrength: 0.02
     - _HeightmapStrength2: 0
-    - _IntersectionFoamDensity: 1.79
-    - _Metallic: 0
+    - _IntersectionFoamDensity: 0.24
+    - _Metallic: 0.306
     - _Mode: 0
-    - _NormalMapBias: 0.588
+    - _NormalMapBias: 0.039
     - _NormalMapMoveSpeed: 4
-    - _NormalMapMoveSpeed1: 4.29
-    - _NormalMapMoveSpeed2: 6.7
+    - _NormalMapMoveSpeed1: 0.14
+    - _NormalMapMoveSpeed2: 2
     - _Occlusion: 1
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _Power: 1.3
-    - _RefractionStrength: 0.433
-    - _SSSPower: 1.5
+    - _RefractionStrength: 0.502
+    - _SSSPower: 1.3
     - _Scale: 1.18
     - _Shininess: 0
-    - _SmoothNess: 0.653
+    - _SmoothNess: 0.912
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _Speed: 0.05
-    - _Speed1: 80
-    - _Speed2: 53
-    - _Speed3: 61
-    - _Speed4: 30
-    - _Speed5: 100
+    - _Speed1: 50
+    - _Speed2: 14.32
+    - _Speed3: 9.48
+    - _Speed4: 9
+    - _Speed5: 7
     - _SrcBlend: 1
     - _Steepness1: 0
-    - _Steepness2: 2.42
-    - _Steepness3: 1.65
+    - _Steepness2: 0
+    - _Steepness3: 0
     - _Steepness4: 0
-    - _Steepness5: 0
+    - _Steepness5: 0.45
     - _UVSec: 0
-    - _WaterFogDensity: 0.37
-    - _Wave2Enabled: 1
-    - _Wave3Enabled: 1
-    - _Wave4Enabled: 1
-    - _Wave5Enabled: 1
+    - _WaterFogDensity: 0.34
+    - _Wave2Enabled: 0
+    - _Wave3Enabled: 0
+    - _Wave4Enabled: 0
+    - _Wave5Enabled: 0
     - _WaveLength: 0.001
-    - _WaveLength1: 4.91
-    - _WaveLength2: 1.37
-    - _WaveLength3: 1.51
-    - _WaveLength4: 6.74
-    - _WaveLength5: 10
+    - _WaveLength1: 8.41
+    - _WaveLength2: 1.5
+    - _WaveLength3: 4
+    - _WaveLength4: 2
+    - _WaveLength5: 0.13
     - _ZWrite: 1
-    - _ZWrite_Prepass_Enabled: 0
     m_Colors:
     - _BumpMapMoveDir: {r: -1, g: 0, b: 1, a: 1}
-    - _Color: {r: 0, g: 0.116582215, b: 0.1397059, a: 0.691}
+    - _Color: {r: 0, g: 0.41110566, b: 0.49264705, a: 0.691}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _HeightmapFoam: {r: 1, g: 1, b: 1, a: 1}
     - _HeightmapFoamColor: {r: 1, g: 1, b: 1, a: 1}
-    - _IntersectionFoamColor: {r: 0.764151, g: 0.764151, b: 0.764151, a: 1}
+    - _IntersectionFoamColor: {r: 0.6084906, g: 0.9693926, b: 1, a: 1}
     - _NormalMapMoveDir: {r: -1, g: 0, b: 0, a: 0}
-    - _NormalMapMoveDir1: {r: -1, g: -0.3, b: 0, a: 0}
-    - _NormalMapMoveDir2: {r: -0.5, g: 0.5, b: 0, a: 0}
+    - _NormalMapMoveDir1: {r: -1, g: 0, b: 0, a: 0}
+    - _NormalMapMoveDir2: {r: -1, g: 0, b: 0, a: 0}
     - _PumpMapMoveDir: {r: 0, g: 0, b: 0, a: 0}
     - _SSSColor: {r: 1, g: 0, b: 0, a: 1}
-    - _WaterFogColor: {r: 0, g: 0.119969055, b: 0.14705884, a: 1}
-    - _WaveDir: {r: 0, g: 0, b: -4.29, a: 0}
-    - _WaveFoamDir: {r: 0, g: 0, b: -3.37, a: 0}
-    - _WaveFoamSideDir: {r: 0, g: 0, b: 0, a: 0}
+    - _WaterFogColor: {r: 0, g: 0.29302713, b: 0.3584906, a: 1}
+    - _WaveFoamDir: {r: 0, g: 0, b: 0, a: 0}
