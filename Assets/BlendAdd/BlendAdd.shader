@@ -73,23 +73,21 @@
 				// First noise sample
 				float2 uv1 = i.uv;
 				uv1.xy -= _Time.x * _Speed1;
-				fixed4 noise1 = tex2D(_NoiseTex, uv1);
+				float noise1 = tex2D(_NoiseTex, uv1).a;
 
 				// Second noise sample
 				float2 uv2 = i.uv * 0.5;
 				uv2.xy -= _Time.x * _Speed2;
-				fixed4 noise2 = tex2D(_NoiseTex, uv2);
+				float noise2 = tex2D(_NoiseTex, uv2).a;
 
 				// Third noise sample
 				float2 uv3 = i.uv * 2;
 				uv3.xy -= _Time.x * _Speed3;
-				fixed4 noise3 = tex2D(_NoiseTex, uv3);
+				float noise3 = tex2D(_NoiseTex, uv3).a;
 
 				// Final noise
-				float4 finalNoise = noise1 * noise2 * 2;
-				finalNoise *= noise3;
-				finalNoise *= 2;
-
+				float finalNoise = saturate(noise1 * noise2 * noise3 * 3);
+				
 				half4 mask = tex2D(_Mask, i.uv);
 
 				// apply fog
