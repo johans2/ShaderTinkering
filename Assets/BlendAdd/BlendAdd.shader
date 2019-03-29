@@ -96,8 +96,8 @@
 				UNITY_APPLY_FOG(i.fogCoord, col);
 
 
-				float4 final = _Color * mask.r;
-				final.rgb *= finalNoise.a;
+				float4 final = _Color * mask.r * finalNoise;
+				//final.rgb *= finalNoise.a;
 				
 				return final;
 				//return _Color * finalNoise * mask.r;
