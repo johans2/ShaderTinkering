@@ -4,12 +4,21 @@
 	{
 		_MainTex ("Main Texture", 2D) = "white" {}
 		_NoiseTex("Noise Texture", 2D) = "black" {}
-		_Colot("Color tint", Color) = (1,1,1,1)
+		_Mask("Mask Texture", 2D) = "white" {}
+		_Color("Color tint", Color) = (1,1,1,1)
+
+		_Speed1("Speed 1", Float) = 1
+		_Speed2("Speed 2", Float) = 1
+		_Speed3("Speed 3", Float) = 1
 	}
 	SubShader
 	{
 		Tags { "Queue"="Transparent"  "RenderType"="Transparent" }
-		LOD 100
+		
+		ZWrite Off
+		Blend One OneMinusSrcAlpha
+		//Blend SrcAlpha OneMinusSrcAlpha
+
 
 		Pass
 		{
@@ -36,10 +45,17 @@
 
 			sampler2D _MainTex;
 			sampler2D _NoiseTex;
+			sampler2D _Mask;
 
 			float4 _MainTex_ST;
 			float4 _NoiseTex_ST;
+			float4 _Mask_ST;
+			float4 _Color;
 			
+			float _Speed1;
+			float _Speed2;
+			float _Speed3;
+
 			v2f vert (appdata v)
 			{
 				v2f o;
@@ -54,12 +70,37 @@
 				// sample the texture
 				fixed4 col = tex2D(_MainTex, i.uv);
 
-				fixed4 noise = tex2D(_NoiseTex, i.uv);
+				// First noise sample
+				float2 uv1 = i.uv;
+				uv1.xy -= _Time.x * _Speed1;
+				fixed4 noise1 = tex2D(_NoiseTex, uv1);
 
+				// Second noise sample
+				float2 uv2 = i.uv * 0.5;
+				uv2.xy -= _Time.x * _Speed2;
+				fixed4 noise2 = tex2D(_NoiseTex, uv2);
+
+				// Third noise sample
+				float2 uv3 = i.uv * 2;
+				uv3.xy -= _Time.x * _Speed3;
+				fixed4 noise3 = tex2D(_NoiseTex, uv3);
+
+				// Final noise
+				float4 finalNoise = noise1 * noise2 * 2;
+				finalNoise *= noise3;
+				finalNoise *= 2;
+
+				half4 mask = tex2D(_Mask, i.uv);
 
 				// apply fog
 				UNITY_APPLY_FOG(i.fogCoord, col);
-				return col * noise;
+
+
+				float4 final = _Color * mask.r;
+				final.rgb *= finalNoise.a;
+				
+				return final;
+				//return _Color * finalNoise * mask.r;
 			}
 			ENDCG
 		}
