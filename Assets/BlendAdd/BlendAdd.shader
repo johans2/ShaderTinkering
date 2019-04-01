@@ -7,6 +7,16 @@
 		_Mask("Mask Texture", 2D) = "white" {}
 		_Color("Color tint", Color) = (1,1,1,1)
 
+
+		_UVMultiplier1("UV multiplier 1", Float) = 1
+		_UVMultiplier2("UV multiplier 2", Float) = 1
+		_UVMultiplier3("UV multiplier 3", Float) = 1
+		_UVMultiplier4("UV multiplier 4", Float) = 1
+		_UVMultiplier5("UV multiplier 5", Float) = 1
+		_UVMultiplier6("UV multiplier 6", Float) = 1
+		_UVMultiplier7("UV multiplier 7", Float) = 1
+
+
 		_Speed1("Speed 1", Float) = 1
 		_Speed2("Speed 2", Float) = 1
 		_Speed3("Speed 3", Float) = 1
@@ -56,6 +66,16 @@
 			float4 _Mask_ST;
 			float4 _Color;
 			
+
+			float _UVMultiplier1;
+			float _UVMultiplier2;
+			float _UVMultiplier3;
+			float _UVMultiplier4;
+			float _UVMultiplier5;
+			float _UVMultiplier6;
+			float _UVMultiplier7;
+
+
 			float _Speed1;
 			float _Speed2;
 			float _Speed3;
@@ -80,57 +100,62 @@
 				fixed4 col = tex2D(_MainTex, i.uv);
 
 				// First noise sample
-				float2 uv1 = i.uv;
+				float2 uv1 = i.uv * _UVMultiplier1;
 				uv1.xy -= _Time.x * _Speed1;
-				float noise1 = tex2D(_NoiseTex, uv1).r;
+				float noise1 = tex2D(_NoiseTex, uv1).a;
 
 				// Second noise sample
-				float2 uv2 = i.uv * 0.5;
+				float2 uv2 = i.uv * _UVMultiplier2;
 				uv2.xy -= _Time.x * _Speed2;
-				float noise2 = tex2D(_NoiseTex, uv2).r;
+				float noise2 = tex2D(_NoiseTex, uv2).a;
 
 				// Third noise sample
-				float2 uv3 = i.uv * 2;
+				float2 uv3 = i.uv * _UVMultiplier3;
 				uv3.xy -= _Time.x * _Speed3;
-				float noise3 = tex2D(_NoiseTex, uv3).r;
+				float noise3 = tex2D(_NoiseTex, uv3).a;
 
 				// 4th noise sample
-				float2 uv4 = i.uv * 0.7;
+				float2 uv4 = i.uv * _UVMultiplier4;
 				uv4.xy -= _Time.x * _Speed4;
-				float noise4 = tex2D(_NoiseTex, uv4).r;
+				float noise4 = tex2D(_NoiseTex, uv4).a;
 
 				// 5th noise sample
-				float2 uv5 = i.uv * 0.15;
+				float2 uv5 = i.uv * _UVMultiplier5;
 				uv5.xy -= _Time.x * _Speed5;
-				float noise5 = tex2D(_NoiseTex, uv5).r;
+				float noise5 = tex2D(_NoiseTex, uv5).a;
 
 				// 6th noise sample
-				float2 uv6 = i.uv * 0.4;
+				float2 uv6 = i.uv * _UVMultiplier6;
 				uv6.xy -= _Time.x * _Speed6;
-				float noise6 = tex2D(_NoiseTex, uv6).r;
+				float noise6 = tex2D(_NoiseTex, uv6).a;
 
 				// 7th noise sample
-				float2 uv7 = i.uv * 0.1;
+				float2 uv7 = i.uv * _UVMultiplier7;
 				uv7.xy -= _Time.x * _Speed7;
-				float noise7 = tex2D(_NoiseTex, uv7).r;
+				float noise7 = tex2D(_NoiseTex, uv7).a;
 
 				// Final noise
 				float finalNoise = noise1;
 				
 				finalNoise *= noise2;
 				finalNoise *= 2;
+				finalNoise = saturate(finalNoise);
 
 				finalNoise *= noise3;
 				finalNoise *= 2;
+				finalNoise = saturate(finalNoise);
 				
 				finalNoise *= noise4;
 				finalNoise *= 2;
+				finalNoise = saturate(finalNoise);
 				
 				finalNoise *= noise5;
 				finalNoise *= 2;
+				finalNoise = saturate(finalNoise);
 				
 				finalNoise *= noise6;
 				finalNoise *= 2;
+				finalNoise = saturate(finalNoise);
 
 				finalNoise *= noise7;
 				finalNoise *= 2;

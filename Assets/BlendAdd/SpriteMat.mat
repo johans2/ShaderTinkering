@@ -76,17 +76,24 @@ Material:
     - _Parallax: 0.02
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _Speed1: -4
-    - _Speed2: 3.2
-    - _Speed3: 4.71
-    - _Speed4: -3.3
-    - _Speed5: 12
-    - _Speed6: -0.43
-    - _Speed7: 10.61
+    - _Speed1: -2.41
+    - _Speed2: 2.22
+    - _Speed3: 1.61
+    - _Speed4: -0.83
+    - _Speed5: 0.3
+    - _Speed6: -0.89
+    - _Speed7: 1.88
     - _SrcBlend: 1
+    - _UVMultiplier1: 0.29
+    - _UVMultiplier2: 1
+    - _UVMultiplier3: 1.62
+    - _UVMultiplier4: 0.7
+    - _UVMultiplier5: 1.1
+    - _UVMultiplier6: 0.51
+    - _UVMultiplier7: 1.24
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 1, g: 0.07075471, b: 0.07075471, a: 1}
+    - _Color: {r: 0, g: 1, b: 0.060104847, a: 1}
     - _Colot: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
