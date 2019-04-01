@@ -10,6 +10,7 @@
 		_Speed1("Speed 1", Float) = 1
 		_Speed2("Speed 2", Float) = 1
 		_Speed3("Speed 3", Float) = 1
+		_Speed4("Speed 4", Float) = 1
 	}
 	SubShader
 	{
@@ -57,6 +58,7 @@
 			float _Speed1;
 			float _Speed2;
 			float _Speed3;
+			float _Speed4;
 
 			v2f vert (appdata v)
 			{
@@ -88,8 +90,13 @@
 				uv3.xy -= _Time.x * _Speed3;
 				float noise3 = tex2D(_NoiseTex, uv3).a;
 
+				// 4th noise sample
+				float2 uv4 = i.uv * 0.7;
+				uv4.xy -= _Time.x * _Speed4;
+				float noise4 = tex2D(_NoiseTex, uv4).a;
+
 				// Final noise
-				float finalNoise = saturate(noise1 * noise2 * noise3 * 3);
+				float finalNoise = saturate(noise1 * noise2 * noise3 * noise4 * 4);
 				
 				half4 mask = tex2D(_Mask, i.uv);
 
