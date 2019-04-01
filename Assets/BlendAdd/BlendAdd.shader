@@ -11,6 +11,9 @@
 		_Speed2("Speed 2", Float) = 1
 		_Speed3("Speed 3", Float) = 1
 		_Speed4("Speed 4", Float) = 1
+		_Speed5("Speed 5", Float) = 1
+		_Speed6("Speed 6", Float) = 1
+		_Speed7("Speed 7", Float) = 1
 	}
 	SubShader
 	{
@@ -18,9 +21,7 @@
 		
 		ZWrite Off
 		Blend One OneMinusSrcAlpha
-		//Blend SrcAlpha OneMinusSrcAlpha
-
-
+		
 		Pass
 		{
 			CGPROGRAM
@@ -59,6 +60,9 @@
 			float _Speed2;
 			float _Speed3;
 			float _Speed4;
+			float _Speed5;
+			float _Speed6;
+			float _Speed7;
 
 			v2f vert (appdata v)
 			{
@@ -78,33 +82,68 @@
 				// First noise sample
 				float2 uv1 = i.uv;
 				uv1.xy -= _Time.x * _Speed1;
-				float noise1 = tex2D(_NoiseTex, uv1).a;
+				float noise1 = tex2D(_NoiseTex, uv1).r;
 
 				// Second noise sample
 				float2 uv2 = i.uv * 0.5;
 				uv2.xy -= _Time.x * _Speed2;
-				float noise2 = tex2D(_NoiseTex, uv2).a;
+				float noise2 = tex2D(_NoiseTex, uv2).r;
 
 				// Third noise sample
 				float2 uv3 = i.uv * 2;
 				uv3.xy -= _Time.x * _Speed3;
-				float noise3 = tex2D(_NoiseTex, uv3).a;
+				float noise3 = tex2D(_NoiseTex, uv3).r;
 
 				// 4th noise sample
 				float2 uv4 = i.uv * 0.7;
 				uv4.xy -= _Time.x * _Speed4;
-				float noise4 = tex2D(_NoiseTex, uv4).a;
+				float noise4 = tex2D(_NoiseTex, uv4).r;
+
+				// 5th noise sample
+				float2 uv5 = i.uv * 0.15;
+				uv5.xy -= _Time.x * _Speed5;
+				float noise5 = tex2D(_NoiseTex, uv5).r;
+
+				// 6th noise sample
+				float2 uv6 = i.uv * 0.4;
+				uv6.xy -= _Time.x * _Speed6;
+				float noise6 = tex2D(_NoiseTex, uv6).r;
+
+				// 7th noise sample
+				float2 uv7 = i.uv * 0.1;
+				uv7.xy -= _Time.x * _Speed7;
+				float noise7 = tex2D(_NoiseTex, uv7).r;
 
 				// Final noise
-				float finalNoise = saturate(noise1 * noise2 * noise3 * noise4 * 4);
+				float finalNoise = noise1;
 				
+				finalNoise *= noise2;
+				finalNoise *= 2;
+
+				finalNoise *= noise3;
+				finalNoise *= 2;
+				
+				finalNoise *= noise4;
+				finalNoise *= 2;
+				
+				finalNoise *= noise5;
+				finalNoise *= 2;
+				
+				finalNoise *= noise6;
+				finalNoise *= 2;
+
+				finalNoise *= noise7;
+				finalNoise *= 2;
+				
+				finalNoise = saturate(finalNoise);
+
 				half4 mask = tex2D(_Mask, i.uv);
 
 				// apply fog
 				UNITY_APPLY_FOG(i.fogCoord, col);
 
 
-				float4 final = i.color.a * mask.r * finalNoise * _Color;
+				float4 final = mask.r * finalNoise * _Color;
 
 				
 				return final;
