@@ -3,6 +3,7 @@
 	Properties
 	{
 		_MainTex ("Main Texture", 2D) = "white" {}
+		_MainTex2 ("Main Texture 2", 2D) = "white" {}
 		_NoiseTex("Noise Texture", 2D) = "black" {}
 		_Mask("Mask Texture", 2D) = "white" {}
 		_Color("Color tint", Color) = (1,1,1,1)
@@ -58,10 +59,12 @@
 			};
 
 			sampler2D _MainTex;
+			sampler2D _MainTex2;
 			sampler2D _NoiseTex;
 			sampler2D _Mask;
 
 			float4 _MainTex_ST;
+			float4 _MainTex2_ST;
 			float4 _NoiseTex_ST;
 			float4 _Mask_ST;
 			float4 _Color;
@@ -102,76 +105,92 @@
 				// First noise sample
 				float2 uv1 = i.uv * _UVMultiplier1;
 				uv1.xy -= _Time.x * _Speed1;
-				float noise1 = tex2D(_NoiseTex, uv1).a;
 
 				// Second noise sample
 				float2 uv2 = i.uv * _UVMultiplier2;
 				uv2.xy -= _Time.x * _Speed2;
-				float noise2 = tex2D(_NoiseTex, uv2).a;
 
 				// Third noise sample
 				float2 uv3 = i.uv * _UVMultiplier3;
 				uv3.xy -= _Time.x * _Speed3;
-				float noise3 = tex2D(_NoiseTex, uv3).a;
 
 				// 4th noise sample
 				float2 uv4 = i.uv * _UVMultiplier4;
 				uv4.xy -= _Time.x * _Speed4;
-				float noise4 = tex2D(_NoiseTex, uv4).a;
 
 				// 5th noise sample
 				float2 uv5 = i.uv * _UVMultiplier5;
 				uv5.xy -= _Time.x * _Speed5;
-				float noise5 = tex2D(_NoiseTex, uv5).a;
 
 				// 6th noise sample
 				float2 uv6 = i.uv * _UVMultiplier6;
 				uv6.xy -= _Time.x * _Speed6;
-				float noise6 = tex2D(_NoiseTex, uv6).a;
 
 				// 7th noise sample
 				float2 uv7 = i.uv * _UVMultiplier7;
 				uv7.xy -= _Time.x * _Speed7;
-				float noise7 = tex2D(_NoiseTex, uv7).a;
 
+
+				float4 color1 = tex2D(_MainTex, uv1);
+				float4 color2 = tex2D(_MainTex, uv2);
+				float4 color3 = tex2D(_MainTex, uv3);
+				float4 color4 = tex2D(_MainTex, uv4);
+				float4 color5 = tex2D(_MainTex, uv5);
+				float4 color6 = tex2D(_MainTex, uv6);
+				float4 color7 = tex2D(_MainTex, uv7);
+
+				float noise1 = tex2D(_NoiseTex, uv1).a;
+				float noise2 = tex2D(_NoiseTex, uv2).a;
+				float noise3 = tex2D(_NoiseTex, uv3).a;
+				float noise4 = tex2D(_NoiseTex, uv4).a;
+				float noise5 = tex2D(_NoiseTex, uv5).a;
+				float noise6 = tex2D(_NoiseTex, uv6).a;
+				float noise7 = tex2D(_NoiseTex, uv7).a;
 				// Final noise
+
+				float finalNoise = /*(((*/(((noise1 * noise2 * 2) * noise3 * 2) * noise4 * 2);//  *noise5 * 2) * noise6 * 2) * noise7 * 2);
+
+
+				float3 finalColor = lerp( lerp( color1, color2, 0.5), color3, 0.5 ) *2 ;// saturate(((color1 * color2 * 2) * color3 * 2));//  *color5 * 2) * color6 * 2) * color7 * 2);
+				float3 finalColor2 = tex2D(_MainTex2, uv2);
+				/*
 				float finalNoise = noise1;
 				
 				finalNoise *= noise2;
 				finalNoise *= 2;
-				finalNoise = saturate(finalNoise);
 
 				finalNoise *= noise3;
 				finalNoise *= 2;
-				finalNoise = saturate(finalNoise);
 				
 				finalNoise *= noise4;
 				finalNoise *= 2;
-				finalNoise = saturate(finalNoise);
 				
 				finalNoise *= noise5;
 				finalNoise *= 2;
-				finalNoise = saturate(finalNoise);
 				
 				finalNoise *= noise6;
 				finalNoise *= 2;
-				finalNoise = saturate(finalNoise);
 
 				finalNoise *= noise7;
 				finalNoise *= 2;
-				
+				*/
 				finalNoise = saturate(finalNoise);
+				//finalColor = saturate(finalColor);
 
 				half4 mask = tex2D(_Mask, i.uv);
 
 				// apply fog
 				UNITY_APPLY_FOG(i.fogCoord, col);
 
+				float4 finalOut = float4(0,0,0,0);
+				finalOut.rgb = color1;
+				finalOut.a = finalNoise;
 
-				float4 final = mask.r * finalNoise * _Color;
 
+				float4 final = mask.r * float4(finalColor,1) * finalNoise;
+				//final *= i.color;
 				
-				return final;
+				return final;//float4(finalColor,1);
 			}
 			ENDCG
 		}

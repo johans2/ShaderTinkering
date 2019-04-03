@@ -39,7 +39,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: ab78a862493ed7f42a9d16bc994e6697, type: 3}
+        m_Texture: {fileID: 2800000, guid: 8127f41df7f607f47b3ce934e10efe5a, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex2:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Mask:
@@ -52,7 +56,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _NoiseTex:
         m_Texture: {fileID: 2800000, guid: 4cdd8d58e04e57742986f7d4533b1b40, type: 3}
-        m_Scale: {x: 2, y: 12}
+        m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
         m_Texture: {fileID: 0}
@@ -76,24 +80,24 @@ Material:
     - _Parallax: 0.02
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _Speed1: -2.41
-    - _Speed2: 2.22
-    - _Speed3: 1.61
-    - _Speed4: -0.83
-    - _Speed5: 0.3
-    - _Speed6: -0.89
-    - _Speed7: 1.88
+    - _Speed1: 5.66
+    - _Speed2: 6.31
+    - _Speed3: 4.14
+    - _Speed4: 0.44
+    - _Speed5: -0.01
+    - _Speed6: 1.42
+    - _Speed7: 1.58
     - _SrcBlend: 1
-    - _UVMultiplier1: 0.29
-    - _UVMultiplier2: 1
-    - _UVMultiplier3: 1.62
-    - _UVMultiplier4: 0.7
-    - _UVMultiplier5: 1.1
-    - _UVMultiplier6: 0.51
-    - _UVMultiplier7: 1.24
+    - _UVMultiplier1: 2
+    - _UVMultiplier2: 0.96
+    - _UVMultiplier3: 0.78
+    - _UVMultiplier4: 1
+    - _UVMultiplier5: 2
+    - _UVMultiplier6: 0.5
+    - _UVMultiplier7: 1
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0, g: 1, b: 0.060104847, a: 1}
+    - _Color: {r: 0, g: 0.51251984, b: 1, a: 1}
     - _Colot: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
