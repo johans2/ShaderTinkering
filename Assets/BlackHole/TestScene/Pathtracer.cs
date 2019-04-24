@@ -50,9 +50,27 @@ public class Pathtracer : MonoBehaviour
                 {
                     break;
                 }
+                
+                Vector3 previousPos = trace.startPosition + Vector3.forward * Mathf.Clamp((j - 1), 0 ,Mathf.Infinity) * stepDistance;
+                Vector3 newUnaffectedPos = trace.startPosition + Vector3.forward * j * stepDistance;
+
+                Vector3 unaffectedVector = newUnaffectedPos - previousPos;
+                Vector3 toBH = (blackHole.transform.position - previousPos).normalized * stepDistance;
+
+                Vector3 addVector = unaffectedVector;
+                if((blackHole.transform.position - previousPos).magnitude < (0.5f * 2.6f)) {
+                    if(j == 0) {
+                        Debug.Log(previousPos.y);
+                    }
+
+                    addVector = toBH;
+                    trace.traceObjects[j].GetComponent<Renderer>().material.color = Color.blue;
+                }
+
+                Debug.DrawLine(previousPos, previousPos + addVector, Color.red);
 
                 Transform pathObjectTransform = trace.traceObjects[j];
-                pathObjectTransform.position = trace.startPosition + Vector3.forward * j * stepDistance;
+                pathObjectTransform.position = previousPos + addVector; // trace.startPosition + Vector3.forward * j * stepDistance;
 
                 // Inside black hole. Radius = 0.5 * scale.
                 if (Vector3.Distance(pathObjectTransform.position, blackHole.transform.position) < (blackHole.transform.localScale.x * 0.5))
