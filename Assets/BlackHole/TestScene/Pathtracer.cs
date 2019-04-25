@@ -47,7 +47,7 @@ public class Pathtracer : MonoBehaviour
         {
             Trace trace = traces[i];
             bool continueTrace = true;
-            Vector3 previousPos = trace.startPosition;
+            Vector3 previousPos = cameraTransform.position + trace.startPosition;
             for (int j = 0; j < trace.traceObjects.Count; j++)
             {
                 if (!continueTrace)
@@ -80,7 +80,7 @@ public class Pathtracer : MonoBehaviour
                 if (Vector3.Distance(pathObjectTransform.position, blackHole.transform.position) < (blackHole.transform.localScale.x * 0.5))
                 {
                     pathObjectTransform.gameObject.SetActive(false);
-                    continueTrace = false;
+                    //continueTrace = false;
                 }
                 else {
                     pathObjectTransform.gameObject.SetActive(true);
