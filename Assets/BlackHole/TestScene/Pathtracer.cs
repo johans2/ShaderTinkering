@@ -7,7 +7,7 @@ public class Pathtracer : MonoBehaviour
     [Range(0, 100)]
     public int numTraces;
 
-    [Range(0, 100)]
+    [Range(0, 200)]
     public int numTraceSteps;
 
     [Range(0, 10)]
@@ -68,9 +68,9 @@ public class Pathtracer : MonoBehaviour
 
                 float distanceToSingularity = Vector3.Distance(blackHole.transform.position, previousPos);
                 float lerpValue = GetSpaceDistortionLerpValue(0.5f, distanceToSingularity, spaceDistortion);
-                addVector = Vector3.Lerp(unaffectedAddVector, maxAffectedAddVector, lerpValue);
+                addVector = Vector3.Lerp(unaffectedAddVector, maxAffectedAddVector, lerpValue).normalized * stepDistance;
 
-                Debug.DrawLine(previousPos, previousPos + addVector, Color.red);
+                //Debug.DrawLine(previousPos, previousPos + addVector, Color.red);
 
                 Transform pathObjectTransform = trace.traceObjects[j];
                 pathObjectTransform.position = previousPos + addVector;
