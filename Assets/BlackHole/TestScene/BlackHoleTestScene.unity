@@ -283,11 +283,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73ac8184e076a244aac344013f42147e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numTraces: 73
+  numTraces: 71
   numTraceSteps: 150
   stepDistance: 0.07
-  traceSpacing: 0.07
-  spaceDistortion: 1.35
+  traceSpacing: 0.05
+  spaceDistortion: 4
   traceObjectPrefab: {fileID: 4000187796247287927, guid: b47c84a8343b37e44b5723be8c9d906a,
     type: 2}
   traceContainer: {fileID: 1526624791}
@@ -413,7 +413,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1551667834}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0.73}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

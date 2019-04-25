@@ -46,41 +46,28 @@ public class Pathtracer : MonoBehaviour
         for (int i = 0; i < traces.Count; i++)
         {
             Trace trace = traces[i];
-            bool continueTrace = true;
             Vector3 previousPos = cameraTransform.position + trace.startPosition;
+            Vector3 dir = Vector3.forward;
             for (int j = 0; j < trace.traceObjects.Count; j++)
             {
-                if (!continueTrace)
-                {
-                    break;
-                }
-
-                Vector3 unaffectedAddVector = Vector3.forward * stepDistance;
+                Vector3 unaffectedAddVector = dir.normalized * stepDistance; // TODO: This should not be forward. Lightrays can never loop then.
                 Vector3 maxAffectedAddVector = (blackHole.transform.position - previousPos).normalized * stepDistance; // Pointing straight towards the black hole. 
                 
-                Vector3 addVector = unaffectedAddVector;
-
-                // TODO: Dont use this if statement. Have the addvector lerp by a curve value instead. f(x) = (R^p) / x^p where p is gravitational "pull". 
-                if((blackHole.transform.position - previousPos).magnitude < (0.5f * 2.6f)) {
-                    addVector = maxAffectedAddVector;
-                    trace.traceObjects[j].GetComponent<Renderer>().material.color = Color.blue;
-                }
-
                 float distanceToSingularity = Vector3.Distance(blackHole.transform.position, previousPos);
                 float lerpValue = GetSpaceDistortionLerpValue(0.5f, distanceToSingularity, spaceDistortion);
-                addVector = Vector3.Lerp(unaffectedAddVector, maxAffectedAddVector, lerpValue).normalized * stepDistance;
+                Vector3 addVector = Vector3.Lerp(unaffectedAddVector, maxAffectedAddVector, lerpValue).normalized * stepDistance;
 
                 //Debug.DrawLine(previousPos, previousPos + addVector, Color.red);
 
                 Transform pathObjectTransform = trace.traceObjects[j];
                 pathObjectTransform.position = previousPos + addVector;
                 previousPos = pathObjectTransform.position;
+                dir = addVector;
 
                 // Inside black hole. Radius = 0.5 * scale.
                 if (Vector3.Distance(pathObjectTransform.position, blackHole.transform.position) < (blackHole.transform.localScale.x * 0.5))
                 {
                     pathObjectTransform.gameObject.SetActive(false);
-                    //continueTrace = false;
                 }
                 else {
                     pathObjectTransform.gameObject.SetActive(true);
