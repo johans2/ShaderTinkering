@@ -44,33 +44,35 @@ public class Pathtracer : MonoBehaviour
         {
             Trace trace = traces[i];
             bool continueTrace = true;
+            Vector3 previousPos = trace.startPosition;
             for (int j = 0; j < trace.traceObjects.Count; j++)
             {
                 if (!continueTrace)
                 {
                     break;
                 }
-                
-                Vector3 previousPos = trace.startPosition + Vector3.forward * Mathf.Clamp((j - 1), 0 ,Mathf.Infinity) * stepDistance;
-                Vector3 newUnaffectedPos = trace.startPosition + Vector3.forward * j * stepDistance;
 
-                Vector3 unaffectedVector = newUnaffectedPos - previousPos;
-                Vector3 toBH = (blackHole.transform.position - previousPos).normalized * stepDistance;
+                Vector3 unaffectedAddVector = Vector3.forward * stepDistance;
+                Vector3 maxAffectedAddVector = (blackHole.transform.position - previousPos).normalized * stepDistance; // Pointing straight towards the black hole. 
 
-                Vector3 addVector = unaffectedVector;
+                // Interpolate between the two add vectors;
+                // Vector3 previousPos = trace.startPosition + Vector3.forward * Mathf.Clamp((j - 1), 0 ,Mathf.Infinity) * stepDistance;
+                // Vector3 newUnaffectedPos = trace.startPosition + Vector3.forward * j * stepDistance;
+
+                //Vector3 unaffectedVector = newUnaffectedPos - previousPos;
+                //Vector3 toBH = (blackHole.transform.position - previousPos).normalized * stepDistance;
+
+                Vector3 addVector = unaffectedAddVector;
                 if((blackHole.transform.position - previousPos).magnitude < (0.5f * 2.6f)) {
-                    if(j == 0) {
-                        Debug.Log(previousPos.y);
-                    }
-
-                    addVector = toBH;
+                    addVector = maxAffectedAddVector;
                     trace.traceObjects[j].GetComponent<Renderer>().material.color = Color.blue;
                 }
 
                 Debug.DrawLine(previousPos, previousPos + addVector, Color.red);
 
                 Transform pathObjectTransform = trace.traceObjects[j];
-                pathObjectTransform.position = previousPos + addVector; // trace.startPosition + Vector3.forward * j * stepDistance;
+                pathObjectTransform.position = previousPos + addVector;
+                previousPos = pathObjectTransform.position;
 
                 // Inside black hole. Radius = 0.5 * scale.
                 if (Vector3.Distance(pathObjectTransform.position, blackHole.transform.position) < (blackHole.transform.localScale.x * 0.5))
