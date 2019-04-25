@@ -16,6 +16,9 @@ public class Pathtracer : MonoBehaviour
     [Range(0, 10)]
     public float traceSpacing;
 
+    [Range(0.1f, 5)]
+    public float spaceDistortion = 1; // TODO: rename this.
+
     public GameObject traceObjectPrefab;
     public Transform traceContainer;
     public Transform cameraTransform;
@@ -54,19 +57,18 @@ public class Pathtracer : MonoBehaviour
 
                 Vector3 unaffectedAddVector = Vector3.forward * stepDistance;
                 Vector3 maxAffectedAddVector = (blackHole.transform.position - previousPos).normalized * stepDistance; // Pointing straight towards the black hole. 
-
-                // Interpolate between the two add vectors;
-                // Vector3 previousPos = trace.startPosition + Vector3.forward * Mathf.Clamp((j - 1), 0 ,Mathf.Infinity) * stepDistance;
-                // Vector3 newUnaffectedPos = trace.startPosition + Vector3.forward * j * stepDistance;
-
-                //Vector3 unaffectedVector = newUnaffectedPos - previousPos;
-                //Vector3 toBH = (blackHole.transform.position - previousPos).normalized * stepDistance;
-
+                
                 Vector3 addVector = unaffectedAddVector;
+
+                // TODO: Dont use this if statement. Have the addvector lerp by a curve value instead. f(x) = (R^p) / x^p where p is gravitational "pull". 
                 if((blackHole.transform.position - previousPos).magnitude < (0.5f * 2.6f)) {
                     addVector = maxAffectedAddVector;
                     trace.traceObjects[j].GetComponent<Renderer>().material.color = Color.blue;
                 }
+
+                float distanceToSingularity = Vector3.Distance(blackHole.transform.position, previousPos);
+                float lerpValue = GetSpaceDistortionLerpValue(0.5f, distanceToSingularity, spaceDistortion);
+                addVector = Vector3.Lerp(unaffectedAddVector, maxAffectedAddVector, lerpValue);
 
                 Debug.DrawLine(previousPos, previousPos + addVector, Color.red);
 
@@ -87,6 +89,10 @@ public class Pathtracer : MonoBehaviour
 
             }
         }
+    }
+
+    private float GetSpaceDistortionLerpValue(float schwarzschildRadius, float distanceToSingularity, float spaceDistortion) {
+        return Mathf.Pow(schwarzschildRadius, spaceDistortion) / Mathf.Pow(distanceToSingularity, spaceDistortion);
     }
 
     private Trace CreateTrace(Vector3 startPosition) {

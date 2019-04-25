@@ -287,6 +287,7 @@ MonoBehaviour:
   numTraceSteps: 100
   stepDistance: 0.07
   traceSpacing: 0.2
+  spaceDistortion: 1.6
   traceObjectPrefab: {fileID: 4000187796247287927, guid: b47c84a8343b37e44b5723be8c9d906a,
     type: 2}
   traceContainer: {fileID: 1526624791}
