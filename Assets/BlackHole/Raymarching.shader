@@ -83,7 +83,7 @@ Shader "Hidden/Raymarching"
 			// of any object we put in the scene.  If the given point (point p) is inside of an object, we return a
 			// negative answer.
 			float map(float3 p) {
-				return opSmoothUnion(  sdTorus(p, float2(2, 0.4)), sdSphere(p, 2), 0.3);
+				return opSmoothUnion(  sdTorus(p, float2(2, 0.4)), sdSphere(p, 1.7), 0.3);
 			}
 
 			float3 calcNormal(in float3 pos)
@@ -108,8 +108,9 @@ Shader "Hidden/Raymarching"
 			fixed4 raymarch(float3 ro, float3 rd) {
 				fixed4 ret = fixed4(0, 0, 0, 0);
 
-				const int maxstep = 128;
+				const int maxstep = 64;
 				float t = 0; // current distance traveled along ray
+
 				for (int i = 0; i < maxstep; ++i) {
 					float3 p = ro + rd * t; // World space position of sample
 					float d = map(p);       // Sample of distance field (see map())

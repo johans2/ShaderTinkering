@@ -50,7 +50,7 @@ public class Pathtracer : MonoBehaviour
             Vector3 dir = Vector3.forward;
             for (int j = 0; j < trace.traceObjects.Count; j++)
             {
-                Vector3 unaffectedAddVector = dir.normalized * stepDistance; // TODO: This should not be forward. Lightrays can never loop then.
+                Vector3 unaffectedAddVector = dir.normalized * stepDistance; 
                 Vector3 maxAffectedAddVector = (blackHole.transform.position - previousPos).normalized * stepDistance; // Pointing straight towards the black hole. 
                 
                 float distanceToSingularity = Vector3.Distance(blackHole.transform.position, previousPos);
