@@ -123,7 +123,7 @@ Shader "Hidden/Raymarching"
 					if (sdfResult < epsilon) {
 						// Lambertian Lighting
 						float3 n = calcNormal(newPos);
-						ret = fixed4(1, 0, 0, 1);// fixed4(dot(-_LightDir.xyz, n).rrr, 1);
+						ret = fixed4(dot(-_LightDir.xyz, n).rrr, 1);
 						doInside = true;
 						break;
 					}
@@ -131,7 +131,8 @@ Shader "Hidden/Raymarching"
 					// If the sample > 0, we haven't hit anything yet so we should march forward
 					// We step forward by distance d, because d is the minimum distance possible to intersect
 					// an object (see map()).
-					t += sdfResult;
+					previousPos = newPos;
+					t = sdfResult;
 				}
 				
 				// March on inside
@@ -141,7 +142,7 @@ Shader "Hidden/Raymarching"
 					float insideDistance = 0;
 
 					for (int i = 0; i < maxstep; ++i) {
-						float3 newPos = previousPos + rd * insideDistance; // World space position of sample
+						float3 newPos = previousPos + rd * abs(insideDistance); // World space position of sample
 						float sdfResult = map(newPos);       // Sample of distance field (see map())
 						insideDistance += sdfResult;
 						// If the sample <= 0, we have hit something (see map()).
@@ -157,7 +158,7 @@ Shader "Hidden/Raymarching"
 
 					ret.xyz *= (1 - abs(insideDistance));
 				}
-
+				
 				return ret;
 			}
 
