@@ -1,5 +1,12 @@
 - Rendera det svarta hålet med en unlit mesh.
 - Kombinera det svarta hålet med en SDF renderad torus (donut)
+
+
 - Kör ett fast antal steg istället för att stega med radien (kommer gå långsammare men kanske ok).
 - Detta kommer tillåta bättre gravitations-påverkan på alla rays.
 - Det kommer även tillåta att öka färgen baserat på hur många steg (alternativt avstånd) inuti volymen jag går.
+
+Djup
+- När steg-distances nåt en goemetri, tryck fram den lite och börja gå igen tills den inte länge är negativ. 
+- Mät då hur långt den har gått. Låt detta avgöra färgen på objektet.
+
