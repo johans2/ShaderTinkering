@@ -24,6 +24,7 @@ Shader "Hidden/Raymarching"
 			uniform sampler2D _MainTex;
 			uniform float4 _MainTex_TexelSize;
 			uniform float4x4 _CameraInvViewMatrix;
+			uniform float3 _CameraWS;
 
 			// Input to vertex shader
 			struct appdata
@@ -40,6 +41,52 @@ Shader "Hidden/Raymarching"
 				float2 uv : TEXCOORD0;
 				float3 ray : TEXCOORD1;
 			};
+
+			// Torus
+			// t.x: diameter
+			// t.y: thickness
+			// Adapted from: http://iquilezles.org/www/articles/distfunctions/distfunctions.htm
+			float sdTorus(float3 p, float2 t)
+			{
+				float2 q = float2(length(p.xz) - t.x, p.y);
+				return length(q) - t.y;
+			}
+
+			// This is the distance field function.  The distance field represents the closest distance to the surface
+			// of any object we put in the scene.  If the given point (point p) is inside of an object, we return a
+			// negative answer.
+			float map(float3 p) {
+				return sdTorus(p, float2(1, 0.2));
+			}
+
+			// Raymarch along given ray
+			// ro: ray origin
+			// rd: ray direction
+			fixed4 raymarch(float3 ro, float3 rd) {
+				fixed4 ret = fixed4(0, 0, 0, 0);
+
+				const int maxstep = 64;
+				float t = 0; // current distance traveled along ray
+				for (int i = 0; i < maxstep; ++i) {
+					float3 p = ro + rd * t; // World space position of sample
+					float d = map(p);       // Sample of distance field (see map())
+
+					// If the sample <= 0, we have hit something (see map()).
+					if (d < 0.001) {
+						// Simply return a gray color if we have hit an object
+						// We will deal with lighting later.
+						ret = fixed4(0.5, 0.5, 0.5, 1);
+						break;
+					}
+
+					// If the sample > 0, we haven't hit anything yet so we should march forward
+					// We step forward by distance d, because d is the minimum distance possible to intersect
+					// an object (see map()).
+					t += d;
+				}
+
+				return ret;
+			}
 
 			v2f vert(appdata v)
 			{
@@ -68,8 +115,16 @@ Shader "Hidden/Raymarching"
 			
 			fixed4 frag(v2f i) : SV_Target
 			{
-				fixed4 col = fixed4(i.ray, 1);
-				return col;
+				// ray direction
+				float3 rd = normalize(i.ray.xyz);
+				// ray origin (camera position)
+				float3 ro = _CameraWS;
+
+				fixed3 col = tex2D(_MainTex,i.uv); // Color of the scene before this shader was run
+				fixed4 add = raymarch(ro, rd);
+
+				// Returns final color using alpha blending
+				return fixed4(col*(1.0 - add.w) + add.xyz * add.w,1.0);
 			}
 			ENDCG
 		}
