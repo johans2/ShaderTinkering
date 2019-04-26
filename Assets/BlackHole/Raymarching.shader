@@ -108,25 +108,54 @@ Shader "Hidden/Raymarching"
 			fixed4 raymarch(float3 ro, float3 rd) {
 				fixed4 ret = fixed4(0, 0, 0, 0);
 
-				const int maxstep = 64;
+				const int maxstep = 128;
 				float t = 0; // current distance traveled along ray
+				float3 previousPos = ro;
+				bool doInside = false;
+				float epsilon = 0.001;
 
+				// March to outside
 				for (int i = 0; i < maxstep; ++i) {
-					float3 p = ro + rd * t; // World space position of sample
-					float d = map(p);       // Sample of distance field (see map())
+					float3 newPos = previousPos + rd * t; // World space position of sample
+					float sdfResult = map(newPos);       // Sample of distance field (see map())
 
 					// If the sample <= 0, we have hit something (see map()).
-					if (d < 0.001) {
+					if (sdfResult < epsilon) {
 						// Lambertian Lighting
-						float3 n = calcNormal(p);
-						ret = fixed4(dot(-_LightDir.xyz, n).rrr, 1);
+						float3 n = calcNormal(newPos);
+						ret = fixed4(1, 0, 0, 1);// fixed4(dot(-_LightDir.xyz, n).rrr, 1);
+						doInside = true;
 						break;
 					}
 
 					// If the sample > 0, we haven't hit anything yet so we should march forward
 					// We step forward by distance d, because d is the minimum distance possible to intersect
 					// an object (see map()).
-					t += d;
+					t += sdfResult;
+				}
+				
+				// March on inside
+				if (doInside)
+				{
+					previousPos += rd * epsilon * 2;
+					float insideDistance = 0;
+
+					for (int i = 0; i < maxstep; ++i) {
+						float3 newPos = previousPos + rd * insideDistance; // World space position of sample
+						float sdfResult = map(newPos);       // Sample of distance field (see map())
+						insideDistance += sdfResult;
+						// If the sample <= 0, we have hit something (see map()).
+						if (sdfResult > 0) {
+							break;
+						}
+
+						// If the sample > 0, we haven't hit anything yet so we should march forward
+						// We step forward by distance d, because d is the minimum distance possible to intersect
+						// an object (see map()).
+						
+					}
+
+					ret.xyz *= (1 - abs(insideDistance));
 				}
 
 				return ret;
