@@ -25,6 +25,7 @@ Shader "Hidden/Raymarching"
 			uniform float4 _MainTex_TexelSize;
 			uniform float4x4 _CameraInvViewMatrix;
 			uniform float3 _CameraWS;
+			uniform float3 _LightDir;
 
 			// Input to vertex shader
 			struct appdata
@@ -41,6 +42,12 @@ Shader "Hidden/Raymarching"
 				float2 uv : TEXCOORD0;
 				float3 ray : TEXCOORD1;
 			};
+			/*
+			float opElongate(in sdf3d primitive, in vec3 p, in vec3 h)
+			{
+				vec3 q = p - clamp(p, -h, h);
+				return primitive(q);
+			}*/
 
 			// Torus
 			// t.x: diameter
@@ -52,11 +59,47 @@ Shader "Hidden/Raymarching"
 				return length(q) - t.y;
 			}
 
+			// s: radius
+			float sdSphere(float3 p, float s)
+			{
+				return length(p) - s;
+			}
+
+			float sdScaledTorus(float3 p, float2 t, float3 scale) {
+				float3 q = p - clamp(p, -scale, scale);
+				return sdTorus(q, t);
+			}
+
+			float opUnion(float d1, float d2) { 
+				return min(d1, d2); 
+			}
+
+			float opSmoothUnion(float d1, float d2, float k) {
+				float h = clamp(0.5 + 0.5*(d2 - d1) / k, 0.0, 1.0);
+				return lerp(d2, d1, h) - k * h*(1.0 - h);
+			}
+
 			// This is the distance field function.  The distance field represents the closest distance to the surface
 			// of any object we put in the scene.  If the given point (point p) is inside of an object, we return a
 			// negative answer.
 			float map(float3 p) {
-				return sdTorus(p, float2(1, 0.2));
+				return opSmoothUnion(  sdTorus(p, float2(2, 0.4)), sdSphere(p, 2), 0.3);
+			}
+
+			float3 calcNormal(in float3 pos)
+			{
+				// epsilon - used to approximate dx when taking the derivative
+				const float2 eps = float2(0.001, 0.0);
+
+				// The idea here is to find the "gradient" of the distance field at pos
+				// Remember, the distance field is not boolean - even if you are inside an object
+				// the number is negative, so this calculation still works.
+				// Essentially you are approximating the derivative of the distance field at this point.
+				float3 nor = float3(
+					map(pos + eps.xyy).x - map(pos - eps.xyy).x,
+					map(pos + eps.yxy).x - map(pos - eps.yxy).x,
+					map(pos + eps.yyx).x - map(pos - eps.yyx).x);
+				return normalize(nor);
 			}
 
 			// Raymarch along given ray
@@ -65,7 +108,7 @@ Shader "Hidden/Raymarching"
 			fixed4 raymarch(float3 ro, float3 rd) {
 				fixed4 ret = fixed4(0, 0, 0, 0);
 
-				const int maxstep = 64;
+				const int maxstep = 128;
 				float t = 0; // current distance traveled along ray
 				for (int i = 0; i < maxstep; ++i) {
 					float3 p = ro + rd * t; // World space position of sample
@@ -73,9 +116,9 @@ Shader "Hidden/Raymarching"
 
 					// If the sample <= 0, we have hit something (see map()).
 					if (d < 0.001) {
-						// Simply return a gray color if we have hit an object
-						// We will deal with lighting later.
-						ret = fixed4(0.5, 0.5, 0.5, 1);
+						// Lambertian Lighting
+						float3 n = calcNormal(p);
+						ret = fixed4(dot(-_LightDir.xyz, n).rrr, 1);
 						break;
 					}
 
