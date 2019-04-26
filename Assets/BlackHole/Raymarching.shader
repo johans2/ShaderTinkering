@@ -84,6 +84,7 @@ Shader "Hidden/Raymarching"
 			// negative answer.
 			float map(float3 p) {
 				return opSmoothUnion(  sdTorus(p, float2(2, 0.4)), sdSphere(p, 1.7), 0.3);
+				//return sdTorus(p, float2(3, 0.5));
 			}
 
 			float3 calcNormal(in float3 pos)
@@ -108,11 +109,11 @@ Shader "Hidden/Raymarching"
 			fixed4 raymarch(float3 ro, float3 rd) {
 				fixed4 ret = fixed4(0, 0, 0, 0);
 
-				const int maxstep = 128;
+				const int maxstep = 1256;
 				float t = 0; // current distance traveled along ray
 				float3 previousPos = ro;
 				bool doInside = false;
-				float epsilon = 0.001;
+				float epsilon = 0.0001;
 
 				// March to outside
 				for (int i = 0; i < maxstep; ++i) {
@@ -123,8 +124,9 @@ Shader "Hidden/Raymarching"
 					if (sdfResult < epsilon) {
 						// Lambertian Lighting
 						float3 n = calcNormal(newPos);
-						ret = fixed4(dot(-_LightDir.xyz, n).rrr, 1);
+						ret = fixed4 (1,0,0,1); //fixed4(dot(-_LightDir.xyz, n).rrr, 1);
 						doInside = true;
+						previousPos = newPos;
 						break;
 					}
 
@@ -138,9 +140,9 @@ Shader "Hidden/Raymarching"
 				// March on inside
 				if (doInside)
 				{
-					previousPos += rd * epsilon * 2;
+					previousPos += rd * epsilon * 6;
 					float insideDistance = 0;
-
+					
 					for (int i = 0; i < maxstep; ++i) {
 						float3 newPos = previousPos + rd * abs(insideDistance); // World space position of sample
 						float sdfResult = map(newPos);       // Sample of distance field (see map())
@@ -153,10 +155,10 @@ Shader "Hidden/Raymarching"
 						// If the sample > 0, we haven't hit anything yet so we should march forward
 						// We step forward by distance d, because d is the minimum distance possible to intersect
 						// an object (see map()).
-						
 					}
-
-					ret.xyz *= (1 - abs(insideDistance));
+					
+					ret.a *= (abs(insideDistance) -0.2);
+					ret.a = clamp(ret.a, 0, 1);
 				}
 				
 				return ret;
