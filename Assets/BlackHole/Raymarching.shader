@@ -109,12 +109,33 @@ Shader "Hidden/Raymarching"
 			fixed4 raymarch(float3 ro, float3 rd) {
 				fixed4 ret = fixed4(0, 0, 0, 0);
 
-				const int maxstep = 1256;
+				const int maxstep = 2256;
 				float t = 0; // current distance traveled along ray
 				float3 previousPos = ro;
 				bool doInside = false;
 				float epsilon = 0.0001;
+				float stepSize = 0.01;
+				float thickness = 0;
 
+				for (int i = 0; i < maxstep; ++i) {
+					float3 newPos = previousPos + rd * stepSize; // World space position of sample
+					float sdfResult = map(newPos);       // Sample of distance field (see map())
+
+					// If the sample <= 0, we have hit something (see map()).
+					if (sdfResult < epsilon) {
+						thickness += stepSize;
+					}
+
+					// If the sample > 0, we haven't hit anything yet so we should march forward
+					// We step forward by distance d, because d is the minimum distance possible to intersect
+					// an object (see map()).
+					previousPos = newPos;
+
+				}
+				ret.a = thickness;
+
+
+				/*
 				// March to outside
 				for (int i = 0; i < maxstep; ++i) {
 					float3 newPos = previousPos + rd * t; // World space position of sample
@@ -124,7 +145,7 @@ Shader "Hidden/Raymarching"
 					if (sdfResult < epsilon) {
 						// Lambertian Lighting
 						float3 n = calcNormal(newPos);
-						ret = fixed4 (1,0,0,1); //fixed4(dot(-_LightDir.xyz, n).rrr, 1);
+						ret = fixed4(dot(-_LightDir.xyz, n).rrr, 1);
 						doInside = true;
 						previousPos = newPos;
 						break;
@@ -136,7 +157,8 @@ Shader "Hidden/Raymarching"
 					previousPos = newPos;
 					t = sdfResult;
 				}
-				
+				*/
+				/*
 				// March on inside
 				if (doInside)
 				{
@@ -159,7 +181,7 @@ Shader "Hidden/Raymarching"
 					
 					ret.a *= (abs(insideDistance) -0.2);
 					ret.a = clamp(ret.a, 0, 1);
-				}
+				}*/
 				
 				return ret;
 			}
