@@ -10,3 +10,13 @@ Djup
 - När steg-distances nåt en goemetri, tryck fram den lite och börja gå igen tills den inte länge är negativ. 
 - Mät då hur långt den har gått. Låt detta avgöra färgen på objektet.
 
+
+
+https://www.shadertoy.com/view/Ms3XWN
+http://www.blog.sirenix.net/blog/realtime-volumetric-clouds-in-unity
+https://www.guerrilla-games.com/read/the-real-time-volumetric-cloudscapes-of-horizon-zero-dawn
+http://magnuswrenninge.com/productionvolumerendering
+https://www.shadertoy.com/view/4dKXDG
+http://9bitscience.blogspot.co.uk/2013/07/raymarching-distance-fields_14.html
+https://www.shadertoy.com/view/XslGRr
+http://www.shadowmint.com/articles/code-volumetric-shader-1/

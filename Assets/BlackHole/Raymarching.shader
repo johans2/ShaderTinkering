@@ -26,6 +26,7 @@ Shader "Hidden/Raymarching"
 			uniform float4x4 _CameraInvViewMatrix;
 			uniform float3 _CameraWS;
 			uniform float3 _LightDir;
+			uniform sampler2D _Noise;
 
 			// Input to vertex shader
 			struct appdata
@@ -79,12 +80,19 @@ Shader "Hidden/Raymarching"
 				return lerp(d2, d1, h) - k * h*(1.0 - h);
 			}
 
+			float opSmoothIntersection(float d1, float d2, float k) {
+				float h = clamp(0.5 - 0.5*(d2 - d1) / k, 0.0, 1.0);
+				return lerp(d2, d1, h) + k * h*(1.0 - h);
+			}
+
 			// This is the distance field function.  The distance field represents the closest distance to the surface
 			// of any object we put in the scene.  If the given point (point p) is inside of an object, we return a
 			// negative answer.
 			float map(float3 p) {
-				return opSmoothUnion(  sdTorus(p, float2(2, 0.4)), sdSphere(p, 1.7), 0.3);
+				//return opSmoothUnion(  sdTorus(p, float2(2, 0.4)), sdTorus(p + float3(0,0.2,0), float2(2, 0.4)), 0.3);
+				return opSmoothIntersection(sdTorus(p, float2(2, 0.8)), sdTorus(p + float3(0, 1.3, 0), float2(2, 0.8)), 0.1);
 				//return sdTorus(p, float2(3, 0.5));
+				//return sdSphere(p, 1.7);
 			}
 
 			float3 calcNormal(in float3 pos)
@@ -117,22 +125,27 @@ Shader "Hidden/Raymarching"
 				float stepSize = 0.01;
 				float thickness = 0;
 
+
+
 				for (int i = 0; i < maxstep; ++i) {
 					float3 newPos = previousPos + rd * stepSize; // World space position of sample
 					float sdfResult = map(newPos);       // Sample of distance field (see map())
 
-					// If the sample <= 0, we have hit something (see map()).
 					if (sdfResult < epsilon) {
-						thickness += stepSize;
+						float u = cos(_Time.y);
+						float v = sin(_Time.y);
+
+						float2x2 rot = float2x2(u, -v, v, u);
+
+						float2 uv = mul(rot, newPos.xz);
+
+						thickness += (stepSize * tex2D(_Noise, uv));
 					}
 
-					// If the sample > 0, we haven't hit anything yet so we should march forward
-					// We step forward by distance d, because d is the minimum distance possible to intersect
-					// an object (see map()).
 					previousPos = newPos;
 
 				}
-				ret.a = thickness;
+				ret.a = pow(thickness* 2, 5);
 
 
 				/*

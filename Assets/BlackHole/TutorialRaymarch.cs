@@ -11,6 +11,10 @@ public class TutorialRaymarch : SceneViewFilter {
     [SerializeField]
     private Shader _EffectShader;
 
+    [SerializeField]
+    private Texture noiseTexture;
+
+
     public Material EffectMaterial {
         get {
             if(!_EffectMaterial && _EffectShader) {
@@ -46,6 +50,7 @@ public class TutorialRaymarch : SceneViewFilter {
 
         //Graphics.Blit(source, destination, EffectMaterial, 0); // use given effect shader as image effect
         EffectMaterial.SetMatrix("_FrustumCornersES", GetFrustumCorners(CurrentCamera));
+        EffectMaterial.SetTexture("_Noise", noiseTexture);
 
         CustomGraphicsBlit(source, destination, EffectMaterial, 0); // Replace Graphics.Blit with CustomGraphicsBlit
     }
