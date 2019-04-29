@@ -90,7 +90,7 @@ Shader "Hidden/Raymarching"
 			// negative answer.
 			float map(float3 p) {
 				//return opSmoothUnion(  sdTorus(p, float2(2, 0.4)), sdTorus(p + float3(0,0.2,0), float2(2, 0.4)), 0.3);
-				return opSmoothIntersection(sdTorus(p, float2(2.5, 1)), sdTorus(p + float3(0, 1.6, 0), float2(2.5, 1)), 0);
+				return opSmoothIntersection(sdTorus(p + float3(0, -0.8, 0), float2(2.5, 1)), sdTorus(p + float3(0, 0.8, 0), float2(2.5, 1)), 0);
 				//return sdTorus(p, float2(3, 0.5));
 				//return sdSphere(p, 1.7);
 			}
@@ -121,39 +121,48 @@ Shader "Hidden/Raymarching"
 			fixed4 raymarch(float3 ro, float3 rd) {
 				fixed4 ret = fixed4(1, 0.2, 0.2, 0);
 
-				const int maxstep = 2256;
+				const int maxstep = 256;
 				float t = 0; // current distance traveled along ray
 				float3 previousPos = ro;
 				bool doInside = false;
 				float epsilon = 0.0001;
-				float stepSize = 0.01;
+				float stepSize = 0.05;
 				float thickness = 0;
 
 
+				float3 rayDir = rd;
+				float3 blackHolePosition = float3(0, 0, 0);
+				float schwarzschildRadius = 0.5;
+				float spaceDistortion = 4.069;
+
 
 				for (int i = 0; i < maxstep; ++i) {
-					float3 newPos = previousPos + rd * stepSize; // World space position of sample
+					float3 unaffectedAddVector = normalize(rayDir) * stepSize;
+					float3 maxAffectedAddVector = normalize(blackHolePosition - previousPos) * stepSize;
+					float distanceToSingularity = distance(blackHolePosition, previousPos);
+
+					float lerpValue = GetSpaceDistortionLerpValue(schwarzschildRadius, distanceToSingularity, spaceDistortion);
+					float3 addVector = normalize(lerp(unaffectedAddVector, maxAffectedAddVector, lerpValue)) * stepSize;
+
+
+					float3 newPos = previousPos + addVector;// rd * stepSize; // World space position of sample
 					float sdfResult = map(newPos);       // Sample of distance field (see map())
 
 					if (sdfResult < epsilon) {
-						float u1 = cos(_Time.x*13 / 2);
-						float v1 = sin(_Time.x*13 / 2);
-						float u2 = cos(_Time.y / 2);
-						float v2 = sin(_Time.y / 2);
-
-						float2x2 rot1 = float2x2(u1, -v1, v1, u1);
-						float2x2 rot2 = float2x2(u2, -v2, v2, u2);
-
-						float2 uv1 = mul(rot1, newPos.xz);
-						float2 uv2 = mul(rot2, newPos.xz);
-
-						float noise = (tex2D(_Noise, uv1).a /* tex2D(_Noise, uv2).a * 2*/) * tex2D(_Noise, newPos.y + _Time.x).a * 2;
+						float u = cos(_Time.x*13 / 2);
+						float v = sin(_Time.x*13 / 2);
+						
+						float2x2 rot = float2x2(u, -v, v, u);
+						
+						float2 uv = mul(rot, newPos.xz);
+						
+						float noise = (tex2D(_Noise, uv).a) * tex2D(_Noise, newPos.y + _Time.x).a * 2;
 
 						thickness += (stepSize * noise);
 					}
 
 					previousPos = newPos;
-
+					rayDir = addVector;
 				}
 				ret.a = pow(thickness, 1.3);
 
