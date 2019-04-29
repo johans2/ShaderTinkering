@@ -90,7 +90,7 @@ Shader "Hidden/Raymarching"
 			// negative answer.
 			float map(float3 p) {
 				//return opSmoothUnion(  sdTorus(p, float2(2, 0.4)), sdTorus(p + float3(0,0.2,0), float2(2, 0.4)), 0.3);
-				return opSmoothIntersection(sdTorus(p, float2(2.5, 1)), sdTorus(p + float3(0, 1.7, 0), float2(2.5, 1)), 0);
+				return opSmoothIntersection(sdTorus(p, float2(2.5, 1)), sdTorus(p + float3(0, 1.6, 0), float2(2.5, 1)), 0);
 				//return sdTorus(p, float2(3, 0.5));
 				//return sdSphere(p, 1.7);
 			}
@@ -111,11 +111,15 @@ Shader "Hidden/Raymarching"
 				return normalize(nor);
 			}
 
+			float GetSpaceDistortionLerpValue(float schwarzschildRadius, float distanceToSingularity, float spaceDistortion) {
+				return pow(schwarzschildRadius, spaceDistortion) / pow(distanceToSingularity, spaceDistortion);
+			}
+
 			// Raymarch along given ray
 			// ro: ray origin
 			// rd: ray direction
 			fixed4 raymarch(float3 ro, float3 rd) {
-				fixed4 ret = fixed4(0, 0, 0, 0);
+				fixed4 ret = fixed4(1, 0.2, 0.2, 0);
 
 				const int maxstep = 2256;
 				float t = 0; // current distance traveled along ray
@@ -143,7 +147,7 @@ Shader "Hidden/Raymarching"
 						float2 uv1 = mul(rot1, newPos.xz);
 						float2 uv2 = mul(rot2, newPos.xz);
 
-						float noise = tex2D(_Noise, uv1).a * tex2D(_Noise, newPos.y + _Time.x).a;
+						float noise = (tex2D(_Noise, uv1).a /* tex2D(_Noise, uv2).a * 2*/) * tex2D(_Noise, newPos.y + _Time.x).a * 2;
 
 						thickness += (stepSize * noise);
 					}
@@ -151,7 +155,7 @@ Shader "Hidden/Raymarching"
 					previousPos = newPos;
 
 				}
-				ret.a = pow(thickness * 4, 4);
+				ret.a = pow(thickness, 1.3);
 
 
 				/*
