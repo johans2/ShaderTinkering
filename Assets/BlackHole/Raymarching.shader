@@ -90,7 +90,7 @@ Shader "Hidden/Raymarching"
 			// negative answer.
 			float map(float3 p) {
 				//return opSmoothUnion(  sdTorus(p, float2(2, 0.4)), sdTorus(p + float3(0,0.2,0), float2(2, 0.4)), 0.3);
-				return opSmoothIntersection(sdTorus(p, float2(2, 0.8)), sdTorus(p + float3(0, 1.3, 0), float2(2, 0.8)), 0.1);
+				return opSmoothIntersection(sdTorus(p, float2(2.5, 1)), sdTorus(p + float3(0, 1.7, 0), float2(2.5, 1)), 0);
 				//return sdTorus(p, float2(3, 0.5));
 				//return sdSphere(p, 1.7);
 			}
@@ -132,20 +132,26 @@ Shader "Hidden/Raymarching"
 					float sdfResult = map(newPos);       // Sample of distance field (see map())
 
 					if (sdfResult < epsilon) {
-						float u = cos(_Time.y);
-						float v = sin(_Time.y);
+						float u1 = cos(_Time.x*13 / 2);
+						float v1 = sin(_Time.x*13 / 2);
+						float u2 = cos(_Time.y / 2);
+						float v2 = sin(_Time.y / 2);
 
-						float2x2 rot = float2x2(u, -v, v, u);
+						float2x2 rot1 = float2x2(u1, -v1, v1, u1);
+						float2x2 rot2 = float2x2(u2, -v2, v2, u2);
 
-						float2 uv = mul(rot, newPos.xz);
+						float2 uv1 = mul(rot1, newPos.xz);
+						float2 uv2 = mul(rot2, newPos.xz);
 
-						thickness += (stepSize * tex2D(_Noise, uv));
+						float noise = tex2D(_Noise, uv1).a * tex2D(_Noise, newPos.y + _Time.x).a;
+
+						thickness += (stepSize * noise);
 					}
 
 					previousPos = newPos;
 
 				}
-				ret.a = pow(thickness* 2, 5);
+				ret.a = pow(thickness * 4, 4);
 
 
 				/*
