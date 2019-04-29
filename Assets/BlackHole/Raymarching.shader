@@ -90,7 +90,7 @@ Shader "Hidden/Raymarching"
 			// negative answer.
 			float map(float3 p) {
 				//return opSmoothUnion(  sdTorus(p, float2(2, 0.4)), sdTorus(p + float3(0,0.2,0), float2(2, 0.4)), 0.3);
-				return opSmoothIntersection(sdTorus(p + float3(0, -0.8, 0), float2(2.5, 1)), sdTorus(p + float3(0, 0.8, 0), float2(2.5, 1)), 0);
+				return opSmoothIntersection(sdTorus(p + float3(0, -0.6, 0), float2(2.5, 1)), sdTorus(p + float3(0, 0.6, 0), float2(2.5, 1)), 0);
 				//return sdTorus(p, float2(3, 0.5));
 				//return sdSphere(p, 1.7);
 			}
@@ -119,9 +119,9 @@ Shader "Hidden/Raymarching"
 			// ro: ray origin
 			// rd: ray direction
 			fixed4 raymarch(float3 ro, float3 rd) {
-				fixed4 ret = fixed4(1, 0.2, 0.2, 0);
+				fixed4 ret = fixed4(1, 0.8, 0.8, 0);
 
-				const int maxstep = 256;
+				const int maxstep = 2024;
 				float t = 0; // current distance traveled along ray
 				float3 previousPos = ro;
 				bool doInside = false;
@@ -133,28 +133,30 @@ Shader "Hidden/Raymarching"
 				float3 rayDir = rd;
 				float3 blackHolePosition = float3(0, 0, 0);
 				float schwarzschildRadius = 0.5;
-				float spaceDistortion = 4.069;
-
+				float spaceDistortion = 4;
+				float distanceToSingularity = 99999999;
 
 				for (int i = 0; i < maxstep; ++i) {
 					float3 unaffectedAddVector = normalize(rayDir) * stepSize;
 					float3 maxAffectedAddVector = normalize(blackHolePosition - previousPos) * stepSize;
-					float distanceToSingularity = distance(blackHolePosition, previousPos);
+					distanceToSingularity = distance(blackHolePosition, previousPos);
 
 					float lerpValue = GetSpaceDistortionLerpValue(schwarzschildRadius, distanceToSingularity, spaceDistortion);
 					float3 addVector = normalize(lerp(unaffectedAddVector, maxAffectedAddVector, lerpValue)) * stepSize;
 
 
 					float3 newPos = previousPos + addVector;// rd * stepSize; // World space position of sample
+					
 					float sdfResult = map(newPos);       // Sample of distance field (see map())
 
+
 					if (sdfResult < epsilon) {
-						float u = cos(_Time.x*13 / 2);
-						float v = sin(_Time.x*13 / 2);
+						float u = cos(_Time.y * 2);
+						float v = sin(_Time.y * 2);
 						
 						float2x2 rot = float2x2(u, -v, v, u);
 						
-						float2 uv = mul(rot, newPos.xz);
+						float2 uv = mul(rot, newPos.xz / 7);
 						
 						float noise = (tex2D(_Noise, uv).a) * tex2D(_Noise, newPos.y + _Time.x).a * 2;
 
@@ -164,7 +166,15 @@ Shader "Hidden/Raymarching"
 					previousPos = newPos;
 					rayDir = addVector;
 				}
-				ret.a = pow(thickness, 1.3);
+				if (distanceToSingularity <= schwarzschildRadius)
+				{
+					ret = fixed4(0, 0, 0, 1);
+				}
+				else {
+					ret.a = pow(thickness, 1.3);
+				}
+
+
 
 
 				/*

@@ -146,8 +146,8 @@ Camera:
   m_GameObject: {fileID: 4791534}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
@@ -184,13 +184,13 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 4791534}
-  m_LocalRotation: {x: 0.18772106, y: -0, z: -0, w: 0.9822224}
-  m_LocalPosition: {x: 0, y: 3.71, z: -7.88}
+  m_LocalRotation: {x: 0.07029763, y: -0, z: -0, w: 0.99752605}
+  m_LocalPosition: {x: 0, y: 1.36, z: -8.62}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 21.640001, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 8.062, y: 0, z: 0}
 --- !u!114 &4791538
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -287,7 +287,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!65 &1956424989
 BoxCollider:
   m_ObjectHideFlags: 0
