@@ -136,18 +136,13 @@ Shader "BlackHole/Raymarching"
 				ret.a = 0;
 
 				const int maxstep = 1024;
-				float t = 0; // current distance traveled along ray
 				float3 previousPos = ro;
-				bool doInside = false;
 				float epsilon = 0.01;
 				float stepSize = 0.07;
 				float thickness = 0;
 
-
 				float3 rayDir = rd;
 				float3 blackHolePosition = float3(0, 0, 0);
-				float schwarzschildRadius = 0.5;
-				float spaceDistortion = 4.069;
 				float distanceToSingularity = 99999999;
 
 				for (int i = 0; i < maxstep; ++i) {
@@ -161,7 +156,6 @@ Shader "BlackHole/Raymarching"
 					float3 newPos = previousPos + addVector;
 					
 					float sdfResult = map(newPos);
-
 
 					if (sdfResult < epsilon) {
 						float u = cos(_Time.y * 2);
@@ -179,7 +173,7 @@ Shader "BlackHole/Raymarching"
 					previousPos = newPos;
 					rayDir = addVector;
 				}
-				if (distanceToSingularity <= schwarzschildRadius)
+				if (distanceToSingularity <= _SchwarzschildRadius)
 				{
 					ret = fixed4(0, 0, 0, 1);
 				}
