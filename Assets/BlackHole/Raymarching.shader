@@ -9,6 +9,7 @@ Shader "BlackHole/Raymarching"
 		_SpaceDistortion ("Space distortion", Float) = 4.069
 		_AccretionDiskColor("Accretion disk color", Color) = (1,1,1,1)
 		_AccretionDiskThickness("Accretion disk thickness", Float) = 1
+		_SkyCube("Skycube", Cube) = "defaulttexture" {}
 	}
 	SubShader
 	{
@@ -35,6 +36,8 @@ Shader "BlackHole/Raymarching"
 			float _SchwarzschildRadius;
 			half4 _AccretionDiskColor;
 			float _AccretionDiskThickness;
+			samplerCUBE _SkyCube;
+
 
 			// Input to vertex shader
 			struct appdata
@@ -183,7 +186,9 @@ Shader "BlackHole/Raymarching"
 					rayDir = addVector;
 				}
 
-				half4 backGround = lerp(backGroundBaseColor, blackHoleBaseColor, blackHoleInfluence);
+				float3 skyColor = texCUBE(_SkyCube, rayDir).rgb;
+
+				half4 backGround = lerp(float4(skyColor.rgb, 0), blackHoleBaseColor, blackHoleInfluence);
 
 				return backGround + volumetricBaseColor;
 			}
