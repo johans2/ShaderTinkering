@@ -135,15 +135,20 @@ Shader "BlackHole/Raymarching"
 				fixed4 ret = _AccretionDiskColor;
 				ret.a = 0;
 
-				const int maxstep = 1024;
+				const int maxstep = 512;
 				float3 previousPos = ro;
 				float epsilon = 0.01;
-				float stepSize = 0.07;
+				float stepSize = 0.1;
 				float thickness = 0;
 
 				float3 rayDir = rd;
 				float3 blackHolePosition = float3(0, 0, 0);
 				float distanceToSingularity = 99999999;
+				half4 blackHoleBaseColor = half4(0, 0, 0, 1);
+				half4 backGroundBaseColor = half4(0, 0, 0, 1);
+				half4 accerationDiskColorAdd = half4(0, 0, 0, 0);
+				float blackHoleInfluence = 0;
+				half4 volumetricBaseColor = half4(0, 0, 0, 1);
 
 				for (int i = 0; i < maxstep; ++i) {
 					float3 unaffectedAddVector = normalize(rayDir) * stepSize;
@@ -167,21 +172,18 @@ Shader "BlackHole/Raymarching"
 						
 						float noise = tex2D(_Noise, uv).a;
 
-						thickness += (stepSize * noise);
+						thickness = (stepSize * noise);
+						volumetricBaseColor += _AccretionDiskColor * thickness;
 					}
 
+					blackHoleInfluence = step(distanceToSingularity, _SchwarzschildRadius);
 					previousPos = newPos;
 					rayDir = addVector;
 				}
-				if (distanceToSingularity <= _SchwarzschildRadius)
-				{
-					ret = fixed4(0, 0, 0, 1);
-				}
-				else {
-					ret.a = pow(thickness, 1.3);
-				}
 
-				return ret;
+				half4 backGround = lerp(backGroundBaseColor, blackHoleBaseColor, blackHoleInfluence);
+
+				return backGround + volumetricBaseColor;
 			}
 
 			v2f vert(appdata v)
@@ -221,7 +223,7 @@ Shader "BlackHole/Raymarching"
 				fixed4 add = raymarch(ro, rd);
 
 				// Returns final color using alpha blending
-				return fixed4(col* (1.0 - add.w) + add.xyz * add.w, 1.0);
+				return add;// fixed4(col* (1.0 - add.w) + add.xyz * add.w, 1.0);
 			}
 			ENDCG
 		}
