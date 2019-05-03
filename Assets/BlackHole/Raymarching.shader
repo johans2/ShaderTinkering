@@ -1,10 +1,13 @@
 ﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 
-Shader "Hidden/Raymarching"
+Shader "BlackHole/Raymarching"
 {
 	Properties
 	{
 		_MainTex ("Texture", 2D) = "white" {}
+		_SchwarzschildRadius ("schwarzschildRadius", Float) = 0.5
+		_SpaceDistortion ("Space distortion", Float) = 4.069
+		_AccretionDiskColor("Accretion disk color", Color) = (1,1,1,1)
 	}
 	SubShader
 	{
@@ -27,6 +30,9 @@ Shader "Hidden/Raymarching"
 			uniform float3 _CameraWS;
 			uniform float3 _LightDir;
 			uniform sampler2D _Noise;
+			float _SpaceDistortion;
+			float _SchwarzschildRadius;
+			half4 _AccretionDiskColor;
 
 			// Input to vertex shader
 			struct appdata
@@ -43,13 +49,6 @@ Shader "Hidden/Raymarching"
 				float2 uv : TEXCOORD0;
 				float3 ray : TEXCOORD1;
 			};
-			/*
-			float opElongate(in sdf3d primitive, in vec3 p, in vec3 h)
-			{
-				vec3 q = p - clamp(p, -h, h);
-				return primitive(q);
-			}*/
-
 			// Torus
 			// t.x: diameter
 			// t.y: thickness
@@ -58,6 +57,12 @@ Shader "Hidden/Raymarching"
 			{
 				float2 q = float2(length(p.xz) - t.x, p.y);
 				return length(q) - t.y;
+			}
+
+			float sdRoundedCylinder(float3 p, float ra, float rb, float h)
+			{
+				float2 d = float2(length(p.xz) - 2.0 * ra + rb, abs(p.y) - h);
+				return min(max(d.x, d.y), 0.0) + length(max(d, 0.0)) - rb;
 			}
 
 			// s: radius
@@ -85,12 +90,20 @@ Shader "Hidden/Raymarching"
 				return lerp(d2, d1, h) + k * h*(1.0 - h);
 			}
 
+			float opSmoothSubtraction(float d1, float d2, float k) {
+				float h = clamp(0.5 - 0.5 * (d2 + d1) / k, 0.0, 1.0);
+				return lerp(d2, -d1, h) + k * h * (1.0 - h);
+			}
+
 			// This is the distance field function.  The distance field represents the closest distance to the surface
 			// of any object we put in the scene.  If the given point (point p) is inside of an object, we return a
 			// negative answer.
 			float map(float3 p) {
 				//return opSmoothUnion(  sdTorus(p, float2(2, 0.4)), sdTorus(p + float3(0,0.2,0), float2(2, 0.4)), 0.3);
-				return opSmoothIntersection(sdTorus(p + float3(0, -0.6, 0), float2(2.5, 1)), sdTorus(p + float3(0, 0.6, 0), float2(2.5, 1)), 0);
+				//return opSmoothIntersection(sdTorus(p + float3(0, -0.6, 0), float2(5, 1)), sdTorus(p + float3(0, 0.6, 0), float2(5, 1)), 0);
+				float p1 = sdRoundedCylinder(p, 3.5, 0.25, 0.01);
+				float p2 = sdSphere(p, 3.5);
+				return opSmoothSubtraction(p2, p1, 0.5);
 				//return sdTorus(p, float2(3, 0.5));
 				//return sdSphere(p, 1.7);
 			}
@@ -119,21 +132,22 @@ Shader "Hidden/Raymarching"
 			// ro: ray origin
 			// rd: ray direction
 			fixed4 raymarch(float3 ro, float3 rd) {
-				fixed4 ret = fixed4(1, 0.8, 0.8, 0);
+				fixed4 ret = _AccretionDiskColor;
+				ret.a = 0;
 
-				const int maxstep = 2024;
+				const int maxstep = 1024;
 				float t = 0; // current distance traveled along ray
 				float3 previousPos = ro;
 				bool doInside = false;
-				float epsilon = 0.0001;
-				float stepSize = 0.05;
+				float epsilon = 0.01;
+				float stepSize = 0.07;
 				float thickness = 0;
 
 
 				float3 rayDir = rd;
 				float3 blackHolePosition = float3(0, 0, 0);
 				float schwarzschildRadius = 0.5;
-				float spaceDistortion = 4;
+				float spaceDistortion = 4.069;
 				float distanceToSingularity = 99999999;
 
 				for (int i = 0; i < maxstep; ++i) {
@@ -141,13 +155,12 @@ Shader "Hidden/Raymarching"
 					float3 maxAffectedAddVector = normalize(blackHolePosition - previousPos) * stepSize;
 					distanceToSingularity = distance(blackHolePosition, previousPos);
 
-					float lerpValue = GetSpaceDistortionLerpValue(schwarzschildRadius, distanceToSingularity, spaceDistortion);
+					float lerpValue = GetSpaceDistortionLerpValue(_SchwarzschildRadius, distanceToSingularity, _SpaceDistortion);
 					float3 addVector = normalize(lerp(unaffectedAddVector, maxAffectedAddVector, lerpValue)) * stepSize;
 
-
-					float3 newPos = previousPos + addVector;// rd * stepSize; // World space position of sample
+					float3 newPos = previousPos + addVector;
 					
-					float sdfResult = map(newPos);       // Sample of distance field (see map())
+					float sdfResult = map(newPos);
 
 
 					if (sdfResult < epsilon) {
@@ -156,9 +169,9 @@ Shader "Hidden/Raymarching"
 						
 						float2x2 rot = float2x2(u, -v, v, u);
 						
-						float2 uv = mul(rot, newPos.xz / 7);
+						float2 uv = mul(rot, newPos.xz / 10);
 						
-						float noise = (tex2D(_Noise, uv).a) * tex2D(_Noise, newPos.y + _Time.x).a * 2;
+						float noise = tex2D(_Noise, uv).a;
 
 						thickness += (stepSize * noise);
 					}
@@ -174,57 +187,6 @@ Shader "Hidden/Raymarching"
 					ret.a = pow(thickness, 1.3);
 				}
 
-
-
-
-				/*
-				// March to outside
-				for (int i = 0; i < maxstep; ++i) {
-					float3 newPos = previousPos + rd * t; // World space position of sample
-					float sdfResult = map(newPos);       // Sample of distance field (see map())
-
-					// If the sample <= 0, we have hit something (see map()).
-					if (sdfResult < epsilon) {
-						// Lambertian Lighting
-						float3 n = calcNormal(newPos);
-						ret = fixed4(dot(-_LightDir.xyz, n).rrr, 1);
-						doInside = true;
-						previousPos = newPos;
-						break;
-					}
-
-					// If the sample > 0, we haven't hit anything yet so we should march forward
-					// We step forward by distance d, because d is the minimum distance possible to intersect
-					// an object (see map()).
-					previousPos = newPos;
-					t = sdfResult;
-				}
-				*/
-				/*
-				// March on inside
-				if (doInside)
-				{
-					previousPos += rd * epsilon * 6;
-					float insideDistance = 0;
-					
-					for (int i = 0; i < maxstep; ++i) {
-						float3 newPos = previousPos + rd * abs(insideDistance); // World space position of sample
-						float sdfResult = map(newPos);       // Sample of distance field (see map())
-						insideDistance += sdfResult;
-						// If the sample <= 0, we have hit something (see map()).
-						if (sdfResult > 0) {
-							break;
-						}
-
-						// If the sample > 0, we haven't hit anything yet so we should march forward
-						// We step forward by distance d, because d is the minimum distance possible to intersect
-						// an object (see map()).
-					}
-					
-					ret.a *= (abs(insideDistance) -0.2);
-					ret.a = clamp(ret.a, 0, 1);
-				}*/
-				
 				return ret;
 			}
 
@@ -256,6 +218,7 @@ Shader "Hidden/Raymarching"
 			fixed4 frag(v2f i) : SV_Target
 			{
 				// ray direction
+				// ray direction
 				float3 rd = normalize(i.ray.xyz);
 				// ray origin (camera position)
 				float3 ro = _CameraWS;
@@ -264,7 +227,7 @@ Shader "Hidden/Raymarching"
 				fixed4 add = raymarch(ro, rd);
 
 				// Returns final color using alpha blending
-				return fixed4(col*(1.0 - add.w) + add.xyz * add.w,1.0);
+				return fixed4(col* (1.0 - add.w) + add.xyz * add.w, 1.0);
 			}
 			ENDCG
 		}

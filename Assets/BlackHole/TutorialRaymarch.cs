@@ -9,23 +9,10 @@ using System.Collections;
 public class TutorialRaymarch : SceneViewFilter {
 
     [SerializeField]
-    private Shader _EffectShader;
+    private Material blackHoleRayMarching;
 
     [SerializeField]
     private Texture noiseTexture;
-
-
-    public Material EffectMaterial {
-        get {
-            if(!_EffectMaterial && _EffectShader) {
-                _EffectMaterial = new Material(_EffectShader);
-                _EffectMaterial.hideFlags = HideFlags.HideAndDontSave;
-            }
-
-            return _EffectMaterial;
-        }
-    }
-    private Material _EffectMaterial;
 
     public Camera CurrentCamera {
         get {
@@ -38,21 +25,21 @@ public class TutorialRaymarch : SceneViewFilter {
 
     [ImageEffectOpaque]
     void OnRenderImage(RenderTexture source, RenderTexture destination) {
-        if(!EffectMaterial) {
+        if(!blackHoleRayMarching) {
             Graphics.Blit(source, destination); // do nothing
             return;
         }
 
         // pass frustum rays to shader
-        EffectMaterial.SetMatrix("_FrustumCornersES", GetFrustumCorners(CurrentCamera));
-        EffectMaterial.SetMatrix("_CameraInvViewMatrix", CurrentCamera.cameraToWorldMatrix);
-        EffectMaterial.SetVector("_CameraWS", CurrentCamera.transform.position);
-
+        blackHoleRayMarching.SetMatrix("_FrustumCornersES", GetFrustumCorners(CurrentCamera));
+        blackHoleRayMarching.SetMatrix("_CameraInvViewMatrix", CurrentCamera.cameraToWorldMatrix);
+        blackHoleRayMarching.SetVector("_CameraWS", CurrentCamera.transform.position);
+        
         //Graphics.Blit(source, destination, EffectMaterial, 0); // use given effect shader as image effect
-        EffectMaterial.SetMatrix("_FrustumCornersES", GetFrustumCorners(CurrentCamera));
-        EffectMaterial.SetTexture("_Noise", noiseTexture);
+        blackHoleRayMarching.SetMatrix("_FrustumCornersES", GetFrustumCorners(CurrentCamera));
+        blackHoleRayMarching.SetTexture("_Noise", noiseTexture);
 
-        CustomGraphicsBlit(source, destination, EffectMaterial, 0); // Replace Graphics.Blit with CustomGraphicsBlit
+        CustomGraphicsBlit(source, destination, blackHoleRayMarching, 0); // Replace Graphics.Blit with CustomGraphicsBlit
     }
 
     /// \brief Stores the normalized rays representing the camera frustum in a 4x4 matrix.  Each row is a vector.
