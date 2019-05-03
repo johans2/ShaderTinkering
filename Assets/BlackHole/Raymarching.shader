@@ -8,6 +8,7 @@ Shader "BlackHole/Raymarching"
 		_SchwarzschildRadius ("schwarzschildRadius", Float) = 0.5
 		_SpaceDistortion ("Space distortion", Float) = 4.069
 		_AccretionDiskColor("Accretion disk color", Color) = (1,1,1,1)
+		_AccretionDiskThickness("Accretion disk thickness", Float) = 1
 	}
 	SubShader
 	{
@@ -33,6 +34,7 @@ Shader "BlackHole/Raymarching"
 			float _SpaceDistortion;
 			float _SchwarzschildRadius;
 			half4 _AccretionDiskColor;
+			float _AccretionDiskThickness;
 
 			// Input to vertex shader
 			struct appdata
@@ -149,7 +151,7 @@ Shader "BlackHole/Raymarching"
 				half4 accerationDiskColorAdd = half4(0, 0, 0, 0);
 				float blackHoleInfluence = 0;
 				half4 volumetricBaseColor = half4(0, 0, 0, 1);
-
+				
 				for (int i = 0; i < maxstep; ++i) {
 					float3 unaffectedAddVector = normalize(rayDir) * stepSize;
 					float3 maxAffectedAddVector = normalize(blackHolePosition - previousPos) * stepSize;
@@ -172,7 +174,7 @@ Shader "BlackHole/Raymarching"
 						
 						float noise = tex2D(_Noise, uv).a;
 
-						thickness = (stepSize * noise);
+						thickness = noise * _AccretionDiskThickness;
 						volumetricBaseColor += _AccretionDiskColor * thickness;
 					}
 
