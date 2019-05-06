@@ -104,13 +104,9 @@ Shader "BlackHole/Raymarching"
 			// of any object we put in the scene.  If the given point (point p) is inside of an object, we return a
 			// negative answer.
 			float map(float3 p) {
-				//return opSmoothUnion(  sdTorus(p, float2(2, 0.4)), sdTorus(p + float3(0,0.2,0), float2(2, 0.4)), 0.3);
-				//return opSmoothIntersection(sdTorus(p + float3(0, -0.6, 0), float2(5, 1)), sdTorus(p + float3(0, 0.6, 0), float2(5, 1)), 0);
 				float p1 = sdRoundedCylinder(p, 3.5, 0.25, 0.01);
 				float p2 = sdSphere(p, 3.5);
 				return opSmoothSubtraction(p2, p1, 0.5);
-				//return sdTorus(p, float2(3, 0.5));
-				//return sdSphere(p, 1.7);
 			}
 
 			float3 calcNormal(in float3 pos)
@@ -150,7 +146,6 @@ Shader "BlackHole/Raymarching"
 				float3 blackHolePosition = float3(0, 0, 0);
 				float distanceToSingularity = 99999999;
 				half4 blackHoleBaseColor = half4(0, 0, 0, 1);
-				half4 backGroundBaseColor = half4(0, 0, 0, 1);
 				half4 accerationDiskColorAdd = half4(0, 0, 0, 0);
 				float blackHoleInfluence = 0;
 				half4 volumetricBaseColor = half4(0, 0, 0, 1);
@@ -221,16 +216,13 @@ Shader "BlackHole/Raymarching"
 			fixed4 frag(v2f i) : SV_Target
 			{
 				// ray direction
-				// ray direction
 				float3 rd = normalize(i.ray.xyz);
 				// ray origin (camera position)
 				float3 ro = _CameraWS;
 
-				fixed3 col = tex2D(_MainTex,i.uv); // Color of the scene before this shader was run
 				fixed4 add = raymarch(ro, rd);
 
-				// Returns final color using alpha blending
-				return add;// fixed4(col* (1.0 - add.w) + add.xyz * add.w, 1.0);
+				return add;
 			}
 			ENDCG
 		}

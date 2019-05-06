@@ -88,8 +88,6 @@ public class TutorialRaymarch : SceneViewFilter {
     static void CustomGraphicsBlit(RenderTexture source, RenderTexture dest, Material fxMaterial, int passNr) {
         RenderTexture.active = dest;
 
-        fxMaterial.SetTexture("_MainTex", source);
-
         GL.PushMatrix();
         GL.LoadOrtho(); // Note: z value of vertices don't make a difference because we are using ortho projection
 
