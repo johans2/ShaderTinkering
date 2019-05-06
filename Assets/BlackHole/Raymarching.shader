@@ -4,7 +4,7 @@ Shader "BlackHole/Raymarching"
 {
 	Properties
 	{
-		_MainTex ("Texture", 2D) = "white" {}
+		_BlackHoleColor ("Black hole color", Color) = (0,0,0,1)
 		_SchwarzschildRadius ("schwarzschildRadius", Float) = 0.5
 		_SpaceDistortion ("Space distortion", Float) = 4.069
 		_AccretionDiskColor("Accretion disk color", Color) = (1,1,1,1)
@@ -26,8 +26,6 @@ Shader "BlackHole/Raymarching"
 
 			// Provided by our script
 			uniform float4x4 _FrustumCornersES;
-			uniform sampler2D _MainTex;
-			uniform float4 _MainTex_TexelSize;
 			uniform float4x4 _CameraInvViewMatrix;
 			uniform float3 _CameraWS;
 			uniform float3 _LightDir;
@@ -35,6 +33,7 @@ Shader "BlackHole/Raymarching"
 			float _SpaceDistortion;
 			float _SchwarzschildRadius;
 			half4 _AccretionDiskColor;
+			half4 _BlackHoleColor;
 			float _AccretionDiskThickness;
 			samplerCUBE _SkyCube;
 
@@ -51,7 +50,6 @@ Shader "BlackHole/Raymarching"
 			struct v2f
 			{
 				float4 pos : SV_POSITION;
-				float2 uv : TEXCOORD0;
 				float3 ray : TEXCOORD1;
 			};
 			// Torus
@@ -145,8 +143,6 @@ Shader "BlackHole/Raymarching"
 				float3 rayDir = rd;
 				float3 blackHolePosition = float3(0, 0, 0);
 				float distanceToSingularity = 99999999;
-				half4 blackHoleBaseColor = half4(0, 0, 0, 1);
-				half4 accerationDiskColorAdd = half4(0, 0, 0, 0);
 				float blackHoleInfluence = 0;
 				half4 volumetricBaseColor = half4(0, 0, 0, 1);
 				
@@ -183,7 +179,7 @@ Shader "BlackHole/Raymarching"
 
 				float3 skyColor = texCUBE(_SkyCube, rayDir).rgb;
 
-				half4 backGround = lerp(float4(skyColor.rgb, 0), blackHoleBaseColor, blackHoleInfluence);
+				half4 backGround = lerp(float4(skyColor.rgb, 0), _BlackHoleColor, blackHoleInfluence);
 
 				return backGround + volumetricBaseColor;
 			}
@@ -197,13 +193,7 @@ Shader "BlackHole/Raymarching"
 				v.vertex.z = 0.1;
 
 				o.pos = UnityObjectToClipPos(v.vertex);
-				o.uv = v.uv.xy;
-
-#if UNITY_UV_STARTS_AT_TOP
-				if (_MainTex_TexelSize.y < 0)
-					o.uv.y = 1 - o.uv.y;
-#endif
-
+				
 				// Get the eyespace view ray (normalized)
 				o.ray = _FrustumCornersES[(int)index].xyz;
 
