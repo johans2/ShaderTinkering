@@ -159,14 +159,14 @@ Shader "BlackHole/Raymarching"
 					float sdfResult = map(newPos);
 
 					if (sdfResult < epsilon) {
-						float u = cos(_Time.z - distanceToSingularity);
-						float v = sin(_Time.z - distanceToSingularity);
+						float u = cos(_Time.z - (distanceToSingularity * 1.5));
+						float v = sin(_Time.z - (distanceToSingularity * 1.5));
 						
 						float2x2 rot = float2x2(u, -v, v, u);
 						
 						float2 uv = mul(rot, newPos.xz / 10);
 						
-						float noise = tex2D(_Noise, uv).a;
+						float noise = pow( tex2D(_Noise, uv).a, 1.5);
 
 						thickness = noise * _AccretionDiskThickness;
 						volumetricBaseColor += _AccretionDiskColor * thickness;
