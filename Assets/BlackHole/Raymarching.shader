@@ -159,8 +159,8 @@ Shader "BlackHole/Raymarching"
 					float sdfResult = map(newPos);
 
 					if (sdfResult < epsilon) {
-						float u = cos(_Time.y * 2);
-						float v = sin(_Time.y * 2);
+						float u = cos(_Time.z - distanceToSingularity);
+						float v = sin(_Time.z - distanceToSingularity);
 						
 						float2x2 rot = float2x2(u, -v, v, u);
 						
