@@ -134,10 +134,10 @@ Shader "BlackHole/Raymarching"
 				fixed4 ret = _AccretionDiskColor;
 				ret.a = 0;
 
-				const int maxstep = 512;
+				const int maxstep = 762;
 				float3 previousPos = ro;
 				float epsilon = 0.01;
-				float stepSize = 0.1;
+				float stepSize = 0.05;
 				float thickness = 0;
 
 				float3 rayDir = rd;
@@ -159,8 +159,8 @@ Shader "BlackHole/Raymarching"
 					float sdfResult = map(newPos);
 
 					if (sdfResult < epsilon) {
-						float u = cos(_Time.z - (distanceToSingularity * 1.5));
-						float v = sin(_Time.z - (distanceToSingularity * 1.5));
+						float u = cos(_Time.z * 1.5 - (distanceToSingularity * 1));
+						float v = sin(_Time.z * 1.5 - (distanceToSingularity * 1));
 						
 						float2x2 rot = float2x2(u, -v, v, u);
 						

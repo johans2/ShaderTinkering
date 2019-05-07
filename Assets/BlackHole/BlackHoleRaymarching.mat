@@ -73,7 +73,7 @@ Material:
     - _Parallax: 0.02
     - _SchwarzschildRadius: 0.5
     - _SmoothnessTextureChannel: 0
-    - _SpaceDistortion: 2.39
+    - _SpaceDistortion: 2.76
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _UVSec: 0
