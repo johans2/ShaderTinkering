@@ -1,7 +1,7 @@
 ﻿// Created by Johan Svensson. https://medium.com/dotcrossdot
 // Raymarching setup based on http://flafla2.github.io/2016/10/01/raymarching.html.
-// The raymarching algorithm is changed to have a fixed step distance and create a 
-// light bending black hole with an accretion disk around it. 
+// The raymarching algorithm is changed to have a fixed step distance for volumetric sampling
+// and create a light bending black hole with an accretion disk around it. 
 
 Shader "BlackHole/Raymarching"
 {
@@ -174,9 +174,9 @@ Shader "BlackHole/Raymarching"
 				// ray origin (camera position)
 				float3 ro = _CameraWS;
 
-				fixed4 add = raymarch(ro, rd);
+				fixed4 col = raymarch(ro, rd);
 
-				return add;
+				return col;
 			}
 			ENDCG
 		}
