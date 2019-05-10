@@ -1,4 +1,7 @@
-﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+﻿// Created by Johan Svensson. https://medium.com/dotcrossdot
+// Raymarching setup based on http://flafla2.github.io/2016/10/01/raymarching.html.
+// The raymarching algorithm is changed to have a fixed step distance and create a 
+// light bending black hole with an accretion disk around it. 
 
 Shader "BlackHole/Raymarching"
 {
@@ -10,6 +13,7 @@ Shader "BlackHole/Raymarching"
 		_AccretionDiskColor("Accretion disk color", Color) = (1,1,1,1)
 		_AccretionDiskThickness("Accretion disk thickness", Float) = 1
 		_SkyCube("Skycube", Cube) = "defaulttexture" {}
+		_Noise("Accretion disk noise", 2D) = "" {}
 	}
 	SubShader
 	{
@@ -24,11 +28,12 @@ Shader "BlackHole/Raymarching"
 			
 			#include "UnityCG.cginc"
 
-			// Provided by our script
+			// Set from script.
 			uniform float4x4 _FrustumCornersES;
 			uniform float4x4 _CameraInvViewMatrix;
 			uniform float3 _CameraWS;
-			uniform float3 _LightDir;
+
+			// Set from material.
 			uniform sampler2D _Noise;
 			float _SpaceDistortion;
 			float _SchwarzschildRadius;
@@ -37,29 +42,22 @@ Shader "BlackHole/Raymarching"
 			float _AccretionDiskThickness;
 			samplerCUBE _SkyCube;
 
-
-			// Input to vertex shader
 			struct appdata
 			{
-				// Remember, the z value here contains the index of _FrustumCornersES to use
+				// The z value here contains the index of _FrustumCornersES to use
 				float4 vertex : POSITION;
 				float2 uv : TEXCOORD0;
 			};
 
-			// Output of vertex shader / input to fragment shader
 			struct v2f
 			{
 				float4 pos : SV_POSITION;
 				float3 ray : TEXCOORD1;
 			};
-			// Torus
-			// t.x: diameter
-			// t.y: thickness
-			// Adapted from: http://iquilezles.org/www/articles/distfunctions/distfunctions.htm
-			float sdTorus(float3 p, float2 t)
+			
+			float sdSphere(float3 p, float s)
 			{
-				float2 q = float2(length(p.xz) - t.x, p.y);
-				return length(q) - t.y;
+				return length(p) - s;
 			}
 
 			float sdRoundedCylinder(float3 p, float ra, float rb, float h)
@@ -68,68 +66,24 @@ Shader "BlackHole/Raymarching"
 				return min(max(d.x, d.y), 0.0) + length(max(d, 0.0)) - rb;
 			}
 
-			// s: radius
-			float sdSphere(float3 p, float s)
-			{
-				return length(p) - s;
-			}
-
-			float sdScaledTorus(float3 p, float2 t, float3 scale) {
-				float3 q = p - clamp(p, -scale, scale);
-				return sdTorus(q, t);
-			}
-
-			float opUnion(float d1, float d2) { 
-				return min(d1, d2); 
-			}
-
-			float opSmoothUnion(float d1, float d2, float k) {
-				float h = clamp(0.5 + 0.5*(d2 - d1) / k, 0.0, 1.0);
-				return lerp(d2, d1, h) - k * h*(1.0 - h);
-			}
-
-			float opSmoothIntersection(float d1, float d2, float k) {
-				float h = clamp(0.5 - 0.5*(d2 - d1) / k, 0.0, 1.0);
-				return lerp(d2, d1, h) + k * h*(1.0 - h);
-			}
-
 			float opSmoothSubtraction(float d1, float d2, float k) {
 				float h = clamp(0.5 - 0.5 * (d2 + d1) / k, 0.0, 1.0);
 				return lerp(d2, -d1, h) + k * h * (1.0 - h);
 			}
 
-			// This is the distance field function.  The distance field represents the closest distance to the surface
-			// of any object we put in the scene.  If the given point (point p) is inside of an object, we return a
-			// negative answer.
-			float map(float3 p) {
+			// A SDF combination creating something that looks like an accretion disk.
+			// Made up of a flattened rounded cylinder from which we subtract a sphere.
+			float accretionDiskSDF(float3 p) {
 				float p1 = sdRoundedCylinder(p, 3.5, 0.25, 0.01);
 				float p2 = sdSphere(p, 3.5);
 				return opSmoothSubtraction(p2, p1, 0.5);
 			}
 
-			float3 calcNormal(in float3 pos)
-			{
-				// epsilon - used to approximate dx when taking the derivative
-				const float2 eps = float2(0.001, 0.0);
-
-				// The idea here is to find the "gradient" of the distance field at pos
-				// Remember, the distance field is not boolean - even if you are inside an object
-				// the number is negative, so this calculation still works.
-				// Essentially you are approximating the derivative of the distance field at this point.
-				float3 nor = float3(
-					map(pos + eps.xyy).x - map(pos - eps.xyy).x,
-					map(pos + eps.yxy).x - map(pos - eps.yxy).x,
-					map(pos + eps.yyx).x - map(pos - eps.yyx).x);
-				return normalize(nor);
-			}
-
+			// An (very rough!!) approximation of how light is bent given the distance to a black hole. 
 			float GetSpaceDistortionLerpValue(float schwarzschildRadius, float distanceToSingularity, float spaceDistortion) {
 				return pow(schwarzschildRadius, spaceDistortion) / pow(distanceToSingularity, spaceDistortion);
 			}
 
-			// Raymarch along given ray
-			// ro: ray origin
-			// rd: ray direction
 			fixed4 raymarch(float3 ro, float3 rd) {
 				fixed4 ret = _AccretionDiskColor;
 				ret.a = 0;
@@ -140,48 +94,58 @@ Shader "BlackHole/Raymarching"
 				float stepSize = 0.05;
 				float thickness = 0;
 
-				float3 rayDir = rd;
+				float3 previousRayDir = rd;
 				float3 blackHolePosition = float3(0, 0, 0);
 				float distanceToSingularity = 99999999;
 				float blackHoleInfluence = 0;
-				half4 volumetricBaseColor = half4(0, 0, 0, 1);
+				half4 lightAccumulation = half4(0, 0, 0, 1);
+				half rotationSpeed = 1.5;
+				half noiseScale = 0.1;
 				
 				for (int i = 0; i < maxstep; ++i) {
-					float3 unaffectedAddVector = normalize(rayDir) * stepSize;
-					float3 maxAffectedAddVector = normalize(blackHolePosition - previousPos) * stepSize;
+					// Get two vectors. One pointing in previous direction and one pointing to the singularity. 
+					float3 unaffectedDir = normalize(previousRayDir) * stepSize;
+					float3 maxAffectedDir = normalize(blackHolePosition - previousPos) * stepSize;
 					distanceToSingularity = distance(blackHolePosition, previousPos);
 
+					// Calculate how to interpolate between the two previously calculated vectors.
 					float lerpValue = GetSpaceDistortionLerpValue(_SchwarzschildRadius, distanceToSingularity, _SpaceDistortion);
-					float3 addVector = normalize(lerp(unaffectedAddVector, maxAffectedAddVector, lerpValue)) * stepSize;
+					float3 newRayDir = normalize(lerp(unaffectedDir, maxAffectedDir, lerpValue)) * stepSize;
 
-					float3 newPos = previousPos + addVector;
-					
-					float sdfResult = map(newPos);
+					// Move the lightray along and calculate the sdf result
+					float3 newPos = previousPos + newRayDir;
+					float sdfResult = accretionDiskSDF(newPos);
 
+					// Inside the acceration disk. Sample light.
 					if (sdfResult < epsilon) {
-						float u = cos(_Time.z * 1.5 - (distanceToSingularity * 1));
-						float v = sin(_Time.z * 1.5 - (distanceToSingularity * 1));
-						
+						// Rotate the texture sampling to fake motion.
+						float u = cos(_Time.z * rotationSpeed - (distanceToSingularity));
+						float v = sin(_Time.z * rotationSpeed - (distanceToSingularity));
 						float2x2 rot = float2x2(u, -v, v, u);
-						
-						float2 uv = mul(rot, newPos.xz / 10);
-						
-						float noise = pow( tex2D(_Noise, uv).a, 1.5);
+						float2 uv = mul(rot, newPos.xz * noiseScale);
 
+						// Get thickness from the noise texture.
+						float noise = pow( tex2D(_Noise, uv).a, 1.5);
 						thickness = noise * _AccretionDiskThickness;
-						volumetricBaseColor += _AccretionDiskColor * thickness;
+
+						// Add to the rays light accumulation.
+						lightAccumulation += _AccretionDiskColor * thickness;
 					}
 
+					// Calculate black hole influence on the final color.
 					blackHoleInfluence = step(distanceToSingularity, _SchwarzschildRadius);
 					previousPos = newPos;
-					rayDir = addVector;
+					previousRayDir = newRayDir;
 				}
 
-				float3 skyColor = texCUBE(_SkyCube, rayDir).rgb;
+				// Sample the skybox.
+				float3 skyColor = texCUBE(_SkyCube, previousRayDir).rgb;
 
+				// Sample let background be either skybox or the black hole color.
 				half4 backGround = lerp(float4(skyColor.rgb, 0), _BlackHoleColor, blackHoleInfluence);
 
-				return backGround + volumetricBaseColor;
+				// Return background and light.
+				return backGround + lightAccumulation;
 			}
 
 			v2f vert(appdata v)

@@ -2,7 +2,6 @@
 using System.Collections;
 
 // http://flafla2.github.io/2016/10/01/raymarching.html
-
 [ExecuteInEditMode]
 [RequireComponent(typeof(Camera))]
 [AddComponentMenu("Effects/Raymarch (Generic)")]
@@ -10,9 +9,6 @@ public class TutorialRaymarch : SceneViewFilter {
 
     [SerializeField]
     private Material blackHoleRayMarching;
-
-    [SerializeField]
-    private Texture noiseTexture;
 
     public Camera CurrentCamera {
         get {
@@ -35,10 +31,6 @@ public class TutorialRaymarch : SceneViewFilter {
         blackHoleRayMarching.SetMatrix("_CameraInvViewMatrix", CurrentCamera.cameraToWorldMatrix);
         blackHoleRayMarching.SetVector("_CameraWS", CurrentCamera.transform.position);
         
-        //Graphics.Blit(source, destination, EffectMaterial, 0); // use given effect shader as image effect
-        blackHoleRayMarching.SetMatrix("_FrustumCornersES", GetFrustumCorners(CurrentCamera));
-        blackHoleRayMarching.SetTexture("_Noise", noiseTexture);
-
         CustomGraphicsBlit(source, destination, blackHoleRayMarching, 0); // Replace Graphics.Blit with CustomGraphicsBlit
     }
 
