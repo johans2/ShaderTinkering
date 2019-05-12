@@ -5,7 +5,7 @@ using System.Collections;
 [ExecuteInEditMode]
 [RequireComponent(typeof(Camera))]
 [AddComponentMenu("Effects/Raymarch (Generic)")]
-public class TutorialRaymarch : SceneViewFilter {
+public class Raymarch : SceneViewFilter {
 
     [SerializeField]
     private Material blackHoleRayMarching;
