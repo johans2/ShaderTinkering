@@ -3,7 +3,7 @@
 // The raymarching algorithm is changed to have a fixed step distance for volumetric sampling
 // and create a light bending black hole with an accretion disk around it. 
 
-Shader "BlackHole/Raymarching"
+Shader "DotCrossDot/BlackHoleRaymarching"
 {
 	Properties
 	{
