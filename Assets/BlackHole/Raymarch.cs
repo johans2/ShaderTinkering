@@ -1,7 +1,10 @@
-﻿using UnityEngine;
+﻿// Created by Johan Svensson. https://medium.com/dotcrossdot
+// Slightly modified version of http://flafla2.github.io/2016/10/01/raymarching.html
+// Most shader properties are moved to the material instead for better control.
+
+using UnityEngine;
 using System.Collections;
 
-// http://flafla2.github.io/2016/10/01/raymarching.html
 [ExecuteInEditMode]
 [RequireComponent(typeof(Camera))]
 [AddComponentMenu("Effects/Raymarch (Generic)")]
